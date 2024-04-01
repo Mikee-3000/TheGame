@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import json
 from mistralai.client import MistralClient
+from mistralai.models.models import ModelCard
 from mistralai.models.chat_completion import ChatMessage
 import os
 
@@ -10,7 +11,8 @@ model = 'mistral-large-latest'
 
 client = MistralClient(api_key=api_key)
 for model_data in client.list_models():
-    for model in model_data:
-        # model = json.dumps(model, indent=2)
-        print(model)
+    print(model_data[1])
+    for model in model_data[1]:
+        if type(model) == ModelCard:
+            print(model.id)
         
