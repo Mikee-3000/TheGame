@@ -12,3 +12,5 @@ def log_message(message: ChatMessage, log_file: str, model=None, thread_position
             f.write(f'{message.role}: {message.content}\n')
         if thread_position == 'bottom':
             f.write('--------------------------------------------------------------\n')
+
+log_file = 'logs/chat.log'
