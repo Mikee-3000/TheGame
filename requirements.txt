@@ -1,5 +1,6 @@
 fastapi
+jinja2
 mistralai
-uvicorn
 pydantic
 python-dotenv
+uvicorn
