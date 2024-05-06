@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 
 export default class WindowSetup { 
     constructor(camera, renderer) {
@@ -5,8 +6,8 @@ export default class WindowSetup {
             width: window.innerWidth,
             height: window.innerHeight
         }
-        window.addEventListener('resize', () =>
-        {
+        this.mouse = new THREE.Vector2()
+        window.addEventListener('resize', () => {
             // Update sizes
             this.sizes.width = window.innerWidth
             this.sizes.height = window.innerHeight

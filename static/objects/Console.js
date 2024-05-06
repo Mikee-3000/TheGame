@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import {gltfLoader} from '../lib/loader.js'
+import { ConsoleLight, ConsoleButton } from './smallObjects.js'
 
 
 export default class Console {
@@ -13,6 +14,12 @@ export default class Console {
             (gltf) => {
                 this.consoleModel = gltf.scene
                 this.consoleModel.castShadow = true
+                this.clickLight = new ConsoleLight(2.9, 5.9, -2.8)
+                this.hoverLight = new ConsoleLight(3.2, 5.9, -2.8)
+                this.button1 = new ConsoleButton(2.9, 4.9, -1.8)
+                this.button1.clickCallback = () => {
+                    this.clickLight.material.color.set(0x00ff00)
+                }
                 window.scene.add(this.consoleModel)
             }
         )
