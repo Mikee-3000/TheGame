@@ -1,120 +1,44 @@
 import * as THREE from 'three'
-import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js'
-import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js'
-import { DRACOLoader } from './node_modules/three/examples/jsm/loaders/DRACOLoader.js'
-const GUI = window.lil.GUI;
+import {gui, canvas, scene, raycaster} from './lib/base.js'
+import Console from './objects/Console.js'
+import {ConsoleLight, ConsoleButton} from './objects/smallObjects.js'
+import Floor from './objects/Floor.js'
+import {AmbientLight} from './objects/lights.js'
+import {Camera} from './objects/Camera.js'
+import {Controls} from './objects/Controls.js'
+import WindowSetup from './lib/window.Setup.js'
+import Renderer from './lib/renderer.js'
 
+window.scene = scene
 
-/**
- * Base
- */
-// Debug/
-const gui = new GUI()
+// Objects
+let console = new Console()
+let hoverLight = new ConsoleLight()
+let clickLight = new ConsoleLight()
+let button1 = new ConsoleButton()
+let floor = new Floor()
+let ambientLight = new AmbientLight()
+let camera = new Camera()
+let controls = new Controls(camera, canvas)
+let renderer = new Renderer(canvas)
+let windowSetup = new WindowSetup(camera, renderer)
 
-// Canvas
-const canvas = document.querySelector('canvas.webgl')
+// Mouse cursor
 
-// Scene
-const scene = new THREE.Scene()
-
-/**
- * Models
- */
-const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('static/draco/')
-const gltfLoader = new GLTFLoader()
-gltfLoader.setDRACOLoader(dracoLoader)
-
-let mixer = null
-
-gltfLoader.load(
-    'static/models/console.glb',
-    (gltf) =>
-    {
-        scene.add(gltf.scene)
-    }
-)
-
-/**
- * Floor
- */
-const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(50, 50),
-    new THREE.MeshStandardMaterial({
-        color: '#0000ff',
-        metalness: 0.9,
-        roughness: 0.2,
-        transparent: true,
-        opacity: 0.7,
-    })
-)
-floor.receiveShadow = true
-// floor.rotation.x = - Math.PI * 0.5
-scene.add(floor)
-
-/**
- * Lights
- */
-const ambientLight = new THREE.AmbientLight(0xffffff, 2.4)
-scene.add(ambientLight)
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8)
-directionalLight.castShadow = true
-directionalLight.shadow.mapSize.set(1024, 1024)
-directionalLight.shadow.camera.far = 15
-directionalLight.shadow.camera.left = - 7
-directionalLight.shadow.camera.top = 7
-directionalLight.shadow.camera.right = 7
-directionalLight.shadow.camera.bottom = - 7
-directionalLight.position.set(5, 5, 5)
-scene.add(directionalLight)
-
-/**
- * Sizes
- */
-const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
-}
-
-window.addEventListener('resize', () =>
+let pointedObjects = []
+const mouse = new THREE.Vector2()
+window.addEventListener('mousemove', (event) => 
 {
-    // Update sizes
-    sizes.width = window.innerWidth
-    sizes.height = window.innerHeight
-
-    // Update camera
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
-
-    // Update renderer
-    renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    // the values need to be from -1 to 1 left to right 
+    mouse.x = event.clientX / windowSetup.sizes.width * 2 - 1
+    // the values need to be from -1 to 1 bottom to top
+    mouse.y = - (event.clientY / windowSetup.sizes.height) * 2 + 1
 })
-
-/**
- * Camera
- */
-// Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(- 8, 4, 8)
-scene.add(camera)
-
-// Controls
-const controls = new OrbitControls(camera, canvas)
-controls.target.set(0, 1, 0)
-controls.enableDamping = true
-
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+window.addEventListener('click', (event) => {
+    if (pointedObjects.includes(button1)) {
+        button1.clicked = !button1.clicked
+    }
 })
-renderer.shadowMap.enabled = true
-renderer.shadowMap.type = THREE.PCFSoftShadowMap
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 /**
  * Animate
@@ -128,10 +52,45 @@ const tick = () =>
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
 
-    if(mixer)
+    raycaster.setFromCamera(mouse, camera)
+    hoverLight.position.y = 0
+
+    if (console.consoleModel)
     {
-        mixer.update(deltaTime)
+        console.size = console.getSize()
+        console.setPosition(null, console.size.y / 2, null)
+        clickLight.setPos(2.9, console.size.y / 2 + 1, -2.8)
+        hoverLight.setPos(3.2, console.size.y / 2 + 1, -2.8)
+        button1.setPos(2.9, console.size.y / 2, -2.8)
+        const objectsToTest = [button1]
+        const intersects = raycaster.intersectObjects(objectsToTest)
+        // check if consoleModel is in the intersects array
+        for (const intersect of intersects) {
+            if (!pointedObjects.includes(intersect.object)) {
+                pointedObjects.push(intersect.object)   
+            }
+        }
+        if (pointedObjects.includes(button1)){
+            // button1Pressed = !button1Pressed
+            if (button1.clicked) {
+                clickLight.material.color.set('#ff0000')
+            } else {
+                clickLight.material.color.set('#0000ff')        
+            }
+            if (!button1.hovered) {
+                button1.hovered = true
+                hoverLight.material.color.set('blue')
+            }
+        } else {
+            button1.hovered = false
+            hoverLight.material.color.set('red')
+            pointedObjects.splice(pointedObjects.indexOf(button1), 1)
+        }
+        // console.log(intersects)
     }
+
+
+
 
     // Update controls
     controls.update()
