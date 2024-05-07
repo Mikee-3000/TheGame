@@ -1,25 +1,43 @@
 import * as THREE from 'three'
 
 export default class Mouse {
-    constructor(windowSetup) {
+    constructor(windowSetup, camera) {
         let cursor = new THREE.Vector2()
         this.cursor = cursor
+        this.camera = camera
+        this.raycaster = new THREE.Raycaster()
         this.currentIntersect = []
+        this.clickedObject = null
+        this.hoveredObject = null
+        this.registeredObjects = []
+        
+        // Event listeners
         window.addEventListener('mousemove', (event) => {
-            // the values need to be from -1 to 1 left to right 
             cursor.x = event.clientX / windowSetup.sizes.width * 2 - 1
-            // the values need to be from -1 to 1 bottom to top
             cursor.y = - (event.clientY / windowSetup.sizes.height) * 2 + 1
+            if (this.currentIntersect.length > 0) {
+                this.hoveredObject.dispatchEvent({type: 'mousemove'})
+            }
         })
         window.addEventListener('mousedown', (event) => {
             if (this.currentIntersect.length > 0) {
-                this.currentIntersect[0].object.dispatchEvent({type: 'mousedown'})
+                this.clickedObject = this.currentIntersect[0].object
+                this.clickedObject.dispatchEvent({type: 'mousedown'})
             }
         })
         window.addEventListener('mouseup', (event) => {
-            if (this.currentIntersect.length > 0) {
-                this.currentIntersect[0].object.dispatchEvent({type: 'mouseup'})
+            if (this.clickedObject) {
+                this.clickedObject.dispatchEvent({type: 'mouseup'})
+                this.clickedObject = null
             }
         })
     }
+    registerObject(obj) {
+        this.registeredObjects.push(obj)
+    }
+    castRay(camera) {
+        this.raycaster.setFromCamera(this.cursor, camera)
+        this.currentIntersect = this.raycaster.intersectObjects(this.registeredObjects)
+        this.hoveredObject = this.currentIntersect.length > 0 ? this.currentIntersect[0].object : null
+    }   
 }

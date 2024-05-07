@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import {gui, canvas, scene, raycaster} from './lib/base.js'
+import {gui, canvas, scene} from './lib/base.js'
 import Console from './objects/Console.js'
 import Floor from './objects/Floor.js'
 import {AmbientLight} from './objects/lights.js'
@@ -19,7 +19,8 @@ let camera = new Camera()
 let controls = new Controls(camera, canvas)
 let renderer = new Renderer(canvas)
 let windowSetup = new WindowSetup(camera, renderer)
-let mouse = new Mouse(windowSetup)
+// mouse needs to be global so that in can be used by objects to register themselves to receive clicks
+window.mouse = new Mouse(windowSetup, camera)
 
 const clock = new THREE.Clock()
 let previousTime = 0
@@ -30,25 +31,18 @@ const tick = () =>
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
 
-    raycaster.setFromCamera(mouse.cursor, camera)
+    // this needs to be done here, because browsers sometimes creates mouse events faster than the framerate
+    window.mouse.castRay(camera)
 
     if (consoleObject.consoleModel) {
         consoleObject.size = consoleObject.getSize()
         consoleObject.setPosition(null, consoleObject.size.y / 2, null)
-        mouse.currentIntersect = raycaster.intersectObjects([consoleObject.button1])
-        if (mouse.currentIntersect.length & !consoleObject.button1.hovered) {
-            consoleObject.button1.hovered = true
-            consoleObject.hoverLight.material.color.set(0xff0000)
-        } else if (!mouse.currentIntersect.length & consoleObject.button1.hovered) {
-            consoleObject.button1.hovered = false
-            consoleObject.hoverLight.material.color.set(0x0000ff)
-        }
     }
     // Update controls
     controls.update()
 
     // Render
-    renderer.render(scene, camera)
+    renderer.render(window.scene, camera)
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)

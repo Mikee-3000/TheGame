@@ -6,7 +6,7 @@ export default class WindowSetup {
             width: window.innerWidth,
             height: window.innerHeight
         }
-        this.mouse = new THREE.Vector2()
+        // this.mouse = new THREE.Vector2()
         window.addEventListener('resize', () => {
             // Update sizes
             this.sizes.width = window.innerWidth

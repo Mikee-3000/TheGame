@@ -8,6 +8,5 @@ const GUI = window.lil.GUI;
 const gui = new GUI()
 const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
-const raycaster = new THREE.Raycaster()
 
-export {gui, canvas, scene, raycaster, DRACOLoader, GLTFLoader, OrbitControls}
+export {gui, canvas, scene, DRACOLoader, GLTFLoader, OrbitControls}
