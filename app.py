@@ -14,11 +14,11 @@ templates = Jinja2Templates(directory="templates")
 
 class Metrics(BaseModel):
     population: int
-    interest_rate: float
-    government_spending: float
-    taxes: float
-    money_supply: float
-    food_import_allowed: bool
+    interestRate: float
+    govtSpending: float
+    taxRate: float
+    moneySupply: float
+    foodImport: bool
 
 
 @app.get("/", response_class=HTMLResponse)

@@ -18,13 +18,13 @@
 </head>
 <body>
     <div id="setters">
-        <input type="text" id="interest-rates">
+        <input type="text" id="interest-rate">
         <input type="text" id="govt-spending">
-        <input type="text" id="taxes">
+        <input type="text" id="tax-rate">
         <input type="text" id="money-supply">
         <input type="text" id="food-import">
         <button id="cancel-button" onclick="setters.hide()">Cancel</button>
-        <button id="send-button">Send</button>
+        <button id="send-button" onclick="setters.sendSetters()">Send</button>
     </div>
 
     <canvas class="webgl"></canvas>

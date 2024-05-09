@@ -9,10 +9,12 @@ import WindowSetup from './lib/window.Setup.js'
 import Renderer from './lib/renderer.js'
 import Mouse from './lib/Mouse.js'
 import Setters from './objects/Setters.js'
+import GameData from './lib/GameData.js'
 
 window.scene = scene
 
 // Objects
+let gameData = new GameData()
 let renderer = new Renderer(canvas)
 let camera = new Camera()
 let windowSetup = new WindowSetup(camera, renderer)
