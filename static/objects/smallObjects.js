@@ -25,7 +25,6 @@ class ConsoleButton extends THREE.Mesh {
         )
 
         this.addEventListener('mouseenter', function(event) {
-            this.material.color.set('#0000ff')
             this.hovered = true
             if (this.mouseenterCallback != null) {
                 this.mouseenterCallback()
@@ -33,7 +32,6 @@ class ConsoleButton extends THREE.Mesh {
         })
 
         this.addEventListener('mouseleave', function(event) {
-            this.material.color.set('#ff0000')
             this.hovered = false
             if (this.mouseleaveCallback != null) {
                 this.mouseleaveCallback()
