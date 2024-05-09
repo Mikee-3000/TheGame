@@ -6,9 +6,9 @@ export default class Mouse {
         this.cursor = cursor
         this.camera = camera
         this.raycaster = new THREE.Raycaster()
-        this.currentIntersect = []
         this.clickedObject = null
         this.hoveredObject = null
+        this.currentIntersect = []
         this.registeredObjects = []
         
         // Event listeners
@@ -37,7 +37,24 @@ export default class Mouse {
     }
     castRay(camera) {
         this.raycaster.setFromCamera(this.cursor, camera)
-        this.currentIntersect = this.raycaster.intersectObjects(this.registeredObjects)
-        this.hoveredObject = this.currentIntersect.length > 0 ? this.currentIntersect[0].object : null
+        this.currentIntersect = this.raycaster.intersectObjects(this.registeredObjects, true)
+        const previousIntersect = this.hoveredObject
+        this.setHoveredObject()
+        const newIntersect = this.hoveredObject
+
+        if (previousIntersect != newIntersect) { 
+            if (newIntersect !== null) {
+                newIntersect.dispatchEvent({type: 'mouseenter'})
+                console.log('mouse enter')
+            }
+            if (previousIntersect !== null) {
+                previousIntersect.dispatchEvent({type: 'mouseleave'})
+                console.log('mouse leave')
+            }
+        }
     }   
+
+    setHoveredObject(obj) {
+        this.hoveredObject = this.currentIntersect.length > 0 ? this.currentIntersect[0].object : null
+    }
 }

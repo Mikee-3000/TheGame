@@ -23,31 +23,44 @@ class ConsoleButton extends THREE.Mesh {
             new THREE.BoxGeometry(0.5, 0.5, 0.5),
             new THREE.MeshStandardMaterial({ color: '#ff0000' })
         )
-        this.addEventListener('mousemove', function(event) {
-            // this.material.color.set('#ff0000')
-            if (this.hovered != null && !this.hovered) {
-                this.hovered = true
-                this.material.color.set('#0000ff')
-            } else if (this.hovered != null && this.hovered) {
-                this.hovered = false
-                this.material.color.set('#ff0000')
+
+        this.addEventListener('mouseenter', function(event) {
+            this.material.color.set('#0000ff')
+            this.hovered = true
+            if (this.mouseenterCallback != null) {
+                this.mouseenterCallback()
             }
         })
+
+        this.addEventListener('mouseleave', function(event) {
+            this.material.color.set('#ff0000')
+            this.hovered = false
+            if (this.mouseleaveCallback != null) {
+                this.mouseleaveCallback()
+            }
+        })
+
         this.addEventListener('mousedown', function(event) {
             this.material.color.set('#0000ff')
             this.clicked = true
-            if (this.clickCallback != null) {
-                this.clickCallback()
+            if (this.mousedownCallback != null) {
+                this.mousedownCallback()
             }
         })
         this.addEventListener('mouseup', function(event) {
             this.material.color.set('#ff0000')
             this.clicked = false
+            if (this.mouseupCallback != null) {
+                this.mouseupCallback()
+            }
         })
 
         this.hovered = false
         this.clicked = false
-        this.clickCallback = null
+        this.mouseenterCallback = null
+        this.mouseleaveCallback = null
+        this.mouseupCallback = null
+        this.mousedownCallback = null
         this.setPos(x, y, z)
 
         window.mouse.registerObject(this)
@@ -59,14 +72,6 @@ class ConsoleButton extends THREE.Mesh {
         this.position.y = y
         this.position.z = z
     }
-
-        // if (mouse.currentIntersect.length & !consoleObject.button1.hovered) {
-        //     consoleObject.button1.hovered = true
-        //     consoleObject.hoverLight.material.color.set(0xff0000)
-        // } else if (!mouse.currentIntersect.length & consoleObject.button1.hovered) {
-        //     consoleObject.button1.hovered = false
-        //     consoleObject.hoverLight.material.color.set(0x0000ff)
-        // }
 }
 
 export {ConsoleLight, ConsoleButton}

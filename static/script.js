@@ -32,12 +32,12 @@ const tick = () =>
     previousTime = elapsedTime
 
     // this needs to be done here, because browsers sometimes creates mouse events faster than the framerate
-    window.mouse.castRay(camera)
 
     if (consoleObject.consoleModel) {
         consoleObject.size = consoleObject.getSize()
         consoleObject.setPosition(null, consoleObject.size.y / 2, null)
     }
+    window.mouse.castRay(camera)
     // Update controls
     controls.update()
 
