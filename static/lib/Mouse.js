@@ -45,11 +45,9 @@ export default class Mouse {
         if (previousIntersect != newIntersect) { 
             if (newIntersect !== null) {
                 newIntersect.dispatchEvent({type: 'mouseenter'})
-                console.log('mouse enter')
             }
             if (previousIntersect !== null) {
                 previousIntersect.dispatchEvent({type: 'mouseleave'})
-                console.log('mouse leave')
             }
         }
     }   

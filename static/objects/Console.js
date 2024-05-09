@@ -19,9 +19,17 @@ export default class Console {
                 this.button1 = new ConsoleButton(2.9, 4.9, -1.8)
                 this.button1.mousedownCallback = () => {
                     this.clickLight.material.color.set(0x00ff00)
+                    this.button1.material.color.set(0x00ff00)
                 }
                 this.button1.mouseupCallback = () => {
                     this.clickLight.material.color.set(0x0000ff)
+                    this.button1.material.color.set(0xff0000)
+                }
+                this.button1.mouseenterCallback = () => {
+                    this.button1.material.color.set(0xffff00)
+                }
+                this.button1.mouseleaveCallback = () => {
+                    this.button1.material.color.set(0xff0000)
                 }
                 window.scene.add(this.consoleModel)
             }

@@ -41,14 +41,12 @@ class ConsoleButton extends THREE.Mesh {
         })
 
         this.addEventListener('mousedown', function(event) {
-            this.material.color.set('#0000ff')
             this.clicked = true
             if (this.mousedownCallback != null) {
                 this.mousedownCallback()
             }
         })
         this.addEventListener('mouseup', function(event) {
-            this.material.color.set('#ff0000')
             this.clicked = false
             if (this.mouseupCallback != null) {
                 this.mouseupCallback()
