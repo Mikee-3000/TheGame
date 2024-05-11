@@ -11,7 +11,7 @@ import Mouse from './lib/Mouse.js'
 import Setters from './objects/Setters.js'
 import GameData from './lib/GameData.js'
 import FixedText from './objects/FixedText.js'
-import TextSprite from './objects/TextSprite.js'
+import DigitalClock from './objects/DigitalClock.js'
 
 window.scene = scene
 
@@ -33,14 +33,16 @@ window.setters.addTextInput()
 const fixedText = new FixedText(new THREE.Vector3(0, consoleObject.getBoxSize().y, -consoleObject.getBoxSize().z), 'DON\'T PANIC!')
 const clock = new THREE.Clock()
 let previousTime = 0
+const digitalClock = new DigitalClock()
 
-const tick = () =>
-{
+
+const tick = () => {
+
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
 
-    // console.log(elapsedTime)
+    digitalClock.update()
 
     // this needs to be done here, because browsers sometimes creates mouse events faster than the framerate
     window.mouse.castRay(camera)
@@ -52,8 +54,6 @@ const tick = () =>
     renderer.render(window.scene, camera)
     cssRenderer.render(window.scene, camera);
 
-    // const t = Date.now() * 0.001;
-    // textSprite.position.set(Math.cos(t) * 5, 0, Math.sin(t) * 5);
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 }
