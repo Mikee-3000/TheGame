@@ -7,7 +7,8 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 
 
 const gui = new GUI()
-const canvas = document.querySelector('canvas.webgl')
+// const canvas = document.querySelector('canvas.webgl')
+const canvas = document.getElementById('webgl-canvas')
 const scene = new THREE.Scene()
 const cssRenderer = new CSS2DRenderer();
 cssRenderer.setSize(window.innerWidth, window.innerHeight);

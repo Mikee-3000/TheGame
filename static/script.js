@@ -11,6 +11,7 @@ import Mouse from './lib/Mouse.js'
 import Setters from './objects/Setters.js'
 import GameData from './lib/GameData.js'
 import FixedText from './objects/FixedText.js'
+import TextSprite from './objects/TextSprite.js'
 
 window.scene = scene
 
@@ -24,14 +25,12 @@ let consoleObject = await createConsoleInstance()
 let floor = new Floor()
 let ambientLight = new AmbientLight()
 let controls = new Controls(camera, canvas)
-controls.target = consoleObject.consoleModel.position
+controls.target = new THREE.Vector3(0, 5, 0)
 // mouse needs to be global so that in can be used by objects to register themselves to receive clicks
 window.cssRenderer = cssRenderer
 window.setters = new Setters()
 window.setters.addTextInput()
-// window.setters.show(cssRenderer)
-const fixedText = new FixedText(new THREE.Vector3(0, consoleObject.getBoxSize().y, -consoleObject.getBoxSize().z/2), 'DON\'T PANIC!')
-console.log(fixedText)
+const fixedText = new FixedText(new THREE.Vector3(0, consoleObject.getBoxSize().y, -consoleObject.getBoxSize().z), 'DON\'T PANIC!')
 const clock = new THREE.Clock()
 let previousTime = 0
 
@@ -40,6 +39,8 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
+
+    // console.log(elapsedTime)
 
     // this needs to be done here, because browsers sometimes creates mouse events faster than the framerate
     window.mouse.castRay(camera)
@@ -51,6 +52,8 @@ const tick = () =>
     renderer.render(window.scene, camera)
     cssRenderer.render(window.scene, camera);
 
+    // const t = Date.now() * 0.001;
+    // textSprite.position.set(Math.cos(t) * 5, 0, Math.sin(t) * 5);
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 }

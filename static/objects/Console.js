@@ -41,6 +41,8 @@ class SettersButton extends ConsoleButton {
 }
 
 
+// TODO: Create a group that would have this object and all the other ones
+// I hope that that will fix the panning issue
 class Console {
     constructor() {
         this.consoleModel = null 
