@@ -10,6 +10,7 @@ import Renderer from './lib/renderer.js'
 import Mouse from './lib/Mouse.js'
 import Setters from './objects/Setters.js'
 import GameData from './lib/GameData.js'
+import FixedText from './objects/FixedText.js'
 
 window.scene = scene
 
@@ -23,12 +24,14 @@ let consoleObject = await createConsoleInstance()
 let floor = new Floor()
 let ambientLight = new AmbientLight()
 let controls = new Controls(camera, canvas)
+controls.target = consoleObject.consoleModel.position
 // mouse needs to be global so that in can be used by objects to register themselves to receive clicks
 window.cssRenderer = cssRenderer
 window.setters = new Setters()
 window.setters.addTextInput()
 // window.setters.show(cssRenderer)
-
+const fixedText = new FixedText(new THREE.Vector3(0, consoleObject.getBoxSize().y, -consoleObject.getBoxSize().z/2), 'DON\'T PANIC!')
+console.log(fixedText)
 const clock = new THREE.Clock()
 let previousTime = 0
 

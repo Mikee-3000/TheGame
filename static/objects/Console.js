@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import {gltfLoader} from '../lib/loader.js'
 import ObjectRegister from '../lib/ObjectRegister.js'
 import { ConsoleLight, ConsoleButton } from './smallObjects.js'
+import { getBoxSize } from '../lib/helperFuncs.js'
 
 // This code puts together the main console model
 
@@ -57,8 +58,9 @@ class Console {
         this.consoleModel.rotation.set(x, y, z)
     }
     getBoxSize() {
-        let boundingBox = new THREE.Box3().setFromObject(this.consoleModel)
-        return boundingBox.getSize(new THREE.Vector3())
+        return getBoxSize(this.consoleModel)
+        // let boundingBox = new THREE.Box3().setFromObject(this.consoleModel)
+        // return boundingBox.getSize(new THREE.Vector3())
     }
     setSize() {
         this.size = this.getBoxSize()
