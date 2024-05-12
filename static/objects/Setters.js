@@ -3,6 +3,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import ObjectRegister from '../lib/ObjectRegister.js'
 import GameData from '../lib/GameData.js'
 import { sendMetrics } from '../lib/messages.js'
+import Displays from './MetricsDisplays/Displays.js'
 
 
 let instance = null;
@@ -85,6 +86,8 @@ export default class Setters {
         console.log(this.gameData)
         this.aiResponse = await sendMetrics(this.gameData)
         this.setValues('ai', 'gameData')
+        let displays = new Displays()
+        displays.updateDisplays()
         console.log('response received')
         console.log(this)
     }

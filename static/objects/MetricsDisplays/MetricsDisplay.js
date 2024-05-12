@@ -12,8 +12,8 @@ export default class MetricsDisplay {
             canvasWidth: 2048,
             canvasHeight: 1024,
             fontFamily: 'Helvetica',
-            textColor: 'yellow',
-            backgroundColor: 'fuchsia',
+            textColor: 'darkblue',
+            backgroundColor: 'grey',
             fontSize: 256
         })
         this.material = new THREE.MeshBasicMaterial({ map: this.textureMapText.texture });

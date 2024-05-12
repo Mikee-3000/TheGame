@@ -19,7 +19,7 @@ export default class FixedText {
                     bevelOffset: 0,
                     bevelSegments: 5
                 })
-                const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+                const textMaterial = new THREE.MeshBasicMaterial({ color: 'darkblue' })
                 const textObject = new THREE.Mesh(textGeometry, textMaterial)
                 this.textObject = textObject
                 textObject.position.set(position.x-(getBoxSize(textObject).x/2), position.y, position.z)
