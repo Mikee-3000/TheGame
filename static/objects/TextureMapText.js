@@ -13,17 +13,27 @@ export default class TextureMapText {
         this.fontSize = options.fontSize || 512
         this.fontFamily = options.fontFamily || 'Arial'
         this.fontWeight = options.fontWeight || 'bold'
+        this.textColor = options.textColor || 'white'
+        this.backgroundColor = options.backgroundColor || 'black'
         this.ctx.font = `${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`
+        // don't update the texture on first run, there isn't any 
+        this.setText(text, false)
+        this.texture = new THREE.CanvasTexture(this.cnvs)
+        this.texture.needsUpdate = true
+    }
+    setText(text, updateTexture=true) {
+        this.ctx.clearRect(0, 0, this.cnvs.width, this.cnvs.height)
+        // Set the canvas background color 
+        this.ctx.fillStyle = this.backgroundColor
+        // console.log(this.backgroundColor)
+        this.ctx.fillRect(0, 0, this.cnvs.width, this.cnvs.height)
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'
         // The color of the text
-        this.ctx.fillStyle = options.color || '#FF0000'
+        this.ctx.fillStyle = this.textColor
         this.ctx.fillText(text, this.cnvs.width / 2, this.cnvs.height / 2)
-        this.texture = new THREE.CanvasTexture(this.cnvs)
-    }
-    setText(text) {
-        this.ctx.clearRect(0, 0, this.cnvs.width, this.cnvs.height)
-        this.ctx.fillText(text, this.cnvs.width / 2, this.cnvs.height / 2)
-        this.texture.needsUpdate = true
+        if (updateTexture) {
+            this.texture.needsUpdate = true
+        }
     }
 }

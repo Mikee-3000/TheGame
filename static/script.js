@@ -12,6 +12,7 @@ import Setters from './objects/Setters.js'
 import GameData from './lib/GameData.js'
 import FixedText from './objects/FixedText.js'
 import DigitalClock from './objects/DigitalClock.js'
+import Displays from './objects/MetricsDisplays/Displays.js'
 
 window.scene = scene
 
@@ -34,6 +35,7 @@ const fixedText = new FixedText(new THREE.Vector3(0, consoleObject.getBoxSize().
 const clock = new THREE.Clock()
 let previousTime = 0
 const digitalClock = new DigitalClock()
+const displays = new Displays()
 
 
 const tick = () => {

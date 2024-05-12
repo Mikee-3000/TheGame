@@ -4,16 +4,19 @@ import * as THREE from 'three'
 // will always face the camera, so not good for text integrated into the world.
 
 export default class TextSprite {
-    constructor(text, position, parentObject) {
+    constructor(text, position, parentObject, options) {
         this.text = text
         this.position = position
         this.parentObject = parentObject
+        this.font = options.font || 'bold 48px Arial'
+        this.fontColor = options.fontColor || 'black'
         this.build()
     }
     build() {
         this.canvas = document.createElement('canvas')
         this.ctx = this.canvas.getContext('2d')
-        this.ctx.font = 'bold 48px Arial'
+        this.ctx.fillStyle = this.fontColor
+        this.ctx.font = this.font
         this.ctx.textAlign = 'center'
         this.ctx.fillText(this.text, this.canvas.width / 2, this.canvas.height / 2)
         this.texture = new THREE.CanvasTexture(this.canvas)
