@@ -12,14 +12,26 @@ export default class GameData {
         this.govtSpending = 1000
         this.taxRate = 0.2
         this.moneySupply = 1000
-        this.foodImport = true
+        this.foodImport = 1
         this.population = 1000
-        this.gdp = null
-        this.inflationRate = null
-        this.consumerConfidence = null
-        this.investmentLevel = null
-        this.tradeBalance = null
-        this.unemploymentRate = null
-        this.governmentDebt = null
+        this.gdp = 1000
+        this.inflationRate = 0
+        this.consumerConfidence = 100
+        this.investmentLevel = 1000
+        this.tradeBalance = 0
+        this.governmentDebt = 0
+        this.unemploymentRate = 0
+        this.populationGrowth = 0
+    }
+    getRequestData() {
+        // sends only the data that the AI expects
+        return {
+            interestRate: this.interestRate,
+            govtSpending: this.govtSpending,
+            taxRate: this.taxRate,
+            moneySupply: this.moneySupply,
+            foodImport: this.foodImport,
+            population: this.population
+        }
     }
 }

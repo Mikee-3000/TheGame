@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js'
 import ObjectRegister from '../lib/ObjectRegister.js'
-import GameData from '../lib/GameData.js';
+import GameData from '../lib/GameData.js'
+import { sendMetrics } from '../lib/messages.js'
 
 
 let instance = null;
@@ -70,29 +71,21 @@ export default class Setters {
             for (const [camelCase, input] of Object.entries(this.textInputs)) {
                 this.gameData[camelCase] = document.getElementById(input.id).value
             }
+        } else if (source === 'ai' && destination === 'gameData') {
+            for (const [camelCase, value] of Object.entries(this.aiResponse)) {
+                this.gameData[camelCase] = value
+            }
         }
             // TODO: Error handling
     }
 
-    sendSetters() {
-        this.setValues('input', 'gameData')
-        fetch('http://localhost:8080/send_metrics/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ...this.gameData
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response data
-            ;
-        })
-        .catch(error => {
-            // Handle any errors
-            console.error(error)
-        })
+    async sendSetters() {
+        await this.setValues('input', 'gameData')
+        this.hide()
+        console.log(this.gameData)
+        this.aiResponse = await sendMetrics(this.gameData)
+        this.setValues('ai', 'gameData')
+        console.log('response received')
+        console.log(this)
     }
 }
