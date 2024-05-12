@@ -13,6 +13,7 @@ import GameData from './lib/GameData.js'
 import FixedText from './objects/FixedText.js'
 import DigitalClock from './objects/DigitalClock.js'
 import Displays from './objects/MetricsDisplays/Displays.js'
+import Calendar from './objects/Calendar.js'
 
 window.scene = scene
 
@@ -36,6 +37,7 @@ const clock = new THREE.Clock()
 let previousTime = 0
 const digitalClock = new DigitalClock()
 const displays = new Displays()
+const calendar = new Calendar()
 
 
 const tick = () => {
@@ -45,6 +47,8 @@ const tick = () => {
     previousTime = elapsedTime
 
     digitalClock.update()
+
+    calendar.dateUpdate()
 
     // this needs to be done here, because browsers sometimes creates mouse events faster than the framerate
     window.mouse.castRay(camera)
