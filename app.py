@@ -19,7 +19,7 @@ class Metrics(BaseModel):
     taxRate: float
     moneySupply: float
     foodImport: bool
-    gdp: int
+    gdp: float
     inflationRate: float
     consumerConfidence: float
     investmentLevel: float

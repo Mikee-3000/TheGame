@@ -1,6 +1,6 @@
 async function sendMetrics(gameData) {
   try {
-    const response = await fetch('http://localhost:8080/send_metrics/', {
+    const response = await fetch('http://127.0.0.1:8080/send_metrics/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

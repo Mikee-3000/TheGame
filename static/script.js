@@ -47,6 +47,7 @@ const tick = () => {
     previousTime = elapsedTime
 
     digitalClock.update()
+    digitalClock.mesh.rotation.y = (Math.PI / 4) * elapsedTime
 
     calendar.dateUpdate()
 
