@@ -23,8 +23,8 @@ class Metrics(BaseModel):
     inflationRate: float
     consumerConfidence: float
     investmentLevel: float
-    tradeBalance: int
-    governmentDebt: int
+    tradeBalance: float
+    governmentDebt: float
     unemploymentRate: float
     populationGrowth: float
 
