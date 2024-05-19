@@ -17,7 +17,17 @@
     <link href=" https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.min.css " rel="stylesheet">
 </head>
 <body>
-    <canvas class="webgl"></canvas>
+    <div id="setters">
+        <input type="text" id="interest-rate">
+        <input type="text" id="govt-spending">
+        <input type="text" id="tax-rate">
+        <input type="text" id="money-supply">
+        <input type="text" id="food-import">
+        <button id="cancel-button" onclick="setters.hide()">Cancel</button>
+        <button id="send-button" onclick="setters.sendSetters()">Send</button>
+    </div>
+
+    <canvas class="webgl" id="webgl-canvas"></canvas>
     <script type="module" src="/static/script.js"></script>
 </body>
 </html>

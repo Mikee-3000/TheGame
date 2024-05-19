@@ -10,7 +10,7 @@ def start_client():
     return MistralClient(api_key=api_key)
 
 async def send_metrics(metrics):
-    metrics_string = f"population: {metrics.population}, interest rate: {metrics.interest_rate}, government spending: {metrics.government_spending}, taxes: {metrics.taxes}, money supply: {metrics.money_supply}, food import allowed: {metrics.food_import_allowed}"
+    metrics_string = f"population: {metrics.population}, interest rate: {metrics.interestRate}, government spending: {metrics.govtSpending}, tax rate: {metrics.taxRate}, money supply: {metrics.moneySupply}, food import allowed: {metrics.foodImport}"
     messages = [message.system_message]
     messages.append(ChatMessage(role='user', content=metrics_string))
     return message.talk(messages)

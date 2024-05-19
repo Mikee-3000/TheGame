@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from lib import client
 from pydantic import BaseModel
@@ -14,11 +14,19 @@ templates = Jinja2Templates(directory="templates")
 
 class Metrics(BaseModel):
     population: int
-    interest_rate: float
-    government_spending: float
-    taxes: float
-    money_supply: float
-    food_import_allowed: bool
+    interestRate: float
+    govtSpending: float
+    taxRate: float
+    moneySupply: float
+    foodImport: bool
+    gdp: float
+    inflationRate: float
+    consumerConfidence: float
+    investmentLevel: float
+    tradeBalance: float
+    governmentDebt: float
+    unemploymentRate: float
+    populationGrowth: float
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -29,8 +37,14 @@ async def root(request: Request):
 
 @app.post('/send_metrics')
 async def send_metrics(metrics: Metrics):
-    resp = await client.send_metrics(metrics)
-    return resp
+    try:
+        resp = await client.send_metrics(metrics)
+        return JSONResponse(content=resp)
+    except Exception as e:
+        print(e)
+        print(resp)
+        print(metrics)
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     uvicorn.run(

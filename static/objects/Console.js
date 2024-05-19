@@ -1,39 +1,57 @@
 import * as THREE from 'three'
 import {gltfLoader} from '../lib/loader.js'
+import ObjectRegister from '../lib/ObjectRegister.js'
 import { ConsoleLight, ConsoleButton } from './smallObjects.js'
+import { getBoxSize } from '../lib/helperFuncs.js'
+
+// This code puts together the main console model
 
 
-export default class Console {
-    constructor() {
-        this.consoleModel = null
-        this.loadModel()
+class SettersButton extends ConsoleButton {
+    constructor(width, height, depth, parent) {
+        super(width, height, depth);
+        // Add custom functionality or override existing methods here
+        this.state = false
+        this.mousedownCallback = () => {
+            parent.clickLight.material.color.set(0x00ff00)
+            this.toggle()
+        }
+        this.mouseupCallback = () => {
+            parent.clickLight.material.color.set(0x0000ff)
+        }
+        this.mouseenterCallback = () => {
+            ;
+        }
+        this.mouseleaveCallback = () => {
+            ;
+        }
     }
-    loadModel() {
-        gltfLoader.load(
-            './static/objects/console.glb',
-            (gltf) => {
-                this.consoleModel = gltf.scene
-                this.consoleModel.castShadow = true
-                this.clickLight = new ConsoleLight(2.9, 5.9, -2.8)
-                this.hoverLight = new ConsoleLight(3.2, 5.9, -2.8)
-                this.button1 = new ConsoleButton(2.9, 4.9, -1.8)
-                this.button1.mousedownCallback = () => {
-                    this.clickLight.material.color.set(0x00ff00)
-                    this.button1.material.color.set(0x00ff00)
-                }
-                this.button1.mouseupCallback = () => {
-                    this.clickLight.material.color.set(0x0000ff)
-                    this.button1.material.color.set(0xff0000)
-                }
-                this.button1.mouseenterCallback = () => {
-                    this.button1.material.color.set(0xffff00)
-                }
-                this.button1.mouseleaveCallback = () => {
-                    this.button1.material.color.set(0xff0000)
-                }
-                window.scene.add(this.consoleModel)
-            }
-        )
+    toggle() {
+        // it goes out and back around, but it's not a problem
+        window.setters.toggle(!this.state)
+    }
+    on() {
+        this.state = true
+        this.material.color.set(0x00ff00)
+    }
+    off() {
+        this.state = false
+        this.material.color.set(0xff0000)
+    }
+}
+
+
+// TODO: Create a group that would have this object and all the other ones
+// I hope that that will fix the panning issue
+class Console {
+    constructor() {
+        this.consoleModel = null 
+        this.size = null
+        this.button1 = new SettersButton(2.9, 4.9, -1.8, this)
+        let objectRegister = new ObjectRegister()
+        objectRegister.registerObject(this, 'consoleObject')
+        this.clickLight = new ConsoleLight(2.9, 5.9, -2.8)
+        this.hoverLight = new ConsoleLight(3.2, 5.9, -2.8)
     }
     setPosition(x, y, z) {
         this.consoleModel.position.set(x, y, z)
@@ -41,8 +59,25 @@ export default class Console {
     setRotation(x, y, z) {
         this.consoleModel.rotation.set(x, y, z)
     }
-    getSize() {
-        let boundingBox = new THREE.Box3().setFromObject(this.consoleModel)
-        return boundingBox.getSize(new THREE.Vector3())
+    getBoxSize() {
+        return getBoxSize(this.consoleModel)
+        // let boundingBox = new THREE.Box3().setFromObject(this.consoleModel)
+        // return boundingBox.getSize(new THREE.Vector3())
     }
+    setSize() {
+        this.size = this.getBoxSize()
+    }
+    getSize() {
+        return this.size
+    }
+}
+
+export default async function createConsoleInstance() {
+    const instance = new Console()
+    let gltf = await gltfLoader.loadAsync('./static/objects/console.glb')
+    instance.consoleModel = gltf.scene
+    instance.setSize()
+    instance.setPosition(null, instance.getSize().y / 2, null)
+    window.scene.add(instance.consoleModel)
+    return instance
 }

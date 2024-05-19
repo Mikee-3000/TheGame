@@ -8,5 +8,6 @@ export default class Renderer extends THREE.WebGLRenderer {
         this.shadowMap.type = THREE.PCFSoftShadowMap
         this.setSize(window.innerWidth, window.innerHeight)
         this.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        this.setClearColor('lightblue', 1)
     }
 }
