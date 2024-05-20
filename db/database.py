@@ -1,8 +1,12 @@
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine, String, URL
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from typing import Annotated
 
 # source: https://fastapi.tiangolo.com/tutorial/sql-databases
+
+
+str255 = Annotated[str, 255]
 
 load_dotenv('../.env')
 
@@ -22,4 +26,8 @@ engine = create_engine(url_object)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Create the base class, from which all the models will inherit
-Base = DeclarativeBase()
+class Base(DeclarativeBase):
+    type_annotation_map = {
+        # enables type oriented mapping for models
+        str255: String(255)
+    }

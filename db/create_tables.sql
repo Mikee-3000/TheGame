@@ -36,7 +36,8 @@ CREATE TABLE metrics (
   government_income FLOAT NOT NULL,
   government_debt FLOAT NOT NULL,
   money_supply FLOAT NOT NULL,
-  aggregate_demand FLOAT NOT NULL
+  aggregate_demand FLOAT NOT NULL,
+  inflation FLOAT NOT NULL
 );
 
 CREATE TABLE policy_settings (
@@ -45,6 +46,6 @@ CREATE TABLE policy_settings (
   interest_rate FLOAT NOT NULL,
   government_spending FLOAT NOT NULL,
   open_market_operations FLOAT NOT NULL,
-  individual_income_tax FLOAT NOT NULL,
-  corporate_income_tax FLOAT NOT NULL
+  individual_tax_rate FLOAT NOT NULL,
+  corporate_tax_rate FLOAT NOT NULL
 );
