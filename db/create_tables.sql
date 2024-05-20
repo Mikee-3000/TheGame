@@ -37,7 +37,8 @@ CREATE TABLE metrics (
   government_debt FLOAT NOT NULL,
   money_supply FLOAT NOT NULL,
   aggregate_demand FLOAT NOT NULL,
-  inflation FLOAT NOT NULL
+  inflation FLOAT NOT NULL,
+  unemployment_rate FLOAT NOT NULL
 );
 
 CREATE TABLE policy_settings (

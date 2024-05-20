@@ -61,7 +61,7 @@ class Message(Base):
 
     # each message belongs to one exchange
     exchange = relationship("Exchange", back_populates="messages")
-    # each message can have one set of metrics or policy settings
+    # each message can have one set of metrics and/or policy settings
     metrics = relationship("Metrics", back_populates="message")
     policy_settings = relationship("PolicySettings", back_populates="message")
 
@@ -80,6 +80,7 @@ class Metrics(Base):
     money_supply: Mapped[float]
     aggregate_demand: Mapped[float]
     inflation: Mapped[float]
+    unemployment_rate: Mapped[float]
 
     # each metric belongs to one message
     message = relationship("Message", back_populates="metrics")
@@ -89,10 +90,10 @@ class PolicySettings(Base):
 
     id: Mapped[intpk]
     message_id = Mapped[msgfk]
-    intereset_rate: Mapped[float]
-    govenment_spending: Mapped[float]
+    interest_rate: Mapped[float]
+    government_spending: Mapped[float]
     open_market_operations: Mapped[float]
-    individal_tax_rate: Mapped[float]
+    individual_tax_rate: Mapped[float]
     corporate_tax_rate: Mapped[float]
 
     # each policy setting belongs to one message
