@@ -8,7 +8,7 @@ class Game(BaseModel):
     result: Annotated[Optional[str], 'The result of the game']
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Exchange(BaseModel):
@@ -16,14 +16,14 @@ class Exchange(BaseModel):
     game_id: Annotated[int, 'The ID of the game that the exchange belongs to']
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class SystemPrompt(BaseModel):
     id: Annotated[int, 'The ID of the system prompt']
     content: Annotated[str, 'The content of the system prompt']
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Message(BaseModel):
     id: Annotated[int, 'The ID of the message']
@@ -36,7 +36,7 @@ class Message(BaseModel):
     message_json: Annotated[dict, 'The JSON representation of the message']
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Metrics(BaseModel):
     id: Annotated[int, 'The ID of the metrics']
@@ -45,7 +45,7 @@ class Metrics(BaseModel):
     consumption: Annotated[float, 'The consumption']
     investment: Annotated[float, 'The investment']
     net_export: Annotated[float, 'The net export']
-    government_incompent: Annotated[float, 'The government income']
+    government_income: Annotated[float, 'The government income']
     government_debt: Annotated[float, 'The government debt']
     money_supply: Annotated[float, 'The money supply']
     aggregate_demand: Annotated[float, 'The aggregate demand']
@@ -53,7 +53,7 @@ class Metrics(BaseModel):
     unemployment_rate: Annotated[float, 'The unemployment rate']
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PolicySettings(BaseModel):
     id: Annotated[int, 'The ID of the policy settings']
@@ -64,4 +64,4 @@ class PolicySettings(BaseModel):
     population_growth: Annotated[float, 'The population growth']
 
     class Config:
-        orm_mode = True
+        from_attributes = True

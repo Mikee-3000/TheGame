@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import os
 from sqlalchemy import create_engine, String, URL
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from typing import Annotated
@@ -29,5 +30,5 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 class Base(DeclarativeBase):
     type_annotation_map = {
         # enables type oriented mapping for models
-        str255: String(255)
+        str255: String(255),
     }
