@@ -2,6 +2,7 @@ from db.database import Base, str255
 from sqlalchemy import Boolean, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.types import Text
 # from typing_extensions import Annotated
 from typing import Annotated, Optional
 
@@ -12,7 +13,7 @@ from typing import Annotated, Optional
 
 # often used field presets
 intpk = Annotated[int, mapped_column(primary_key=True, autoincrement=True)]
-msgfk = Annotated[int, mapped_column(ForeignKey('messages.id'), nullable=False)]
+# msgfk = Annotated[int, mapped_column(ForeignKey('messages.id'), nullable=False)]
 
 
 class Game(Base):
@@ -43,9 +44,9 @@ class SystemPrompt(Base):
     __tablename__ = 'system_prompts'
 
     id: Mapped[intpk]
-    content: Mapped[str255]
+    content: Mapped[str] = mapped_column(Text)
 
-    # one system prompt has many exchanges
+    # one system prompt has many messages
     messages: Mapped['Message'] = relationship('Message', back_populates='system_prompt')
 
 
@@ -54,6 +55,8 @@ class Message(Base):
 
     id: Mapped[intpk]
     exchange_id: Mapped[int] = mapped_column(ForeignKey('exchanges.id'), nullable=False)
+    policy_settings_id: Mapped[int] = mapped_column(ForeignKey('policy_settings.id'), nullable=True)
+    metrics_id: Mapped[int] = mapped_column(ForeignKey('metrics.id'), nullable=True)
     system_prompt_id: Mapped[int] = mapped_column(ForeignKey('system_prompts.id'), nullable=True)
     rl_timestamp: Mapped[int] # real live timestamp
     gt_timestamp: Mapped[int] # game time timestamp
@@ -73,7 +76,6 @@ class Metrics(Base):
     __tablename__ = 'metrics'
 
     id: Mapped[intpk]
-    message_id: Mapped[msgfk]
     population: Mapped[int]
     consumption: Mapped[float]
     investment: Mapped[float]
@@ -92,7 +94,6 @@ class PolicySettings(Base):
     __tablename__ = 'policy_settings'
 
     id: Mapped[intpk]
-    message_id: Mapped[msgfk]
     interest_rate: Mapped[float]
     government_spending: Mapped[float]
     open_market_operations: Mapped[float]

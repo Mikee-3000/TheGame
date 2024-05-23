@@ -7,15 +7,17 @@ import os
 import re
 
 
-def talk(messages):
+def talk(policy_settings_message):
 
-    for message in messages:
-        log.log_message(message, log.log_file, thread_position='top')
+    # for message in messages:
+    #     log.log_message(message, log.log_file, thread_position='top')
 
     # No streaming
     chat_response = client.client.chat(
-        model=client.model,
-        messages=messages,
+        # model=client.model,
+        # messages=messages,
+        policy_settings_message['model'],
+        policy_settings_message['messages']
     )
 
     for resp in chat_response.choices:
