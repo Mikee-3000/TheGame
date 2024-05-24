@@ -49,7 +49,6 @@ def create_policy_settings_message(db: Session, exchange_id: int, gt_timestamp: 
 
     # db_system_prompt = db.query(SystemPrompt).filter(SystemPrompt.id == system_prompt_id).first()
 
-    print('policy_settings is ', db_policy_settings.id)
     policy_settings_schema = PolicySettingsSchema.model_validate(db_policy_settings)
     system_prompt_schema = SystemPromptSchema(**{"id": config.system_prompt_id, "content": config.system_prompt.content})
 
@@ -66,6 +65,5 @@ def create_policy_settings_message(db: Session, exchange_id: int, gt_timestamp: 
     db.commit()
     db.refresh(db_message)
 
-    print('here')
     return policy_settings_message
     

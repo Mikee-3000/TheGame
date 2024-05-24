@@ -9,19 +9,11 @@ import re
 
 def talk(policy_settings_message):
 
-    # for message in messages:
-    #     log.log_message(message, log.log_file, thread_position='top')
-
-    # No streaming
     chat_response = client.client.chat(
-        # model=client.model,
-        # messages=messages,
-        policy_settings_message['model'],
-        policy_settings_message['messages']
+        model=policy_settings_message['model'],
+        messages=policy_settings_message['messages']
     )
 
-    for resp in chat_response.choices:
-        log.log_message(resp.message, log.log_file, model=client.model, thread_position='bottom')
     message_content = chat_response.choices[-1].message.content
     try:
         message_json = re.findall(r'```json([^`]+)```', message_content)[0]
