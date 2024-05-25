@@ -66,4 +66,39 @@ def create_policy_settings_message(db: Session, exchange_id: int, gt_timestamp: 
     db.refresh(db_message)
 
     return policy_settings_message
-    
+
+def create_metrics_message(db: Session, exchange_id: int, gt_timestamp: int, role: str, message_json, message_content):
+    pass
+    # "populationGrowth": 0.004,
+    # "gdp": 10150,
+    # "inflationRate": 2.8,
+    # "consumerConfidence": 0.85,
+    # "investmentLevel": 9600,
+    # "tradeBalance": -1500.3,
+    # "unemploymentRate": 0.052,
+    # "governmentDebt": 12000.2
+
+
+    # population: Mapped[int]
+    # consumption: Mapped[float]
+    # investment: Mapped[float]
+    # net_export: Mapped[float]
+    # government_income: Mapped[float]
+    # government_debt: Mapped[float]
+    # money_supply: Mapped[float]
+    # aggregate_demand: Mapped[float]
+    # inflation: Mapped[float]
+    # unemployment_rate: Mapped[float]
+
+
+    # id: Annotated[int, 'The ID of the metrics']
+    # population: Annotated[int, 'The population']
+    # consumption: Annotated[float, 'The consumption']
+    # investment: Annotated[float, 'The investment']
+    # net_export: Annotated[float, 'The net export']
+    # government_income: Annotated[float, 'The government income']
+    # government_debt: Annotated[float, 'The government debt']
+    # money_supply: Annotated[float, 'The money supply']
+    # aggregate_demand: Annotated[float, 'The aggregate demand']
+    # inflation: Annotated[float, 'The inflation']
+    # unemployment_rate: Annotated[float, 'The unemployment rate']

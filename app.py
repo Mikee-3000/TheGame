@@ -97,11 +97,14 @@ def send_policy(policySettings: PolicySettingsCreateSchema, gameData: GameDateSc
         # and store the message in the db
         policy_settings_message = create_policy_settings_message(db, exchange.id, gt_timestamp, 'user', policySettings) 
         # send the message to the AI and get response
-        resp = talk(policy_settings_message)
+        try:
+            message_json, message_content = talk(policy_settings_message)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str("103" + e))
         # store the response in the db
         # TODO
         # return the response
-        return resp
+        return message_json
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
@@ -128,4 +131,3 @@ if __name__ == "__main__":
         "app:app", 
         host="127.0.0.1", port=8080, log_level="debug", reload="true"
     )
-        
