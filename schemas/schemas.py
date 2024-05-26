@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Annotated, Optional
 
-class Game(BaseModel):
+class GameSchema(BaseModel):
     id: Annotated[int, 'The ID of the game']
     start_rl_timestamp: Annotated[int, 'The real life timestamp when the game started']
     end_rl_timestamp: Annotated[Optional[int], 'The real life timestamp when the game ended']
@@ -11,14 +11,14 @@ class Game(BaseModel):
         from_attributes = True
 
 
-class Exchange(BaseModel):
+class ExchangeSchema(BaseModel):
     id: Annotated[int, 'The ID of the exchange']
     game_id: Annotated[int, 'The ID of the game that the exchange belongs to']
 
     class Config:
         from_attributes = True
 
-class SystemPrompt(BaseModel):
+class SystemPromptSchema(BaseModel):
     id: Annotated[int, 'The ID of the system prompt']
     content: Annotated[str, 'The content of the system prompt']
 
@@ -40,23 +40,25 @@ class Message(BaseModel):
     class Config:
         from_attributes = True
 
-class Metrics(BaseModel):
-    id: Annotated[int, 'The ID of the metrics']
+class MetricsSchema(BaseModel):
+    # id: Annotated[int, 'The ID of the metrics']
+    # generated fields
     population: Annotated[int, 'The population']
     consumption: Annotated[float, 'The consumption']
     investment: Annotated[float, 'The investment']
     net_export: Annotated[float, 'The net export']
     government_income: Annotated[float, 'The government income']
+    inflation: Annotated[float, 'The inflation']
+    # calculated fields
     government_debt: Annotated[float, 'The government debt']
     money_supply: Annotated[float, 'The money supply']
     aggregate_demand: Annotated[float, 'The aggregate demand']
-    inflation: Annotated[float, 'The inflation']
     unemployment_rate: Annotated[float, 'The unemployment rate']
 
     class Config:
         from_attributes = True
 
-class PolicySettingsCreate(BaseModel):
+class PolicySettingsSchema(BaseModel):
     interest_rate: Annotated[float, 'The interest rate']
     government_spending: Annotated[float, 'The government spending']
     open_market_operations: Annotated[float, 'The open market operations']
@@ -66,25 +68,25 @@ class PolicySettingsCreate(BaseModel):
     class Config:
         from_attributes = True
 
-class PolicySettings(PolicySettingsCreate):
-    id: Annotated[int, 'The ID of the policy settings']
+# class PolicySettings(PolicySettingsCreate):
+#     id: Annotated[int, 'The ID of the policy settings']
 
-    class Config:
-        from_attributes = True 
+#     class Config:
+#         from_attributes = True 
 
-class PolicySettingsMessage(Message):
-    policy_settings: Annotated[PolicySettings, 'The policy settings of the message']
+# class PolicySettingsMessage(Message):
+#     policy_settings: Annotated[PolicySettings, 'The policy settings of the message']
 
-    class Config:
-        from_attributes = True 
+#     class Config:
+#         from_attributes = True 
 
-class MetricsMessage(Message):
-    metrics: Annotated[Metrics, 'The metrics of the message']
+# class MetricsMessage(Message):
+#     metrics: Annotated[Metrics, 'The metrics of the message']
 
-    class Config:
-        from_attributes = True
+#     class Config:
+#         from_attributes = True
 
-class GameDate(BaseModel):
+class GameDataSchema(BaseModel):
     gt_timestamp: Annotated[int, 'The game time timestamp']
 
     class Config:

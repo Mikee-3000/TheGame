@@ -27,5 +27,12 @@ def talk(policy_settings_message):
             print(message_content)
             # TODO: more error handling
 
-system_message = ChatMessage(role='system', content='You are an AI game engine, finetuned in Keynesian economics. The player runs a country and can set interest rates, government spending, taxes, money supply and allows or bans import of food.  The player sends you the parameters, together with current population, and you reply with what the population, consumption, investment, net export, government income and inflation will be within a month. You always return one specific number for each parameter, formatted as JSON. The JSON keys are population, consumption, investment, net_export, government_income, inflation. Booleans values are expressed as 0 or 1. The player can then use these numbers to make decisions for the country.')
-    
+system_message = ChatMessage(role='system', content="""
+You are an AI game engine, finetuned in Keynesian economics. The player sends you the following data:
+population, consumption, investment, net export, government income, inflation, interest rate, government spending, open market operations, individual income tax rate, corporate income tax rate.
+You reply estimate what the economy will look like in a month. You generate the following data:
+population, consumption, investment, net export government income and inflation.
+You always return one specific number for each parameter, formatted as JSON. The JSON keys are:
+population, consumption, investment, net_export, government_income, inflation. Boolean values are expressed as 0 or 1. The player can then use these numbers to make decisions for the economy.
+"""
+)

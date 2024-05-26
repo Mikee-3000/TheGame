@@ -1,15 +1,17 @@
 from config import config
 from db.database import Base, engine, SessionLocal
-from db.crud import create_game, create_exchange, create_system_prompt, create_message, create_policy_settings_message
+# from db.crud import create_game, create_exchange, create_system_prompt, create_message, create_policy_settings_message
 from db.models import Game 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+import json
 from lib import client
 from lib.message import system_message, talk
+from mistralai.models.chat_completion import ChatMessage
 from pydantic import BaseModel
-from schemas.schemas import Game as GameSchema, Exchange as ExchangeSchema, MetricsMessage as MetricsMessageSchema, PolicySettings as PolicySettingsSchema, SystemPrompt as SystemPromptSchema, PolicySettingsMessage as PolicySettingsMessageSchema, PolicySettingsCreate as PolicySettingsCreateSchema, GameDate as GameDateSchema
+from schemas.schemas import *
 from sqlalchemy.orm import Session
 import uvicorn
 
@@ -39,23 +41,6 @@ def db_session():
         yield db
     finally:
         db.close()
-
-class Metrics(BaseModel):
-    population: int
-    interestRate: float
-    govtSpending: float
-    taxRate: float
-    moneySupply: float
-    foodImport: bool
-    gdp: float
-    inflationRate: float
-    consumerConfidence: float
-    investmentLevel: float
-    tradeBalance: float
-    governmentDebt: float
-    unemploymentRate: float
-    populationGrowth: float
-
 
 @app.post('/game/new', response_model=GameSchema)
 def new_game(db: Session = Depends(db_session)):
@@ -88,15 +73,24 @@ def new_system_prompt(db: Session = Depends(db_session)):
 
 # TODO: change response model to MetricsMessageSchema
 @app.post('/policy/send')
-def send_policy(policySettings: PolicySettingsCreateSchema, gameData: GameDateSchema, game: GameSchema, db: Session = Depends(db_session)):
+def send_policy(policySettings: PolicySettingsSchema, metrics: MetricsSchema, gameData: GameDataSchema , db: Session = Depends(db_session)):
     try:
         gt_timestamp = gameData.gt_timestamp
-        exchange = create_exchange(db, game.id)
+        # exchange = create_exchange(db, game.id)
         # create a new message with the policy settings
         # TODO: when system_prompt selection is implemented, use that
         # and store the message in the db
-        policy_settings_message = create_policy_settings_message(db, exchange.id, gt_timestamp, 'user', policySettings) 
+        # policy_settings_message = create_policy_settings_message(db, exchange.id, gt_timestamp, 'user', policySettings) 
         # send the message to the AI and get response
+        policy_settings_message = {}
+        policy_settings_message['model'] = config.ai_model
+        policy_and_metrics = json.dumps({
+            **policySettings.model_dump(),
+            **metrics.model_dump()
+        })
+        policy_settings_message['messages'] = [
+            system_message,
+            ChatMessage(role='user', content=policy_and_metrics)]
         try:
             message_json, message_content = talk(policy_settings_message)
         except Exception as e:
