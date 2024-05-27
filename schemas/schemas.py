@@ -19,7 +19,7 @@ class ExchangeSchema(BaseModel):
         from_attributes = True
 
 class SystemPromptSchema(BaseModel):
-    id: Annotated[int, 'The ID of the system prompt']
+    id: Annotated[Optional[int], 'The ID of the system prompt'] = None
     content: Annotated[str, 'The content of the system prompt']
 
     class Config:

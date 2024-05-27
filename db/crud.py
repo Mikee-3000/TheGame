@@ -1,20 +1,22 @@
 # from mistralai.models.chat_completion import ChatMessage
+from sqlalchemy.orm import Session
 from config import config
 import json
 from schemas.schemas import *
+from db.models import *
 import datetime 
+
+def create_game(db: Session):
+    current_timestamp = datetime.datetime.now().timestamp()
+    db_game = Game(start_rl_timestamp=current_timestamp)
+    db.add(db_game)
+    db.commit()
+    db.refresh(db_game)
+    return db_game
 
 # def create_policy_settings_message(metricsSchema: MetricsSchema, policySettingsSchema: PolicySettingsSchema):
 
 #     return policy_settings_message
-
-# def create_game(db: Session):
-#     current_timestamp = datetime.datetime.now().timestamp()
-#     db_game = Game(start_rl_timestamp=current_timestamp)
-#     db.add(db_game)
-#     db.commit()
-#     db.refresh(db_game)
-#     return db_game
 
 # def create_exchange(db: Session, game_id: int):
 #     db_exchange = Exchange(game_id=game_id)
@@ -23,14 +25,14 @@ import datetime
 #     db.refresh(db_exchange)
 #     return db_exchange
 
-# def create_system_prompt(db: Session):
-#     print('config is ', config.system_prompt)
-#     content = config.system_prompt.content
-#     db_system_prompt = SystemPrompt(content=content)
-#     db.add(db_system_prompt)
-#     db.commit()
-#     db.refresh(db_system_prompt)
-#     return db_system_prompt
+def create_system_prompt(db: Session, content: str):
+    # print('config is ', config.system_prompt)
+    # content = config.system_prompt.content
+    db_system_prompt = SystemPrompt(content=content)
+    db.add(db_system_prompt)
+    db.commit()
+    db.refresh(db_system_prompt)
+    return db_system_prompt
 
 # def create_message(db: Session, exchange_id: int, system_prompt_id: int, gt_timestamp: int, role: str, content: str, message_json: dict):
 #     rl_timestamp = datetime.datetime.now().timestamp()

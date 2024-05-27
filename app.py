@@ -1,5 +1,6 @@
 from config import config
 from db.database import Base, engine, SessionLocal
+from db.crud import *
 # from db.crud import create_game, create_exchange, create_system_prompt, create_message, create_policy_settings_message
 from db.models import Game 
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -51,28 +52,20 @@ def new_game(db: Session = Depends(db_session)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post('/exchange/new', response_model=ExchangeSchema)
-def new_game(game: GameSchema, db: Session = Depends(db_session)):
+@app.post('/systemPrompt/new/', response_model=SystemPromptSchema)
+def new_system_prompt(systemPromptSchema: SystemPromptSchema, db: Session = Depends(db_session)):
+    """
+    Creates a new system prompt in the database
+    """
     try:
-        exchange = create_exchange(db, game.id)
-        exchange_schema = ExchangeSchema.model_validate(exchange)
-        return exchange_schema
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post('/systemPrompt/new', response_model=SystemPromptSchema)
-def new_system_prompt(db: Session = Depends(db_session)):
-    try:
-        # TODO: change that it actually creates a new system prompt
-        # rather than storing the one added to config
-        system_prompt = create_system_prompt(db)
+        system_prompt = create_system_prompt(db, systemPromptSchema.content)
         system_prompt_schema = SystemPromptSchema.model_validate(system_prompt)
         return system_prompt_schema
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 # TODO: change response model to MetricsMessageSchema
-@app.post('/policy/send')
+@app.post('/set-policy')
 def send_policy(policySettings: PolicySettingsSchema, metrics: MetricsSchema, gameData: GameDataSchema , db: Session = Depends(db_session)):
     try:
         gt_timestamp = gameData.gt_timestamp
