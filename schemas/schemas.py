@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, ValidationInfo, computed_field
 from typing import Annotated, Optional
 
 class GameSchema(BaseModel):
@@ -49,14 +49,28 @@ class MetricsSchema(BaseModel):
     net_export: Annotated[float, 'The net export']
     government_income: Annotated[float, 'The government income']
     inflation: Annotated[float, 'The inflation']
-    # calculated fields
-    government_debt: Annotated[float, 'The government debt']
-    money_supply: Annotated[float, 'The money supply']
-    aggregate_demand: Annotated[float, 'The aggregate demand']
     unemployment_rate: Annotated[float, 'The unemployment rate']
 
     class Config:
         from_attributes = True
+
+class MetricsCompleteSchema(MetricsSchema):
+    government_debt: Annotated[float, 'The government debt']
+    aggregate_demand: Annotated[float, 'The aggregate demand']
+
+class MetricsComputedSchema(MetricsSchema):
+    previous_government_debt: Annotated[float, 'The previous government debt']
+    government_spending: Annotated[float, 'The government spending']
+
+    @computed_field
+    @property
+    def government_debt(self) -> float:
+        return self.previous_government_debt - self.government_income + self.government_spending
+    
+    @computed_field
+    @property
+    def aggregate_demand(self) -> float:
+        return self.consumption + self.investment + self.net_export + self.government_spending
 
 class PolicySettingsSchema(BaseModel):
     interest_rate: Annotated[float, 'The interest rate']
@@ -64,6 +78,7 @@ class PolicySettingsSchema(BaseModel):
     open_market_operations: Annotated[float, 'The open market operations']
     individual_tax_rate: Annotated[float, 'The individual tax rate']
     corporate_tax_rate: Annotated[float, 'The corporation tax rate']
+    money_supply: Annotated[float, 'The money supply']
 
     class Config:
         from_attributes = True

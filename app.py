@@ -65,8 +65,9 @@ def new_system_prompt(systemPromptSchema: SystemPromptSchema, db: Session = Depe
         raise HTTPException(status_code=500, detail=str(e))
 
 # TODO: change response model to MetricsMessageSchema
-@app.post('/set-policy')
-def send_policy(policySettings: PolicySettingsSchema, metrics: MetricsSchema, gameData: GameDataSchema , db: Session = Depends(db_session)):
+@app.post('/set-policy', response_model=MetricsComputedSchema)
+# @app.post('/set-policy')
+def send_policy(policySettings: PolicySettingsSchema, metrics: MetricsCompleteSchema, gameData: GameDataSchema , db: Session = Depends(db_session)):
     try:
         gt_timestamp = gameData.gt_timestamp
         # exchange = create_exchange(db, game.id)
@@ -85,13 +86,17 @@ def send_policy(policySettings: PolicySettingsSchema, metrics: MetricsSchema, ga
             system_message,
             ChatMessage(role='user', content=policy_and_metrics)]
         try:
-            message_json, message_content = talk(policy_settings_message)
+            metrics_response, message_content = talk(policy_settings_message)
+            metrics_response['previous_government_debt'] = metrics.government_debt
+            metrics_response['government_spending'] = policySettings.government_spending
         except Exception as e:
             raise HTTPException(status_code=500, detail=str("103" + e))
         # store the response in the db
         # TODO
         # return the response
-        return message_json
+        response = MetricsComputedSchema.model_validate(metrics_response)
+        return response
+        # return message_json
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
