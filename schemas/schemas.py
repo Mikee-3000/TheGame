@@ -50,6 +50,7 @@ class MetricsSchema(BaseModel):
     government_income: Annotated[float, 'The government income']
     inflation: Annotated[float, 'The inflation']
     unemployment_rate: Annotated[float, 'The unemployment rate']
+    money_supply: Annotated[float, 'The money supply']
 
     class Config:
         from_attributes = True
@@ -78,7 +79,6 @@ class PolicySettingsSchema(BaseModel):
     open_market_operations: Annotated[float, 'The open market operations']
     individual_tax_rate: Annotated[float, 'The individual tax rate']
     corporate_tax_rate: Annotated[float, 'The corporation tax rate']
-    money_supply: Annotated[float, 'The money supply']
 
     class Config:
         from_attributes = True

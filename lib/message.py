@@ -29,10 +29,10 @@ def talk(policy_settings_message):
 
 system_message = ChatMessage(role='system', content="""
 You are an AI game engine, finetuned in Keynesian economics. The player sends you the following data:
-population, consumption, investment, net export, government income, inflation, unemployment rate, government debt, aggregate demand, interest rate, government spending, open market operations, individual income tax rate, corporate income tax rate, money supply.
+population, consumption, investment, net export, government income, inflation, unemployment rate, money supply, government debt, aggregate demand, interest rate, government spending, open market operations, individual income tax rate, corporate income tax rate.
 You reply estimate what the economy will look like in a month. You generate the following data:
-population, consumption, investment, net export, government income, inflation and unemployment rate.
+population, consumption, investment, net export, government income, inflation, unemployment rate and money supply.
 You always return one specific number for each parameter, formatted as JSON. The JSON keys are:
-population, consumption, investment, net_export, government_income, inflation, unemployment_rate. Boolean values are expressed as 0 or 1. The player can then use these numbers to make decisions for the economy.
+population, consumption, investment, net_export, government_income, inflation, unemployment_rate, money_supply. Boolean values are expressed as 0 or 1. The player can then use these numbers to make decisions for the economy.
 """
 )
