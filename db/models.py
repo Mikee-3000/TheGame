@@ -20,6 +20,7 @@ class Game(Base):
     __tablename__ = 'games'
 
     id: Mapped[intpk]
+    system_prompt_id: Mapped[int] = mapped_column(ForeignKey('system_prompts.id'), nullable=False)
     start_rl_timestamp: Mapped[int]
     # not null is now the default, nullables are explicitly defined by the use of Optional
     end_rl_timestamp: Mapped[Optional[int]]
@@ -27,6 +28,7 @@ class Game(Base):
 
     # one game has many exchanges
     exchanges: Mapped['Exchange'] = relationship('Exchange', back_populates='game')
+    system_prompt: Mapped['SystemPrompt'] = relationship('SystemPrompt', back_populates='games')
 
 
 class Exchange(Base):
@@ -48,6 +50,7 @@ class SystemPrompt(Base):
 
     # one system prompt has many messages
     messages: Mapped['Message'] = relationship('Message', back_populates='system_prompt')
+    games: Mapped['Game'] = relationship('Game', back_populates='system_prompt')
 
 
 class Message(Base):

@@ -44,11 +44,9 @@ def db_session():
         db.close()
 
 @app.post('/game/new', response_model=GameSchema)
-def new_game(db: Session = Depends(db_session)):
+def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(db_session)):
     try:
-        game = create_game(db)
-        game_schema = GameSchema.model_validate(game)
-        return game_schema
+        game_schema = create_game(game_create_schema.system_prompt_id, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

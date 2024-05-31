@@ -6,13 +6,14 @@ from schemas.schemas import *
 from db.models import *
 import datetime 
 
-def create_game(db: Session):
+def create_game(system_prompt_id: int, db: Session):
     current_timestamp = datetime.datetime.now().timestamp()
-    db_game = Game(start_rl_timestamp=current_timestamp)
+    db_game = Game(system_prompt_id=system_prompt_id, start_rl_timestamp=current_timestamp)
     db.add(db_game)
     db.commit()
     db.refresh(db_game)
-    return db_game
+    system_prompt = db.query(SystemPrompt).filter(SystemPrompt.id == system_prompt_id).one()
+    return GameSchema(id=db_game.id, start_rl_timestamp=db_game.start_rl_timestamp, system_prompt=system_prompt.content)
 
 # def create_policy_settings_message(metricsSchema: MetricsSchema, policySettingsSchema: PolicySettingsSchema):
 
