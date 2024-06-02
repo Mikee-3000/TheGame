@@ -10,6 +10,7 @@ from fastapi.templating import Jinja2Templates
 import json
 from lib import client
 from lib.message import system_message, talk
+from middleware.middleware import *
 from mistralai.models.chat_completion import ChatMessage
 from pydantic import BaseModel
 from schemas.schemas import *
@@ -29,19 +30,15 @@ config.ai_model='mistral-small-latest'
 
 
 # Create the FastAPI app
-app = FastAPI() 
+app = FastAPI()
+
+setup_accept_header(app)
 
 # Static has all the HTML/JS/... files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Each request needs an independent session
-def db_session():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
 
 @app.post('/game/new', response_model=GameSchema)
 def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(db_session)):
@@ -99,11 +96,11 @@ def send_policy(policySettings: PolicySettingsSchema, metrics: MetricsCompleteSc
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
-# @app.get("/", response_class=HTMLResponse)
-# async def root(request: Request):
-#     return templates.TemplateResponse(
-#         request=request, name="index.html", context={"id": id}
-#     )
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request, response: Response):
+    return templates.TemplateResponse(
+        request=request, name="index.html", context={"id": id}
+    )
 
 # @app.post('/send_metrics')
 # async def send_metrics(metrics: Metrics):
