@@ -1,5 +1,7 @@
+from dotenv import load_dotenv
+load_dotenv('.env')
 from config import config
-from db.database import Base, engine, SessionLocal
+from db.database import Base, engine
 from db.crud import *
 # from db.crud import create_game, create_exchange, create_system_prompt, create_message, create_policy_settings_message
 from db.models import Game 
@@ -116,5 +118,5 @@ async def root(request: Request, response: Response):
 if __name__ == "__main__":
     uvicorn.run(
         "app:app", 
-        host="127.0.0.1", port=8080, log_level="debug", reload="true"
+        host="0.0.0.0", port=8080, log_level="debug", reload="true"
     )

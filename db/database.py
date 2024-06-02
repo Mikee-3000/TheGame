@@ -9,8 +9,6 @@ from typing import Annotated
 
 str255 = Annotated[str, 255]
 
-load_dotenv('../.env')
-
 url_object = URL.create(
     'postgresql',
     username=os.getenv('DB_USER'),
