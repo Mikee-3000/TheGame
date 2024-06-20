@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
-from sqlalchemy import create_engine, String, URL
+from enum import Enum
+from sqlalchemy import create_engine, String, URL, Enum as SQLAlchemyEnum
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from typing import Annotated
 
@@ -8,6 +9,14 @@ from typing import Annotated
 
 
 str255 = Annotated[str, 255]
+class MetricsType(Enum):
+    measured = 'measured'
+    projected = 'projected'
+
+class GameType(Enum):
+    Keynes = 'Keynes'
+    Marx = 'Marx'
+    Smith = 'Smith'
 
 url_object = URL.create(
     'postgresql',
@@ -29,4 +38,6 @@ class Base(DeclarativeBase):
     type_annotation_map = {
         # enables type oriented mapping for models
         str255: String(255),
+        MetricsType: SQLAlchemyEnum(MetricsType, name='metrics_type'),
+        GameType: SQLAlchemyEnum(GameType, name='game_type')
     }

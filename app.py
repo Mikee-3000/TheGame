@@ -40,31 +40,39 @@ setup_accept_header(app)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# api endpoints
 
+# start a new game
+# needs a reference to the system prompt
+# initial policy settings
+# game time date
+# real life datetime
 
-@app.post('/game/new', response_model=GameSchema)
-def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(db_session)):
+@app.post('/scenario/new', response_model=ScenarioSchema)
+async def new_scenario(scenario_schema: ScenarioSchema, db: Session = Depends(db_session)):
     try:
-        game_schema = create_game(game_create_schema.system_prompt_id, db)
+        scenario = create_scenario(db, scenario_schema)
+        return scenario
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post('/systemPrompt/new/', response_model=SystemPromptSchema)
-def new_system_prompt(systemPromptSchema: SystemPromptSchema, db: Session = Depends(db_session)):
-    """
-    Creates a new system prompt in the database
-    """
+
+@app.post('/game/new', response_model=GameSchema)
+async def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(db_session)):
     try:
-        system_prompt = create_system_prompt(db, systemPromptSchema.content)
-        system_prompt_schema = SystemPromptSchema.model_validate(system_prompt)
-        return system_prompt_schema
+        game_schema = create_game(
+            start_gt_timestamp=game_create_schema.start_gt_timestamp,
+            scenario_id=game_create_schema.scenario_id,
+            db=db
+        )
+        return game_schema
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 # TODO: change response model to MetricsMessageSchema
 @app.post('/set-policy', response_model=MetricsComputedSchema)
 # @app.post('/set-policy')
-def send_policy(policySettings: PolicySettingsSchema, metrics: MetricsCompleteSchema, gameData: GameDataSchema , db: Session = Depends(db_session)):
+def send_policy(policySettings: PolicySettingsSchema, metrics: list[MetricsCompleteSchema], gameData: GameDataSchema , db: Session = Depends(db_session)):
     try:
         gt_timestamp = gameData.gt_timestamp
         # exchange = create_exchange(db, game.id)
@@ -104,6 +112,13 @@ async def root(request: Request, response: Response):
         request=request, name="index.html", context={"id": id}
     )
 
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "app:app", 
+        host="0.0.0.0", port=8080, log_level="debug", reload="true"
+    )
+
 # @app.post('/send_metrics')
 # async def send_metrics(metrics: Metrics):
 #     try:
@@ -115,8 +130,21 @@ async def root(request: Request, response: Response):
 #         print(metrics)
 #         raise HTTPException(status_code=500, detail=str(e))
 
-if __name__ == "__main__":
-    uvicorn.run(
-        "app:app", 
-        host="0.0.0.0", port=8080, log_level="debug", reload="true"
-    )
+# @app.post('/game/new', response_model=GameSchema)
+# def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(db_session)):
+#     try:
+#         game_schema = create_game(game_create_schema.system_prompt_id, db)
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+# @app.post('/systemPrompt/new/', response_model=SystemPromptSchema)
+# def new_system_prompt(systemPromptSchema: SystemPromptSchema, db: Session = Depends(db_session)):
+#     """
+#     Creates a new system prompt in the database
+#     """
+#     try:
+#         system_prompt = create_system_prompt(db, systemPromptSchema.content)
+#         system_prompt_schema = SystemPromptSchema.model_validate(system_prompt)
+#         return system_prompt_schema
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))

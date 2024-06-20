@@ -1,24 +1,26 @@
-from pydantic import BaseModel, field_validator, ValidationInfo, computed_field
+from db.database import GameType
+from pydantic import BaseModel, field_validator, ValidationInfo, computed_field, Field
 from typing import Annotated, Optional
 
-class SystemPromptSchema(BaseModel):
-    id: Annotated[Optional[int], 'The ID of the system prompt'] = None
-    content: Annotated[str, 'The content of the system prompt']
 
-    class Config:
-        from_attributes = True
+class ScenarioSchema(BaseModel):
+    id: Annotated[Optional[int], 'The ID of the scenario'] = None
+    name: Annotated[str, 'The name of the scenario']
+    description: Annotated[str, 'The description of the scenario']
+    game_type: Annotated[GameType, 'The game type of the scenario, e.g. Keynes, Marx, Smith']
+    system_prompt: Annotated[str, 'The system prompt of the scenario']
 
 class GameCreateSchema(BaseModel):
-    system_prompt_id: Annotated[int, 'The ID of the system prompt']
+    start_gt_timestamp: Annotated[Optional[int], 'The game time timestamp of the game']
+    scenario_id: Annotated[int, 'The ID of the scenario']
 
     class Config:
         from_attributes = True
 
 class GameSchema(GameCreateSchema):
-    id: Annotated[int, 'The ID of the game']
-    start_rl_timestamp: Annotated[int, 'The real life timestamp when the game started']
+    id: Annotated[Optional[int], 'The ID of the game']
+    start_rl_timestamp: Annotated[Optional[int], 'The real life timestamp when the game started']
     end_rl_timestamp: Annotated[Optional[int], 'The real life timestamp when the game ended']
-    system_prompt_schema: Annotated[SystemPromptSchema, 'The system prompt schema']
     result: Annotated[Optional[str], 'The result of the game']
 
     class Config:
@@ -113,3 +115,12 @@ class GameDataSchema(BaseModel):
 
     class Config:
         from_attributes = True 
+
+
+# class SystemPromptSchema(BaseModel):
+#     id: Annotated[Optional[int], 'The ID of the system prompt'] = None
+#     content: Annotated[str, 'The content of the system prompt']
+#     description: Annotated[Optional[str]]
+#     game_type: Mapped[Optional[str]]
+#     class Config:
+#         from_attributes = True

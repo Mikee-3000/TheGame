@@ -6,14 +6,37 @@ from schemas.schemas import *
 from db.models import *
 import datetime 
 
-def create_game(system_prompt_id: int, db: Session):
-    current_timestamp = datetime.datetime.now().timestamp()
-    db_game = Game(system_prompt_id=system_prompt_id, start_rl_timestamp=current_timestamp)
+def create_scenario(
+        db: Session,
+        scenario_schema: ScenarioSchema
+    ):
+    db_scenario = Scenario(
+        name=scenario_schema.name,
+        description=scenario_schema.description,
+        game_type=scenario_schema.game_type,
+        system_prompt=scenario_schema.system_prompt
+    )
+    db.add(db_scenario)
+    db.commit()
+    db.refresh(db_scenario)
+    return db_scenario
+    return {}
+
+def create_game(
+        start_gt_timestamp: int,
+        scenario_id: int,
+        db: Session):
+    current_timestamp = round(datetime.datetime.now().timestamp())
+    db_game = Game(
+        start_gt_timestamp =start_gt_timestamp,
+        start_rl_timestamp =current_timestamp,
+        scenario_id=scenario_id
+    )
     db.add(db_game)
     db.commit()
     db.refresh(db_game)
-    system_prompt = db.query(SystemPrompt).filter(SystemPrompt.id == system_prompt_id).one()
-    return GameSchema(id=db_game.id, start_rl_timestamp=db_game.start_rl_timestamp, system_prompt=system_prompt.content)
+    return db_game
+    # return GameSchema(id=db_game.id, start_rl_timestamp=db_game.start_rl_timestamp, scenario_id=db_game.scenario_id, start_gt_timestamp=db_game.start_gt_timestamp)
 
 # def create_policy_settings_message(metricsSchema: MetricsSchema, policySettingsSchema: PolicySettingsSchema):
 
@@ -26,14 +49,14 @@ def create_game(system_prompt_id: int, db: Session):
 #     db.refresh(db_exchange)
 #     return db_exchange
 
-def create_system_prompt(db: Session, content: str):
-    # print('config is ', config.system_prompt)
-    # content = config.system_prompt.content
-    db_system_prompt = SystemPrompt(content=content)
-    db.add(db_system_prompt)
-    db.commit()
-    db.refresh(db_system_prompt)
-    return db_system_prompt
+# def create_system_prompt(db: Session, content: str):
+#     # print('config is ', config.system_prompt)
+#     # content = config.system_prompt.content
+#     db_system_prompt = SystemPrompt(content=content)
+#     db.add(db_system_prompt)
+#     db.commit()
+#     db.refresh(db_system_prompt)
+#     return db_system_prompt
 
 # def create_message(db: Session, exchange_id: int, system_prompt_id: int, gt_timestamp: int, role: str, content: str, message_json: dict):
 #     rl_timestamp = datetime.datetime.now().timestamp()
