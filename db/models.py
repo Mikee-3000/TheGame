@@ -32,6 +32,7 @@ class Game(Base):
     __tablename__ = 'games'
 
     id: Mapped[intpk]
+    ai_model: Mapped[str255]
     start_rl_timestamp: Mapped[int] = mapped_column(BigInteger)
     # not null is now the default, nullables are explicitly defined by the use of Optional
     end_rl_timestamp: Mapped[Optional[int]] = mapped_column(BigInteger)

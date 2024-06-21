@@ -1,5 +1,7 @@
+from db.crud import get_game_scenario_by_id
 from db.database import SessionLocal
-from fastapi import HTTPException, Request, Response
+from fastapi import HTTPException, Request, Response, Depends
+from pydantic import BaseModel
 
 
 def setup_accept_header(app):
@@ -24,3 +26,10 @@ def db_session():
         yield db
     finally:
         db.close()
+
+class GameID(BaseModel):
+    game_id: int
+
+def get_game_by_id(gameId: GameID):
+    db = SessionLocal()
+    return get_game_scenario_by_id(db, gameId.game_id)

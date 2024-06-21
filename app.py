@@ -1,10 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv('.env')
-from config import config
 from db.database import Base, engine
 from db.crud import *
-# from db.crud import create_game, create_exchange, create_system_prompt, create_message, create_policy_settings_message
-from db.models import Game 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -24,12 +21,6 @@ client.client = client.start_client()
 
 # Create the database tables
 Base.metadata.create_all(bind=engine)
-
-# Configure the game
-config.system_prompt=system_message
-config.system_prompt_id=1
-config.ai_model='mistral-small-latest'
-
 
 # Create the FastAPI app
 app = FastAPI()
@@ -63,48 +54,47 @@ async def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(d
         game_schema = create_game(
             start_gt_timestamp=game_create_schema.start_gt_timestamp,
             scenario_id=game_create_schema.scenario_id,
+            ai_model=game_create_schema.ai_model,
             db=db
         )
         return game_schema
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# TODO: change response model to MetricsMessageSchema
-@app.post('/set-policy', response_model=MetricsComputedSchema)
-# @app.post('/set-policy')
-def send_policy(policySettings: PolicySettingsSchema, metrics: list[MetricsCompleteSchema], gameData: GameDataSchema , db: Session = Depends(db_session)):
-    try:
-        gt_timestamp = gameData.gt_timestamp
-        # exchange = create_exchange(db, game.id)
-        # create a new message with the policy settings
-        # TODO: when system_prompt selection is implemented, use that
-        # and store the message in the db
-        # policy_settings_message = create_policy_settings_message(db, exchange.id, gt_timestamp, 'user', policySettings) 
-        # send the message to the AI and get response
-        policy_settings_message = {}
-        policy_settings_message['model'] = config.ai_model
-        policy_and_metrics = json.dumps({
-            **policySettings.model_dump(),
-            **metrics.model_dump()
-        })
-        policy_settings_message['messages'] = [
-            system_message,
-            ChatMessage(role='user', content=policy_and_metrics)]
-        try:
-            metrics_response, message_content = talk(policy_settings_message)
-            metrics_response['previous_government_debt'] = metrics.government_debt
-            metrics_response['government_spending'] = policySettings.government_spending
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str("103" + e))
-        # store the response in the db
-        # TODO
-        # return the response
-        response = MetricsComputedSchema.model_validate(metrics_response)
-        return response
-        # return message_json
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
+# @app.post('/set-policy', response_model=MetricsSchema)
+@app.post('/set-policy')
+def send_policy(policySettings: PolicySettingsSchema,
+                metrics: list[MetricsSchema],
+                db: Session = Depends(db_session),
+                game: GameScenarioSchema = Depends(get_game_by_id)
+):
+    return game
+    # try:
+        
+    #     policy_settings_message = {}
+    #     policy_settings_message['model'] = config.ai_model
+    #     policy_and_metrics = json.dumps({
+    #         **policySettings.model_dump(),
+    #         **metrics.model_dump()
+    #     })
+    #     policy_settings_message['messages'] = [
+    #         system_message,
+    #         ChatMessage(role='user', content=policy_and_metrics)]
+    #     try:
+    #         metrics_response, message_content = talk(policy_settings_message)
+    #         metrics_response['previous_government_debt'] = metrics.government_debt
+    #         metrics_response['government_spending'] = policySettings.government_spending
+    #     except Exception as e:
+    #         raise HTTPException(status_code=500, detail=str("103" + e))
+    #     # store the response in the db
+    #     # TODO
+    #     # return the response
+    #     response = MetricsComputedSchema.model_validate(metrics_response)
+    #     return response
+    #     # return message_json
+    # except Exception as e:
+    #     print(e)
+    #     raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request, response: Response):

@@ -10,9 +10,14 @@ class ScenarioSchema(BaseModel):
     game_type: Annotated[GameType, 'The game type of the scenario, e.g. Keynes, Marx, Smith']
     system_prompt: Annotated[str, 'The system prompt of the scenario']
 
+    # enable default values in class attributes
+    class Config:
+        from_attributes = True
+
 class GameCreateSchema(BaseModel):
     start_gt_timestamp: Annotated[Optional[int], 'The game time timestamp of the game']
     scenario_id: Annotated[int, 'The ID of the scenario']
+    ai_model: Annotated[str, 'The AI model of the game']
 
     class Config:
         from_attributes = True
@@ -26,32 +31,12 @@ class GameSchema(GameCreateSchema):
     class Config:
         from_attributes = True
 
-
-class ExchangeSchema(BaseModel):
-    id: Annotated[int, 'The ID of the exchange']
-    game_id: Annotated[int, 'The ID of the game that the exchange belongs to']
-
-    class Config:
-        from_attributes = True
-
-class Message(BaseModel):
-    id: Annotated[int, 'The ID of the message']
-    exchange_id: Annotated[int, 'The ID of the exchange that the message belongs to']
-    policy_settings_id: Annotated[Optional[int], 'The ID of the policy settings that the message includes']
-    metrics_id: Annotated[Optional[int], 'The ID of the metrics that the message includes']
-    system_prompt_id: Annotated[Optional[int], 'The ID of the system prompt that the message includes']
-    rl_timestamp: Annotated[int, 'The real life timestamp of the message']
-    gt_timestamp: Annotated[int, 'The game time timestamp of the message']
-    role: Annotated[str, 'The role of the message sender']
-    content: Annotated[Optional[str], 'The content of the message']
-    message_json: Annotated[Optional[dict], 'The JSON representation of the message']
-
-    class Config:
-        from_attributes = True
+class GameScenarioSchema(GameSchema):
+    scenario: Annotated[ScenarioSchema, 'The scenario of the game']
 
 class MetricsSchema(BaseModel):
-    # id: Annotated[int, 'The ID of the metrics']
-    # generated fields
+    id: Annotated[Optional[int], 'The ID of the metrics'] = None
+    gt_timestamp: Annotated[Optional[int], 'The game time timestamp']
     population: Annotated[int, 'The population']
     consumption: Annotated[float, 'The consumption']
     investment: Annotated[float, 'The investment']
@@ -60,29 +45,16 @@ class MetricsSchema(BaseModel):
     inflation: Annotated[float, 'The inflation']
     unemployment_rate: Annotated[float, 'The unemployment rate']
     money_supply: Annotated[float, 'The money supply']
+    government_debt: Annotated[float, 'The government debt']
+    aggregate_demand: Annotated[float, 'The aggregate demand']
 
     class Config:
         from_attributes = True
 
-class MetricsCompleteSchema(MetricsSchema):
-    government_debt: Annotated[float, 'The government debt']
-    aggregate_demand: Annotated[float, 'The aggregate demand']
-
-class MetricsComputedSchema(MetricsSchema):
-    previous_government_debt: Annotated[float, 'The previous government debt']
-    government_spending: Annotated[float, 'The government spending']
-
-    @computed_field
-    @property
-    def government_debt(self) -> float:
-        return self.previous_government_debt - self.government_income + self.government_spending
-    
-    @computed_field
-    @property
-    def aggregate_demand(self) -> float:
-        return self.consumption + self.investment + self.net_export + self.government_spending
 
 class PolicySettingsSchema(BaseModel):
+    id: Annotated[Optional[int], 'The ID of the metrics'] = None
+    gt_timestamp: Annotated[Optional[int], 'The game time timestamp']
     interest_rate: Annotated[float, 'The interest rate']
     government_spending: Annotated[float, 'The government spending']
     open_market_operations: Annotated[float, 'The open market operations']
@@ -91,36 +63,3 @@ class PolicySettingsSchema(BaseModel):
 
     class Config:
         from_attributes = True
-
-# class PolicySettings(PolicySettingsCreate):
-#     id: Annotated[int, 'The ID of the policy settings']
-
-#     class Config:
-#         from_attributes = True 
-
-# class PolicySettingsMessage(Message):
-#     policy_settings: Annotated[PolicySettings, 'The policy settings of the message']
-
-#     class Config:
-#         from_attributes = True 
-
-# class MetricsMessage(Message):
-#     metrics: Annotated[Metrics, 'The metrics of the message']
-
-#     class Config:
-#         from_attributes = True
-
-class GameDataSchema(BaseModel):
-    gt_timestamp: Annotated[int, 'The game time timestamp']
-
-    class Config:
-        from_attributes = True 
-
-
-# class SystemPromptSchema(BaseModel):
-#     id: Annotated[Optional[int], 'The ID of the system prompt'] = None
-#     content: Annotated[str, 'The content of the system prompt']
-#     description: Annotated[Optional[str]]
-#     game_type: Mapped[Optional[str]]
-#     class Config:
-#         from_attributes = True

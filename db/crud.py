@@ -1,6 +1,5 @@
 # from mistralai.models.chat_completion import ChatMessage
-from sqlalchemy.orm import Session
-from config import config
+from sqlalchemy.orm import Session, joinedload
 import json
 from schemas.schemas import *
 from db.models import *
@@ -20,22 +19,33 @@ def create_scenario(
     db.commit()
     db.refresh(db_scenario)
     return db_scenario
-    return {}
 
 def create_game(
         start_gt_timestamp: int,
         scenario_id: int,
-        db: Session):
+        ai_model: str,
+        db: Session
+        ):
     current_timestamp = round(datetime.datetime.now().timestamp())
     db_game = Game(
-        start_gt_timestamp =start_gt_timestamp,
-        start_rl_timestamp =current_timestamp,
+        start_gt_timestamp=start_gt_timestamp,
+        start_rl_timestamp=current_timestamp,
+        ai_model=ai_model,
         scenario_id=scenario_id
     )
     db.add(db_game)
     db.commit()
     db.refresh(db_game)
     return db_game
+
+
+def get_game_scenario_by_id(db: Session, game_id: int):
+    query = db.query(Game).outerjoin(Scenario, Game.scenario_id == Scenario.id)
+    query = query.filter(Game.id == game_id)
+    query = query.options(joinedload(Game.scenario))
+    game = query.first()
+    return game
+
     # return GameSchema(id=db_game.id, start_rl_timestamp=db_game.start_rl_timestamp, scenario_id=db_game.scenario_id, start_gt_timestamp=db_game.start_gt_timestamp)
 
 # def create_policy_settings_message(metricsSchema: MetricsSchema, policySettingsSchema: PolicySettingsSchema):
