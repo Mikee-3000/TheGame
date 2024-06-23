@@ -1,14 +1,16 @@
+from datetime import datetime as dt
 from dotenv import load_dotenv
 load_dotenv('.env')
-from db.database import Base, engine
 from db.crud import *
+from db.database import Base, engine
+from db.models import Game
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import json
 from lib import client
-from lib.message import system_message, talk
+from lib.message import talk
 from middleware.middleware import *
 from mistralai.models.chat_completion import ChatMessage
 from pydantic import BaseModel
@@ -64,37 +66,50 @@ async def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(d
 # @app.post('/set-policy', response_model=MetricsSchema)
 @app.post('/set-policy')
 def send_policy(policySettings: PolicySettingsSchema,
-                metrics: list[MetricsSchema],
+                metrics: dict[str, MetricsSchema] = Depends(dated_metrics_dict),
                 db: Session = Depends(db_session),
-                game: GameScenarioSchema = Depends(get_game_by_id)
+                game: Game = Depends(get_game_by_id)
 ):
-    return game
-    # try:
-        
-    #     policy_settings_message = {}
-    #     policy_settings_message['model'] = config.ai_model
-    #     policy_and_metrics = json.dumps({
-    #         **policySettings.model_dump(),
-    #         **metrics.model_dump()
-    #     })
-    #     policy_settings_message['messages'] = [
-    #         system_message,
-    #         ChatMessage(role='user', content=policy_and_metrics)]
-    #     try:
-    #         metrics_response, message_content = talk(policy_settings_message)
-    #         metrics_response['previous_government_debt'] = metrics.government_debt
-    #         metrics_response['government_spending'] = policySettings.government_spending
-    #     except Exception as e:
-    #         raise HTTPException(status_code=500, detail=str("103" + e))
-    #     # store the response in the db
-    #     # TODO
-    #     # return the response
-    #     response = MetricsComputedSchema.model_validate(metrics_response)
-    #     return response
+    try:
+        policy_settings = policySettings.model_dump()
+        policy_and_metrics = json.dumps({
+            **policy_settings,
+            **metrics
+        })
+        user_message = ChatMessage(role='user', content=policy_and_metrics)
+        system_message = ChatMessage(role='system', content=game.scenario.system_prompt)
+        try:
+            metrics_response, raw_llm_response = talk(
+                user_message=user_message,
+                system_message=system_message,
+                model=game.ai_model
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str("103" + e))
+        metrics_response['gt_timestamp'] = dt.strptime(metrics_response['projection_date'], '%Y-%m-%d').timestamp()
+        game_data = {'game_id': game.id, 'rl_timestamp': game.rl_timestamp}
+
+        raw_messages = {
+            'user_message': str(user_message),
+            'system_message': str(system_message),
+            'raw_llm_response': str(raw_llm_response),
+            'model': game.ai_model
+        }
+
+        store_message_exchange(
+            db=db,
+            policy_settings=policy_settings,
+            measured_metrics=metrics,
+            projected_metrics=metrics_response,
+            game_data=game_data,
+            raw_message=raw_messages
+        )
+        response = MetricsSchema.model_validate(metrics_response)
+        return response
     #     # return message_json
-    # except Exception as e:
-    #     print(e)
-    #     raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request, response: Response):
@@ -108,33 +123,3 @@ if __name__ == "__main__":
         "app:app", 
         host="0.0.0.0", port=8080, log_level="debug", reload="true"
     )
-
-# @app.post('/send_metrics')
-# async def send_metrics(metrics: Metrics):
-#     try:
-#         resp = await client.send_metrics(metrics)
-#         return JSONResponse(content=resp)
-#     except Exception as e:
-#         print(e)
-#         print(resp)
-#         print(metrics)
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# @app.post('/game/new', response_model=GameSchema)
-# def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(db_session)):
-#     try:
-#         game_schema = create_game(game_create_schema.system_prompt_id, db)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# @app.post('/systemPrompt/new/', response_model=SystemPromptSchema)
-# def new_system_prompt(systemPromptSchema: SystemPromptSchema, db: Session = Depends(db_session)):
-#     """
-#     Creates a new system prompt in the database
-#     """
-#     try:
-#         system_prompt = create_system_prompt(db, systemPromptSchema.content)
-#         system_prompt_schema = SystemPromptSchema.model_validate(system_prompt)
-#         return system_prompt_schema
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))

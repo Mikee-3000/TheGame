@@ -33,6 +33,7 @@ class GameSchema(GameCreateSchema):
 
 class GameScenarioSchema(GameSchema):
     scenario: Annotated[ScenarioSchema, 'The scenario of the game']
+    rl_timestamp: Annotated[int, 'The real life timestamp of the game']
 
 class MetricsSchema(BaseModel):
     id: Annotated[Optional[int], 'The ID of the metrics'] = None
@@ -53,13 +54,13 @@ class MetricsSchema(BaseModel):
 
 
 class PolicySettingsSchema(BaseModel):
-    id: Annotated[Optional[int], 'The ID of the metrics'] = None
-    gt_timestamp: Annotated[Optional[int], 'The game time timestamp']
+    # id: Annotated[Optional[int], 'The ID of the metrics'] = None
     interest_rate: Annotated[float, 'The interest rate']
     government_spending: Annotated[float, 'The government spending']
     open_market_operations: Annotated[float, 'The open market operations']
     individual_tax_rate: Annotated[float, 'The individual tax rate']
     corporate_tax_rate: Annotated[float, 'The corporation tax rate']
+    gt_timestamp: Annotated[Optional[int], 'The game time timestamp']
 
     class Config:
         from_attributes = True

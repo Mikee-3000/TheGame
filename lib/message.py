@@ -2,22 +2,30 @@ from datetime import datetime as dt
 import json
 import lib.chat_logging as log
 from lib import client
+from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os
 import re
 
 
-def talk(policy_settings_message):
-
+def talk(
+    user_message: ChatMessage,
+    system_message: ChatMessage,
+    model: str,
+):
     chat_response = client.client.chat(
-        model=policy_settings_message['model'],
-        messages=policy_settings_message['messages']
+        model=model,
+        messages=[user_message, system_message]
     )
+    try:
+        assert len(chat_response.choices) == 1
+    except AssertionError as e:
+        print(e.message)
 
-    message_content = chat_response.choices[-1].message.content
+    message_content = chat_response.choices[0].message.content
     try:
         message_json = re.findall(r'```json([^`]+)```', message_content)[0]
-        return json.loads(message_json), message_content
+        return json.loads(message_json), chat_response.choices[0]
     except IndexError:
         # sometimes the AI sends only the JSON
         try:
@@ -26,13 +34,3 @@ def talk(policy_settings_message):
             # stuck
             print(message_content)
             # TODO: more error handling
-
-system_message = ChatMessage(role='system', content="""
-You are an AI game engine, finetuned in Keynesian economics. The player sends you the following data:
-population, consumption, investment, net export, government income, inflation, unemployment rate, money supply, government debt, aggregate demand, interest rate, government spending, open market operations, individual income tax rate, corporate income tax rate.
-You reply estimate what the economy will look like in a month. You generate the following data:
-population, consumption, investment, net export, government income, inflation, unemployment rate and money supply.
-You always return one specific number for each parameter, formatted as JSON. The JSON keys are:
-population, consumption, investment, net_export, government_income, inflation, unemployment_rate, money_supply. Boolean values are expressed as 0 or 1. The player can then use these numbers to make decisions for the economy.
-"""
-)

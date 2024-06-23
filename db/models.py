@@ -58,8 +58,9 @@ class Metrics(Base):
     government_debt: Mapped[float]
     aggregate_demand: Mapped[float]
 
-    game_time: Mapped[Optional[int]]
-    real_time: Mapped[int]
+    gt_timestamp: Mapped[int] = mapped_column(BigInteger)
+    rl_timestamp: Mapped[int] = mapped_column(BigInteger)
+    projection_date: Mapped[Optional[str255]]
     metrics_type: Mapped[MetricsType]
     
     game_id: Mapped[Optional[int]] = mapped_column(ForeignKey('games.id'))
@@ -78,52 +79,20 @@ class PolicySettings(Base):
     individual_tax_rate: Mapped[float]
     corporate_tax_rate: Mapped[float]
 
-    game_time: Mapped[Optional[int]]
-    real_time: Mapped[int]
+    gt_timestamp: Mapped[int] = mapped_column(BigInteger)
+    rl_timestamp: Mapped[int] = mapped_column(BigInteger)
 
     game_id: Mapped[Optional[int]] = mapped_column(ForeignKey('games.id'))
 
-# class Exchange(Base):
-#     __tablename__ = 'exchanges'
+class RawMessages(Base):
+    __tablename__ = 'raw_messages'
 
-#     id: Mapped[intpk]
-#     game_id: Mapped[int] = mapped_column(ForeignKey('games.id'), nullable=False)
+    id: Mapped[intpk]
+    user_message: Mapped[str] = mapped_column(Text)
+    system_message: Mapped[str] = mapped_column(Text)
+    raw_llm_response: Mapped[str] = mapped_column(Text)
+    model: Mapped[str255]
 
-#     # each exchange belongs to one game
-#     game: Mapped['Game'] = relationship('Game', back_populates='exchanges')
-#     # each exchange can have more than one message
-#     messages: Mapped['Message'] = relationship('Message', back_populates='exchange')
+    rl_timestamp: Mapped[int] = mapped_column(BigInteger)
 
-# class Message(Base):
-#     __tablename__ = 'messages'
-
-#     id: Mapped[intpk]
-#     exchange_id: Mapped[int] = mapped_column(ForeignKey('exchanges.id'), nullable=False)
-#     policy_settings_id: Mapped[int] = mapped_column(ForeignKey('policy_settings.id'), nullable=True)
-#     metrics_id: Mapped[int] = mapped_column(ForeignKey('metrics.id'), nullable=True)
-#     system_prompt_id: Mapped[int] = mapped_column(ForeignKey('system_prompts.id'), nullable=True)
-#     rl_timestamp: Mapped[int] # real live timestamp
-#     gt_timestamp: Mapped[int] # game time timestamp
-#     role: Mapped[str255]
-#     content: Mapped[Optional[str]]
-#     message_json: Mapped[dict] = mapped_column(JSONB)
-
-#     # each message belongs to one exchange
-#     exchange: Mapped['Exchange'] = relationship('Exchange', back_populates='messages')
-#     # each message can have one set of metrics and/or policy settings
-#     metrics: Mapped['Metrics'] = relationship('Metrics', back_populates='message')
-#     policy_settings: Mapped['PolicySettings'] = relationship('PolicySettings', back_populates='message')
-#     system_prompt: Mapped['SystemPrompt'] = relationship('SystemPrompt', back_populates='messages')
-
-
-# class SystemPrompt(Base):
-#     __tablename__ = 'system_prompts'
-
-    # id: Mapped[intpk]
-    # content: Mapped[str] = mapped_column(Text)
-    # description: Mapped[Optional[str255]]
-    # game_type: Mapped[Optional[str255]]
-
-    # one system prompt has many messages
-    # messages: Mapped['Message'] = relationship('Message', back_populates='system_prompt')
-    # games: Mapped['Game'] = relationship('Game', back_populates='system_prompt')
+    game_id: Mapped[Optional[int]] = mapped_column(ForeignKey('games.id'))
