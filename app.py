@@ -66,7 +66,7 @@ async def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(d
 # @app.post('/set-policy', response_model=MetricsSchema)
 @app.post('/set-policy')
 def send_policy(policySettings: PolicySettingsSchema,
-                metrics: dict[str, MetricsSchema] = Depends(dated_metrics_dict),
+                metrics: dict[str, dict] = Depends(dated_metrics_dict),
                 db: Session = Depends(db_session),
                 game: Game = Depends(get_game_by_id)
 ):
@@ -105,6 +105,11 @@ def send_policy(policySettings: PolicySettingsSchema,
             raw_message=raw_messages
         )
         response = MetricsSchema.model_validate(metrics_response)
+        MetricsSchema.interpolate(
+            metrics[metrics['current_game_date']],
+            metrics_response,
+            5
+        )
         return response
     #     # return message_json
     except Exception as e:

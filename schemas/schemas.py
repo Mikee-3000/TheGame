@@ -1,6 +1,8 @@
 from db.database import GameType
+import inspect
+from lib.interpolation import interpolate
 from pydantic import BaseModel, field_validator, ValidationInfo, computed_field, Field
-from typing import Annotated, Optional
+from typing import Annotated, Optional, get_type_hints
 
 
 class ScenarioSchema(BaseModel):
@@ -38,19 +40,35 @@ class GameScenarioSchema(GameSchema):
 class MetricsSchema(BaseModel):
     id: Annotated[Optional[int], 'The ID of the metrics'] = None
     gt_timestamp: Annotated[Optional[int], 'The game time timestamp']
-    population: Annotated[int, 'The population']
-    consumption: Annotated[float, 'The consumption']
-    investment: Annotated[float, 'The investment']
-    net_export: Annotated[float, 'The net export']
-    government_income: Annotated[float, 'The government income']
-    inflation: Annotated[float, 'The inflation']
-    unemployment_rate: Annotated[float, 'The unemployment rate']
-    money_supply: Annotated[float, 'The money supply']
-    government_debt: Annotated[float, 'The government debt']
-    aggregate_demand: Annotated[float, 'The aggregate demand']
+    population: Annotated[int, 'The population', 'Interpolation']
+    consumption: Annotated[float, 'The consumption', 'Interpolation']
+    investment: Annotated[float, 'The investment', 'Interpolation']
+    net_export: Annotated[float, 'The net export', 'Interpolation']
+    government_income: Annotated[float, 'The government income', 'Interpolation']
+    inflation: Annotated[float, 'The inflation', 'Interpolation']
+    unemployment_rate: Annotated[float, 'The unemployment rate', 'Interpolation']
+    money_supply: Annotated[float, 'The money supply', 'Interpolation']
+    government_debt: Annotated[float, 'The government debt', 'Interpolation']
+    aggregate_demand: Annotated[float, 'The aggregate demand', 'Interpolation']
 
     class Config:
         from_attributes = True
+
+    
+
+    @classmethod
+    def interpolate(cls, start_metrics, end_metrics, days):
+        interpolated_metrics = {}
+        annotations = inspect.get_annotations(cls)
+        interpolated_fields = [f for f in annotations if 'Interpolation' in annotations[f].__metadata__]
+        for f in interpolated_fields:
+            interpolated_metrics[f] = interpolate(
+                start_metrics[f],
+                end_metrics[f],
+                days
+            )
+        print(interpolated_metrics)
+        return interpolated_metrics
 
 
 class PolicySettingsSchema(BaseModel):
