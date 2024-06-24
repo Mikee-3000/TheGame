@@ -71,14 +71,17 @@ def send_policy(policySettings: PolicySettingsSchema,
                 game: Game = Depends(get_game_by_id)
 ):
     try:
+        # convert the object into a dict
         policy_settings = policySettings.model_dump()
         policy_and_metrics = json.dumps({
             **policy_settings,
             **metrics
         })
+        # create the prompt for the LLM
         user_message = ChatMessage(role='user', content=policy_and_metrics)
         system_message = ChatMessage(role='system', content=game.scenario.system_prompt)
         try:
+            # send it to the LLM
             metrics_response, raw_llm_response = talk(
                 user_message=user_message,
                 system_message=system_message,
@@ -96,22 +99,26 @@ def send_policy(policySettings: PolicySettingsSchema,
             'model': game.ai_model
         }
 
+        # create a value for every day using linear interpolation
+        interpolated_metrics = MetricsSchema.interpolate(
+            metrics[metrics['current_game_date']],
+            metrics_response,
+        )
+        # everything gets stored in the db
         store_message_exchange(
             db=db,
             policy_settings=policy_settings,
             measured_metrics=metrics,
             projected_metrics=metrics_response,
+            interpolated_metrics=interpolated_metrics,
             game_data=game_data,
             raw_message=raw_messages
         )
-        response = MetricsSchema.model_validate(metrics_response)
-        MetricsSchema.interpolate(
-            metrics[metrics['current_game_date']],
-            metrics_response,
-            5
-        )
-        return response
-    #     # return message_json
+        api_response = {
+            **interpolated_metrics,
+            metrics_response['projection_date']: metrics_response
+        }
+        return api_response
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))

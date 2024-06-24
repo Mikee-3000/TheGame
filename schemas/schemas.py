@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+from datetime import timedelta
 from db.database import GameType
 import inspect
 from lib.interpolation import interpolate
@@ -54,21 +56,34 @@ class MetricsSchema(BaseModel):
     class Config:
         from_attributes = True
 
-    
-
     @classmethod
-    def interpolate(cls, start_metrics, end_metrics, days):
+    def interpolate(cls, start_metrics, end_metrics):
+        day_metrics = {}
+        start_ts = dt.fromtimestamp(start_metrics['gt_timestamp'])
+        end_ts = dt.fromtimestamp(end_metrics['gt_timestamp'])
+        # the amount of days not including the start day or the end day
+        days = (end_ts - start_ts).days
         interpolated_metrics = {}
+        # this ensures that interpolation only happens for fields that have the 'Interpolation' annotation, so excluding the id and timestamp
         annotations = inspect.get_annotations(cls)
         interpolated_fields = [f for f in annotations if 'Interpolation' in annotations[f].__metadata__]
         for f in interpolated_fields:
             interpolated_metrics[f] = interpolate(
                 start_metrics[f],
                 end_metrics[f],
-                days
+                days + 1, # the "interpolation" for the end day is the same as the projection, but the dates need to match
+                get_type_hints(cls)[f]
             )
-        print(interpolated_metrics)
-        return interpolated_metrics
+        # change the lists of values into a metrics object for each day 
+        for day in range(1, days): # skip the first day, as it is the same as the start metrics
+            dt_day = start_ts + timedelta(days=day)
+            dt_timestamp = dt_day.timestamp()
+            dt_day_str = dt_day.strftime('%Y-%m-%d')
+            daily_values = {f: interpolated_metrics[f][day] for f in interpolated_fields}
+            daily_values['gt_timestamp'] = dt_timestamp
+            day_metric = cls(**daily_values)
+            day_metrics[dt_day_str] = day_metric
+        return day_metrics
 
 
 class PolicySettingsSchema(BaseModel):

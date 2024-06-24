@@ -61,6 +61,7 @@ class Metrics(Base):
     gt_timestamp: Mapped[int] = mapped_column(BigInteger)
     rl_timestamp: Mapped[int] = mapped_column(BigInteger)
     projection_date: Mapped[Optional[str255]]
+    measurement_date: Mapped[Optional[str255]]
     metrics_type: Mapped[MetricsType]
     
     game_id: Mapped[Optional[int]] = mapped_column(ForeignKey('games.id'))

@@ -12,6 +12,7 @@ str255 = Annotated[str, 255]
 class MetricsType(Enum):
     measured = 'measured'
     projected = 'projected'
+    interpolated = 'interpolated'
 
 class GameType(Enum):
     Keynes = 'Keynes'
