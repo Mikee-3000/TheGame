@@ -51,6 +51,7 @@ def store_message_exchange(
         policy_settings: dict,
         measured_metrics: dict,
         projected_metrics: dict,
+        interpolated_metrics: dict,
         game_data: dict,
         raw_message: dict
 ):
@@ -59,16 +60,27 @@ def store_message_exchange(
         rl_timestamp=game_data['rl_timestamp'],
         **policy_settings)
     db.add(policy_settings_model)
-    for metric in sorted(measured_metrics.keys()):
+
+    for day in sorted(measured_metrics.keys()):
         # there is an extra key with a string date value, skip that
-        if isinstance(measured_metrics[metric], dict):
+        if isinstance(measured_metrics[day], dict):
             measured_metric_model = Metrics(
                 game_id=game_data['game_id'],
                 rl_timestamp=game_data['rl_timestamp'],
                 metrics_type=MetricsType.measured,
-                **measured_metrics[metric]
+                measurement_date=day,
+                **measured_metrics[day]
             )
             db.add(measured_metric_model)
+    for day in sorted(interpolated_metrics.keys()):
+        interpolated_metric_model = Metrics(
+            game_id=game_data['game_id'],
+            rl_timestamp=game_data['rl_timestamp'],
+            metrics_type=MetricsType.interpolated,
+            projection_date=day,
+            **interpolated_metrics[day].model_dump()
+        )
+        db.add(interpolated_metric_model)
     projected_metrics_model = Metrics(
         game_id=game_data['game_id'],
         rl_timestamp=game_data['rl_timestamp'],

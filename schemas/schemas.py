@@ -1,6 +1,10 @@
+from datetime import datetime as dt
+from datetime import timedelta
 from db.database import GameType
+import inspect
+from lib.interpolation import interpolate
 from pydantic import BaseModel, field_validator, ValidationInfo, computed_field, Field
-from typing import Annotated, Optional
+from typing import Annotated, Optional, get_type_hints
 
 
 class ScenarioSchema(BaseModel):
@@ -38,19 +42,48 @@ class GameScenarioSchema(GameSchema):
 class MetricsSchema(BaseModel):
     id: Annotated[Optional[int], 'The ID of the metrics'] = None
     gt_timestamp: Annotated[Optional[int], 'The game time timestamp']
-    population: Annotated[int, 'The population']
-    consumption: Annotated[float, 'The consumption']
-    investment: Annotated[float, 'The investment']
-    net_export: Annotated[float, 'The net export']
-    government_income: Annotated[float, 'The government income']
-    inflation: Annotated[float, 'The inflation']
-    unemployment_rate: Annotated[float, 'The unemployment rate']
-    money_supply: Annotated[float, 'The money supply']
-    government_debt: Annotated[float, 'The government debt']
-    aggregate_demand: Annotated[float, 'The aggregate demand']
+    population: Annotated[int, 'The population', 'Interpolation']
+    consumption: Annotated[float, 'The consumption', 'Interpolation']
+    investment: Annotated[float, 'The investment', 'Interpolation']
+    net_export: Annotated[float, 'The net export', 'Interpolation']
+    government_income: Annotated[float, 'The government income', 'Interpolation']
+    inflation: Annotated[float, 'The inflation', 'Interpolation']
+    unemployment_rate: Annotated[float, 'The unemployment rate', 'Interpolation']
+    money_supply: Annotated[float, 'The money supply', 'Interpolation']
+    government_debt: Annotated[float, 'The government debt', 'Interpolation']
+    aggregate_demand: Annotated[float, 'The aggregate demand', 'Interpolation']
 
     class Config:
         from_attributes = True
+
+    @classmethod
+    def interpolate(cls, start_metrics, end_metrics):
+        day_metrics = {}
+        start_ts = dt.fromtimestamp(start_metrics['gt_timestamp'])
+        end_ts = dt.fromtimestamp(end_metrics['gt_timestamp'])
+        # the amount of days not including the start day or the end day
+        days = (end_ts - start_ts).days
+        interpolated_metrics = {}
+        # this ensures that interpolation only happens for fields that have the 'Interpolation' annotation, so excluding the id and timestamp
+        annotations = inspect.get_annotations(cls)
+        interpolated_fields = [f for f in annotations if 'Interpolation' in annotations[f].__metadata__]
+        for f in interpolated_fields:
+            interpolated_metrics[f] = interpolate(
+                start_metrics[f],
+                end_metrics[f],
+                days + 1, # the "interpolation" for the end day is the same as the projection, but the dates need to match
+                get_type_hints(cls)[f]
+            )
+        # change the lists of values into a metrics object for each day 
+        for day in range(1, days): # skip the first day, as it is the same as the start metrics
+            dt_day = start_ts + timedelta(days=day)
+            dt_timestamp = dt_day.timestamp()
+            dt_day_str = dt_day.strftime('%Y-%m-%d')
+            daily_values = {f: interpolated_metrics[f][day] for f in interpolated_fields}
+            daily_values['gt_timestamp'] = dt_timestamp
+            day_metric = cls(**daily_values)
+            day_metrics[dt_day_str] = day_metric
+        return day_metrics
 
 
 class PolicySettingsSchema(BaseModel):
