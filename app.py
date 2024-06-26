@@ -51,16 +51,31 @@ async def new_scenario(scenario_schema: ScenarioSchema, db: Session = Depends(db
 
 
 @app.post('/game/new', response_model=GameSchema)
-async def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(db_session)):
+async def new_game(
+    game: GameCreateSchema,
+    scenario: ScenarioSchema = Depends(get_scenario_by_id),
+    db: Session = Depends(db_session),
+    ):
     try:
+        # request the initial metrics and policy settings from the LLLM
+        game_time_str = dt.strftime(dt.fromtimestamp(game.start_gt_timestamp), '%Y-%m-%d')
+        user_prompt = f"The game is starting, the game time is {game_time_str}. Please provide the requested data."
+        user_message = ChatMessage(role='user', content=user_prompt)
+        system_message = ChatMessage(role='system', content=scenario.system_prompt)
+        metrics_response, raw_llm_response = talk(
+            user_message=user_message,
+            system_message=system_message,
+            model=game.ai_model
+        )
         game_schema = create_game(
-            start_gt_timestamp=game_create_schema.start_gt_timestamp,
-            scenario_id=game_create_schema.scenario_id,
-            ai_model=game_create_schema.ai_model,
+            start_gt_timestamp=game.start_gt_timestamp,
+            scenario_id=scenario.id,
+            ai_model=game.ai_model,
             db=db
         )
-        return game_schema
+        return {**game_schema, **metrics_response}
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 # @app.post('/set-policy', response_model=MetricsSchema)

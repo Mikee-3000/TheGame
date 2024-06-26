@@ -25,10 +25,12 @@ def talk(
     message_content = chat_response.choices[0].message.content
     try:
         message_json = re.findall(r'```json([^`]+)```', message_content)[0]
+        print(message_json)
         return json.loads(message_json), chat_response.choices[0]
     except IndexError:
         # sometimes the AI sends only the JSON
         try:
+            print(message_content)
             return json.loads(message_content)
         except json.JSONDecodeError:
             # stuck
