@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js'
 import ObjectRegister from '../lib/ObjectRegister.js'
 import GameData from '../lib/GameData.js'
-import { sendMetrics } from '../lib/messages.js'
+import { setPolicy } from '../lib/messages.js'
 import Displays from './MetricsDisplays/Displays.js'
 
 
@@ -84,7 +84,7 @@ export default class Setters {
         await this.setValues('input', 'gameData')
         this.hide()
         console.log(this.gameData)
-        this.aiResponse = await sendMetrics(this.gameData)
+        this.aiResponse = await setPolicy(this.gameData)
         this.setValues('ai', 'gameData')
         let displays = new Displays()
         displays.updateDisplays()
