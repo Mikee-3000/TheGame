@@ -1,6 +1,6 @@
-async function sendMetrics(gameData) {
+async function setPolicy(gameData) {
   try {
-    const response = await fetch('http://127.0.0.1:8080/send_metrics/', {
+    const response = await fetch('http://127.0.0.1:8000/set-policy/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -18,4 +18,4 @@ async function sendMetrics(gameData) {
   }
 }
 
-export {sendMetrics}
+export {setPolicy}
