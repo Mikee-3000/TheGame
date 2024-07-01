@@ -12,6 +12,7 @@ def talk(
     user_message: ChatMessage,
     system_message: ChatMessage,
     model: str,
+    expected_metrics_amount = 1
 ):
     chat_response = client.client.chat(
         model=model,
@@ -24,13 +25,18 @@ def talk(
 
     message_content = chat_response.choices[0].message.content
     try:
-        message_json = re.findall(r'```json([^`]+)```', message_content)[0]
-        print(message_json)
-        return json.loads(message_json), chat_response.choices[0]
+        if expected_metrics_amount == 1:
+            message_json = re.findall(r'```json([^`]+)```', message_content)[0]
+            return json.loads(message_json), chat_response.choices[0]
+        else:
+            metrics_list = []
+            for i in range(expected_metrics_amount):
+                message_json = re.findall(r'```json([^`]+)```', message_content)[i]
+                metrics_list.append(json.loads(message_json))
+            return metrics_list, chat_response.choices[0]
     except IndexError:
         # sometimes the AI sends only the JSON
         try:
-            print(message_content)
             return json.loads(message_content)
         except json.JSONDecodeError:
             # stuck

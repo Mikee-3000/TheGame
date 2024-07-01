@@ -59,14 +59,16 @@ async def new_game(
     try:
         # request the initial metrics and policy settings from the LLLM
         game_time_str = dt.strftime(dt.fromtimestamp(game.start_gt_timestamp), '%Y-%m-%d')
-        user_prompt = f"The game is starting, the game time is {game_time_str}. Please provide the requested data."
+        user_prompt = f"The game is starting, the game date is {game_time_str}. Please provide 2 sets of metrics - one for now and one for 30 days from now."
         user_message = ChatMessage(role='user', content=user_prompt)
-        system_message = ChatMessage(role='system', content=scenario.system_prompt)
+        system_message = ChatMessage(role='system', content=scenario.initial_system_prompt)
         metrics_response, raw_llm_response = talk(
             user_message=user_message,
             system_message=system_message,
-            model=game.ai_model
+            model=game.ai_model,
+            expected_metrics_amount=2
         )
+        print(metrics_response)
         game_schema = create_game(
             start_gt_timestamp=game.start_gt_timestamp,
             scenario_id=scenario.id,

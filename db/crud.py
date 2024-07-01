@@ -13,7 +13,8 @@ def create_scenario(
         name=scenario_schema.name,
         description=scenario_schema.description,
         game_type=scenario_schema.game_type,
-        system_prompt=scenario_schema.system_prompt
+        system_prompt=scenario_schema.system_prompt,
+        initial_system_prompt=scenario_schema.initial_system_prompt
     )
     db.add(db_scenario)
     db.commit()

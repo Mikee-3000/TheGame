@@ -23,6 +23,7 @@ class Scenario(Base):
     description: Mapped[str255]
     game_type: Mapped[GameType]
     system_prompt: Mapped[str] = mapped_column(Text)
+    initial_system_prompt: Mapped[str] = mapped_column(Text)
 
     # one scenario has many games
     games: Mapped[list['Game']] = relationship('Game', back_populates='scenario')
