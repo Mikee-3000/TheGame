@@ -41,7 +41,7 @@ class GameScenarioSchema(GameSchema):
     rl_timestamp: Annotated[int, 'The real life timestamp of the game']
 
 class MetricsSchema(BaseModel):
-    id: Annotated[Optional[int], 'The ID of the metrics'] = None
+    # id: Annotated[Optional[int], 'The ID of the metrics'] = None
     gt_timestamp: Annotated[Optional[int], 'The game time timestamp']
     population: Annotated[int, 'The population', 'Interpolation']
     consumption: Annotated[float, 'The consumption', 'Interpolation']
@@ -58,7 +58,7 @@ class MetricsSchema(BaseModel):
         from_attributes = True
 
     @classmethod
-    def interpolate(cls, start_metrics, end_metrics):
+    def interpolate(cls, start_metrics: dict, end_metrics: dict):
         day_metrics = {}
         start_ts = dt.fromtimestamp(start_metrics['gt_timestamp'])
         end_ts = dt.fromtimestamp(end_metrics['gt_timestamp'])
@@ -98,3 +98,21 @@ class PolicySettingsSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+    @classmethod
+    def create(cls,
+               interest_rate: float = 0,
+               government_spending: float = 0,
+               open_market_operations: float = 0,
+               individual_tax_rate: float = 0,
+               corporate_tax_rate: float = 0,
+               gt_timestamp: Optional[int] = None
+    ):
+        return cls(
+            interest_rate = interest_rate,
+            government_spending = government_spending,
+            open_market_operations = open_market_operations,
+            individual_tax_rate = individual_tax_rate,
+            corporate_tax_rate = corporate_tax_rate,
+            gt_timestamp = gt_timestamp
+        )

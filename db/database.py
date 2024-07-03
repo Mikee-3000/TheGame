@@ -13,6 +13,7 @@ class MetricsType(Enum):
     measured = 'measured'
     projected = 'projected'
     interpolated = 'interpolated'
+    initial = 'initial'
 
 class GameType(Enum):
     Keynes = 'Keynes'
