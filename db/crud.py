@@ -4,6 +4,7 @@ import json
 from schemas.schemas import *
 from db.models import *
 import datetime 
+from pathlib import Path
 
 def create_scenario(
         db: Session,
@@ -13,12 +14,32 @@ def create_scenario(
         name=scenario_schema.name,
         description=scenario_schema.description,
         game_type=scenario_schema.game_type,
-        system_prompt=scenario_schema.system_prompt
+        system_prompt=scenario_schema.system_prompt,
+        initial_system_prompt=scenario_schema.initial_system_prompt
     )
     db.add(db_scenario)
     db.commit()
     db.refresh(db_scenario)
     return db_scenario
+
+def create_scenarios_from_json(
+        db: Session
+):
+    for scenario in Path('scenarios').rglob('*.json'):
+        with open(scenario) as f:
+            scenario_data = json.load(f)
+            db_scenario = Scenario(
+                # name=scenario_data['name'],
+                # description=scenario_data['description'],
+                # game_type=scenario_data['game_type'],
+                # system_prompt=scenario_data['system_prompt'],
+                # initial_system_prompt=scenario_data['initial_system_prompt']
+                **scenario_data
+            )
+            db.add(db_scenario)
+    db.commit()
+    db.refresh(db_scenario)
+    return 0
 
 def create_game(
         start_gt_timestamp: int,
@@ -38,6 +59,8 @@ def create_game(
     db.refresh(db_game)
     return db_game
 
+def get_scenario_by_id(db: Session, scenario_id: int):
+    return db.query(Scenario).filter(Scenario.id == scenario_id).first()
 
 def get_game_scenario_by_id(db: Session, game_id: int):
     query = db.query(Game).outerjoin(Scenario, Game.scenario_id == Scenario.id)
@@ -49,17 +72,27 @@ def get_game_scenario_by_id(db: Session, game_id: int):
 def store_message_exchange(
         db: Session,
         policy_settings: dict,
-        measured_metrics: dict,
         projected_metrics: dict,
         interpolated_metrics: dict,
         game_data: dict,
-        raw_message: dict
+        raw_message: dict,
+        measured_metrics: dict = {},
+        initial_metrics: dict = None
 ):
     policy_settings_model = PolicySettings(
         game_id=game_data['game_id'],
         rl_timestamp=game_data['rl_timestamp'],
         **policy_settings)
     db.add(policy_settings_model)
+
+    if initial_metrics is not None:
+        initial_metrics_model = Metrics(
+            game_id=game_data['game_id'],
+            rl_timestamp=game_data['rl_timestamp'],
+            metrics_type=MetricsType.initial,
+            **initial_metrics
+        )
+        db.add(initial_metrics_model)
 
     for day in sorted(measured_metrics.keys()):
         # there is an extra key with a string date value, skip that
@@ -72,6 +105,7 @@ def store_message_exchange(
                 **measured_metrics[day]
             )
             db.add(measured_metric_model)
+
     for day in sorted(interpolated_metrics.keys()):
         interpolated_metric_model = Metrics(
             game_id=game_data['game_id'],
@@ -81,6 +115,7 @@ def store_message_exchange(
             **interpolated_metrics[day].model_dump()
         )
         db.add(interpolated_metric_model)
+
     projected_metrics_model = Metrics(
         game_id=game_data['game_id'],
         rl_timestamp=game_data['rl_timestamp'],

@@ -49,23 +49,76 @@ async def new_scenario(scenario_schema: ScenarioSchema, db: Session = Depends(db
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-@app.post('/game/new', response_model=GameSchema)
-async def new_game(game_create_schema: GameCreateSchema, db: Session = Depends(db_session)):
+@app.post('/scenario/new-from-json')
+async def new_scenario_from_json(db: Session = Depends(db_session)):
     try:
-        game_schema = create_game(
-            start_gt_timestamp=game_create_schema.start_gt_timestamp,
-            scenario_id=game_create_schema.scenario_id,
-            ai_model=game_create_schema.ai_model,
+        create_scenarios_from_json(db)
+        return JSONResponse(content={'status': 'success'})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post('/game/new')
+def new_game(
+    game: GameCreateSchema,
+    scenario: ScenarioSchema = Depends(get_scenario_by_id),
+    db: Session = Depends(db_session),
+    ):
+    try:
+        # request the initial metrics and policy settings from the LLLM
+        game_time_str = dt.strftime(dt.fromtimestamp(game.start_gt_timestamp), '%Y-%m-%d')
+        user_prompt = f"The game is starting, the game date is {game_time_str}. Please provide 2 sets of metrics - one for the game date and one for 30 days from the game date."
+        user_message = ChatMessage(role='user', content=user_prompt)
+        system_message = ChatMessage(role='system', content=scenario.initial_system_prompt)
+        metrics_response, raw_llm_response = talk(
+            user_message=user_message,
+            system_message=system_message,
+            model=game.ai_model,
+            expected_metrics_amount=2
+        )
+        # add timestamp to the metrics based on the projection dates
+        [
+            m.update({'gt_timestamp': dt.strptime(m['projection_date'], '%Y-%m-%d').timestamp()})
+            for m in metrics_response
+        ]
+        # create interpolated metrics
+        interpolated_metrics = MetricsSchema.interpolate(metrics_response[0], metrics_response[1])
+        game_object = create_game(
+            start_gt_timestamp=game.start_gt_timestamp,
+            scenario_id=scenario.id,
+            ai_model=game.ai_model,
             db=db
         )
-        return game_schema
+        game_data = {'game_id': game_object.id, 'rl_timestamp': game_object.start_rl_timestamp}
+        raw_messages = {
+            'user_message': str(user_message),
+            'system_message': str(system_message),
+            'raw_llm_response': str(raw_llm_response),
+            'model': game.ai_model
+        }
+        store_message_exchange(
+            db=db,
+            policy_settings=PolicySettingsSchema.create(
+                0.0, 0.0, 0.0, 0.0, 0.0,
+                game.start_gt_timestamp
+        ).model_dump(),
+            initial_metrics=metrics_response[0],
+            projected_metrics=metrics_response[1],
+            interpolated_metrics=interpolated_metrics,
+            game_data=game_data,
+            raw_message=raw_messages
+        )
+        return {'game': game_data, 'metrics': {
+            metrics_response[0]['projection_date']: metrics_response[0],
+            **interpolated_metrics,
+            metrics_response[1]['projection_date']: metrics_response[1]
+            }}
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 # @app.post('/set-policy', response_model=MetricsSchema)
 @app.post('/set-policy')
-def send_policy(policySettings: PolicySettingsSchema,
+async def send_policy(policySettings: PolicySettingsSchema,
                 metrics: dict[str, dict] = Depends(dated_metrics_dict),
                 db: Session = Depends(db_session),
                 game: Game = Depends(get_game_by_id)
@@ -82,11 +135,12 @@ def send_policy(policySettings: PolicySettingsSchema,
         system_message = ChatMessage(role='system', content=game.scenario.system_prompt)
         try:
             # send it to the LLM
-            metrics_response, raw_llm_response = talk(
+            metrics_response_list, raw_llm_response = talk(
                 user_message=user_message,
                 system_message=system_message,
                 model=game.ai_model
             )
+            metrics_response = metrics_response_list[0]
         except Exception as e:
             raise HTTPException(status_code=500, detail=str("103" + e))
         metrics_response['gt_timestamp'] = dt.strptime(metrics_response['projection_date'], '%Y-%m-%d').timestamp()
