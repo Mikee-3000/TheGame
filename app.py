@@ -178,9 +178,14 @@ async def send_policy(policySettings: PolicySettingsSchema,
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request, response: Response):
+async def root(
+    request: Request,
+    response: Response,
+    db: Session = Depends(db_session)
+):
+    scenarios = get_all_scenarios(db)
     return templates.TemplateResponse(
-        request=request, name="index.html", context={"id": id}
+        request=request, name="index.html", context={"id": id, "scenarios": scenarios}
     )
 
 

@@ -17,6 +17,13 @@
     <link href=" https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.min.css " rel="stylesheet">
 </head>
 <body>
+    {% for scenario in scenarios %}
+        <div class="scenario" id="{{ scenario.id }}">
+            <h2>{{ scenario.name }}</h2>
+            <p>{{ scenario.description }}</p>
+            <button onclick="setters.show({{ scenario.id }})">Set</button>
+        </div>
+    {% endfor %}
     <div id="setters">
         <input type="text" id="interest-rate">
         <input type="text" id="govt-spending">
