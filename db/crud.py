@@ -62,6 +62,9 @@ def create_game(
 def get_scenario_by_id(db: Session, scenario_id: int):
     return db.query(Scenario).filter(Scenario.id == scenario_id).first()
 
+def get_all_scenarios(db: Session):
+    return db.query(Scenario).all()
+
 def get_game_scenario_by_id(db: Session, game_id: int):
     query = db.query(Game).outerjoin(Scenario, Game.scenario_id == Scenario.id)
     query = query.filter(Game.id == game_id)
