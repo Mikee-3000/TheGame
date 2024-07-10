@@ -21,7 +21,7 @@ class ScenarioSchema(BaseModel):
 
 class GameCreateSchema(BaseModel):
     start_gt_timestamp: Annotated[Optional[int], 'The game time timestamp of the game']
-    ai_model: Annotated[str, 'The AI model of the game']
+    # ai_model: Annotated[str, 'The AI model of the game']
     scenario_id: Annotated[int, 'The ID of the scenario']
 
     class Config:

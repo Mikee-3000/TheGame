@@ -13,6 +13,7 @@ from lib import client
 from lib.message import talk
 from middleware.middleware import *
 from mistralai.models.chat_completion import ChatMessage
+import os
 from pydantic import BaseModel
 from schemas.schemas import *
 from sqlalchemy.orm import Session
@@ -86,7 +87,7 @@ def new_game(
         metrics_response, raw_llm_response = talk(
             user_message=user_message,
             system_message=system_message,
-            model=game.ai_model,
+            model=os.environ['MISTRAL_MODEL'],
             expected_metrics_amount=2
         )
         # add timestamp to the metrics based on the projection dates
@@ -99,7 +100,7 @@ def new_game(
         game_object = create_game(
             start_gt_timestamp=game.start_gt_timestamp,
             scenario_id=scenario.id,
-            ai_model=game.ai_model,
+            ai_model=os.environ['MISTRAL_MODEL'],
             db=db
         )
         game_data = {'game_id': game_object.id, 'rl_timestamp': game_object.start_rl_timestamp}
@@ -107,7 +108,7 @@ def new_game(
             'user_message': str(user_message),
             'system_message': str(system_message),
             'raw_llm_response': str(raw_llm_response),
-            'model': game.ai_model
+            'model': os.environ['MISTRAL_MODEL']
         }
         store_message_exchange(
             db=db,
@@ -152,7 +153,7 @@ def send_policy(policySettings: PolicySettingsSchema,
             metrics_response_list, raw_llm_response = talk(
                 user_message=user_message,
                 system_message=system_message,
-                model=game.ai_model
+                model=os.environ['MISTRAL_MODEL']
             )
             metrics_response = metrics_response_list[0]
         except Exception as e:
@@ -164,7 +165,7 @@ def send_policy(policySettings: PolicySettingsSchema,
             'user_message': str(user_message),
             'system_message': str(system_message),
             'raw_llm_response': str(raw_llm_response),
-            'model': game.ai_model
+            'model': os.environ['MISTRAL_MODEL']
         }
 
         # create a value for every day using linear interpolation
