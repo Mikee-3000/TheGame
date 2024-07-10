@@ -42,7 +42,7 @@ templates = Jinja2Templates(directory="templates")
 # real life datetime
 
 @app.post('/scenario/new', response_model=ScenarioSchema)
-async def new_scenario(scenario_schema: ScenarioSchema, db: Session = Depends(db_session)):
+def new_scenario(scenario_schema: ScenarioSchema, db: Session = Depends(db_session)):
     try:
         scenario = create_scenario(db, scenario_schema)
         return scenario
@@ -50,10 +50,24 @@ async def new_scenario(scenario_schema: ScenarioSchema, db: Session = Depends(db
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post('/scenario/new-from-json')
-async def new_scenario_from_json(db: Session = Depends(db_session)):
+def new_scenario_from_json(db: Session = Depends(db_session)):
     try:
         create_scenarios_from_json(db)
         return JSONResponse(content={'status': 'success'})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get('/{scenario_id}', response_class=HTMLResponse)
+def start_game(
+    request: Request,
+    response: Response,
+    scenario_id: int,
+    db: Session = Depends(db_session)
+):
+    try:
+        return templates.TemplateResponse(
+            request=request, name="main_screen.jinja2", context={"id": id, "scenarios_id": scenario_id}
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -118,7 +132,7 @@ def new_game(
 
 # @app.post('/set-policy', response_model=MetricsSchema)
 @app.post('/set-policy')
-async def send_policy(policySettings: PolicySettingsSchema,
+def send_policy(policySettings: PolicySettingsSchema,
                 metrics: dict[str, dict] = Depends(dated_metrics_dict),
                 db: Session = Depends(db_session),
                 game: Game = Depends(get_game_by_id)
@@ -178,14 +192,14 @@ async def send_policy(policySettings: PolicySettingsSchema,
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/", response_class=HTMLResponse)
-async def root(
+def root(
     request: Request,
     response: Response,
     db: Session = Depends(db_session)
 ):
     scenarios = get_all_scenarios(db)
     return templates.TemplateResponse(
-        request=request, name="index.html", context={"id": id, "scenarios": scenarios}
+        request=request, name="game_selection.jinja2", context={"id": id, "scenarios": scenarios}
     )
 
 
