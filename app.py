@@ -67,7 +67,7 @@ def start_game(
 ):
     try:
         return templates.TemplateResponse(
-            request=request, name="main_screen.jinja2", context={"id": id, "scenarios_id": scenario_id}
+            request=request, name="new_scene.jinja2", context={"id": id, "scenarios_id": scenario_id}
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
