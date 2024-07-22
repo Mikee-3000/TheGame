@@ -7,4 +7,3 @@ logs/*
 **/static/draco/*
 **/static/textures/*
 !**/static/textures/.gitkeep
-

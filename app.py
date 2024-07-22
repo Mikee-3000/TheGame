@@ -203,9 +203,8 @@ def root(
         request=request, name="game_selection.jinja2", context={"id": id, "scenarios": scenarios}
     )
 
-
-@app.get("/about", response_class=HTMLResponse)
-def about(
+@app.get("/about/", response_class=HTMLResponse)
+def root(
     request: Request,
     response: Response,
 ):
