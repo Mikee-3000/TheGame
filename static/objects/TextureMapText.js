@@ -10,6 +10,7 @@ export default class TextureMapText {
         // the canvas size must be a power of 2, the higher the resolution the better the text quality, but the more memory it will consume
         this.cnvs.width = options.canvasWidth || 4096
         this.cnvs.height = options.canvasHeight || 4096
+        this.cnvs.alpha = true
         this.fontSize = options.fontSize || 512
         this.fontFamily = options.fontFamily || 'Arial'
         this.fontWeight = options.fontWeight || 'bold'

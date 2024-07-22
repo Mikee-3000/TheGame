@@ -10,7 +10,7 @@
     <h1>TheGame</h1>
     <h2>Choose a game</h2>
     {% for game in scenarios %}
-        <a href="/{{game.id}}">{{game.name}}</a>: {{game.description}}
+        <a href="/game/{{game.id}}">{{game.name}}</a>: {{game.description}}
         <br>
     {% endfor %}
 </body>

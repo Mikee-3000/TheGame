@@ -58,7 +58,7 @@ def new_scenario_from_json(db: Session = Depends(db_session)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get('/{scenario_id}', response_class=HTMLResponse)
+@app.get('/game/{scenario_id}', response_class=HTMLResponse)
 def start_game(
     request: Request,
     response: Response,
@@ -203,6 +203,15 @@ def root(
         request=request, name="game_selection.jinja2", context={"id": id, "scenarios": scenarios}
     )
 
+
+@app.get("/about", response_class=HTMLResponse)
+def about(
+    request: Request,
+    response: Response,
+):
+    return templates.TemplateResponse(
+        request=request, name="about.jinja2", context={}
+    )
 
 if __name__ == "__main__":
     uvicorn.run(
