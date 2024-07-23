@@ -98,7 +98,7 @@ starrySky.wrapS = THREE.RepeatWrapping
 starrySky.wrapT = THREE.RepeatWrapping
 
 
-const fillerColour = 0x584848
+const fillerColour = 'black'
 const readoutPanelColour = 'black'
 const readoutPanelOpacity = 0.9
 
@@ -138,8 +138,8 @@ class FillerPanel {
             color: fillerColour,
             // depthWrite: false,
             // alphaTest: 0.5,
-            roughness: 0.1,
-            metalness: 1,
+            roughness: 0.5,
+            metalness: 0.5,
             // emissive: fillerColour,
             // emissiveIntensity: 10000
         })
@@ -210,36 +210,25 @@ class ReadoutPanel {
     }
 }
 
-// earth
-const earthTexture = textureLoader.load('/static/textures/earth.png', (texture) => {
-    const geometry = new THREE.SphereGeometry( 1.5, 32, 16 )
-    const material = new THREE.MeshBasicMaterial( { map: texture } )
-    const sphere = new THREE.Mesh( geometry, material )
-    sceneGroup.add( sphere )
-    texture.colorSpace = THREE.SRGBColorSpace
-    return texture
-})
-
 const floor = new THREE.PlaneGeometry(10000, 10000)
 const floorMaterial = new THREE.MeshStandardMaterial({
     // color: 0x2f1555,
     color: 0x1b0825,
     envMap:envMap,
     envMapIntensity: 1,
-    roughness: 0.1,
-    metalness: 1,
-    transparent: false,
-    opacity: 0.9
+    roughness: 0.5,
+    metalness: 0.3,
+    transparent: true,
+    opacity: 0.7
 })
 const floorMesh = new THREE.Mesh(floor, floorMaterial)
 floorMesh.rotation.x = -Math.PI / 2
 floorMesh.position.y = -0.0
 sceneGroup.add(floorMesh)
 
-const ceilingLight = new THREE.RectAreaLight(0x888888, 100, 1000, 1000);
-ceilingLight.position.set(0, 5, 0)
+const ceilingLight = new THREE.RectAreaLight(0x888888, 10, 1000, 1000);
+ceilingLight.position.set(0, 6, 0)
 ceilingLight.lookAt(0, 0, 0)
-// sceneGroup.add(ceilingLight)
 sceneGroup.add(ceilingLight)
 
 const backWall = new THREE.PlaneGeometry(100, 100)
@@ -249,28 +238,37 @@ const backWallMesh = new THREE.Mesh(backWall, backWallMaterial)
 backWallMesh.position.z = -2
 // sceneGroup.add(backWallMesh)
 
-const mainPanel = new ReadoutPanel('main', null, new Points(10, 5.4, 0.5), new Points(0, 2.7, -1.5), 0x2f1555)
-// const populationPanel = new ReadoutPanel('population', 'Population', new Points(3, 1, 0.5), new Points(6.6, 0.5, -1.5), 'blue')
-// const consumptionPanel = new ReadoutPanel('consumption', 'Consumption', new Points(2, 1, 0.5), new Points(6.1, 1.6, -1.5), 'yellow')
-// const investmentPanel = new ReadoutPanel('investment', 'Investment', new Points(2, 1, 0.5), new Points(6.1, 2.7, -1.5), 'black')
-// const netExportPanel = new ReadoutPanel('netExport', 'Net Export', new Points(2, 1, 0.5), new Points(6.1, 3.8, -1.5), 'gold')
-// const governmentIncomePanel = new ReadoutPanel('governmentIncome', 'Government Income', new Points(2, 1, 0.5), new Points(6.1, 4.9, -1.5))
-// const inflationPanel = new ReadoutPanel('inflation', 'Inflation', new Points(2, 1, 0.5), new Points(-6.1, 4.9, -1.5))
-// const unemploymentRatePanel = new ReadoutPanel('unemployment', 'Unemployment', new Points(2, 1, 0.5), new Points(-6.1, 3.8, -1.5))
-// const moneySupplyPanel = new ReadoutPanel('moneySupply', 'Money Supply', new Points(2, 1, 0.5), new Points(-6.1, 2.7, -1.5))
-// const governmentDebtPanel = new ReadoutPanel('governmentDebt', 'Government Debt', new Points(2, 1, 0.5), new Points(-6.1, 1.6, -1.5))
-// const aggregateDemandPanel = new ReadoutPanel('aggregateDemand', 'Aggregate Demand', new Points(2, 1, 0.5), new Points(-6.1, 0.5, -1.5))
-// const timePanel = new ReadoutPanel('time', null, new Points(14.2, 1, 0.5), new Points(0, 6, -1.5))
-const populationPanel = new MetricsDisplay('green', {x: 6.6, y: 0.5, z: -1.5}, 'Population', '3')
+// const mainPanel = new ReadoutPanel('main', null, new Points(10, 5.4, 0.5), new Points(0, 2.7, -1.5), 0x2f1555)
+const aggregateDemandPanel = new MetricsDisplay({color: 'green', position: new Points(6.6, 0.5, -1.55), topText: 'Aggregate Demand'})
+sceneGroup.add(aggregateDemandPanel)
+const populationPanel = new MetricsDisplay({color: 'red', position: new Points(6.6, 1.6, -1.55), topText: 'Population', bottomText: '3'})
 sceneGroup.add(populationPanel)
+const governmentDebtPanel = new MetricsDisplay({color: 'blue', position: new Points(6.6, 2.7, -1.55), topText: 'Government Debt', bottomText: '3'})
+sceneGroup.add(governmentDebtPanel)
+const moneySupplyPanel = new MetricsDisplay({color: 'yellow', position: new Points(6.6, 3.8, -1.55), topText: 'Money Supply', bottomText: '3'})
+sceneGroup.add(moneySupplyPanel)
+const unemploymentRatePanel = new MetricsDisplay({color: 'gold', position: new Points(6.6, 4.9, -1.55), topText: 'Unemployment Rate', bottomText: '3'})
+sceneGroup.add(unemploymentRatePanel)
+const inflationPanel = new MetricsDisplay({color: 'magenta', position: new Points(-6.6, 4.9, -1.55), topText: 'Inflation', bottomText: '3'})
+sceneGroup.add(inflationPanel)
+const governmentIncomePanel = new MetricsDisplay({color: 'cyan', position: new Points(-6.6, 3.8, -1.55), topText: 'Government Income', bottomText: '3'})
+sceneGroup.add(governmentIncomePanel)
+const netExportPanel = new MetricsDisplay({color: 'white', position: new Points(-6.6, 2.7, -1.55), topText: 'Net Export', bottomText: '3'})
+sceneGroup.add(netExportPanel)
+const investmentPanel = new MetricsDisplay({color: 'purple', position: new Points(-6.6, 1.6, -1.55), topText: 'Investment', bottomText: '3'})
+sceneGroup.add(investmentPanel)
+const consumptionPanel = new MetricsDisplay({color: 'orange', position: new Points(-6.6, 0.5, -1.55), topText: 'Consumption', bottomText: '3'})
+sceneGroup.add(consumptionPanel)
+
+// const timePanel = new ReadoutPanel('time', null, new Points(14.2, 1, 0.5), new Points(0, 6, -1.5))
 const fillerCentres = [1.05, 2.15, 3.25, 4.35]
 for (const f of fillerCentres) {
-    new FillerPanel(new Points(2, 0.1, 0.5), new Points(-6.1, f, -1.5))
-    new FillerPanel(new Points(2, 0.1, 0.5), new Points(6.1, f, -1.5))
+    new FillerPanel(new Points(3, 0.1, 0.6), new Points(-6.6, f, -1.5))
+    new FillerPanel(new Points(3, 0.1, 0.6), new Points(6.6, f, -1.5))
 }
-new FillerPanel(new Points(0.1, 5.4, 0.5), new Points(-5.05, 2.7, -1.5))
-new FillerPanel(new Points(0.1, 5.4, 0.5), new Points(5.05, 2.7, -1.5))
-new FillerPanel(new Points(14.2, 0.1, 0.5), new Points(0, 5.45, -1.5))
+new FillerPanel(new Points(0.1, 5.4, 0.6), new Points(-5.05, 2.7, -1.5))
+new FillerPanel(new Points(0.1, 5.4, 0.6), new Points(5.05, 2.7, -1.5))
+new FillerPanel(new Points(16.2, 0.1, 0.6), new Points(0, 5.45, -1.5))
 
 
 // const fillerPanel = boxObject(10, 0.1, 0.5, 0xf000ff, 1)
@@ -278,17 +276,18 @@ new FillerPanel(new Points(14.2, 0.1, 0.5), new Points(0, 5.45, -1.5))
 // sceneGroup.add(fillerPanel)
 
 // camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 20)
 // position the camera so that it's not in the same point as the cube
 camera.position.z = 10
 camera.position.y = 3
-camera.far = 50
+// camera.near = 4
+// camera.far = 5
 sceneGroup.add(camera)
 
 
 
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 10) // color, intensity
+const ambientLight = new THREE.AmbientLight(0xffffff, 100) // color, intensity
 const pointLight = new THREE.PointLight(0xffffff, 1000)
 pointLight.position.x = 2
 pointLight.position.y = 3
@@ -324,7 +323,9 @@ const tick = () => {
     // render
     controls.update();
     
-    populationPanel.bottomTextPlane.text.setText(counter.toString())
+    // populationPanel.bottomTextPlane.text.setText(counter.toString())
+    aggregateDemandPanel.updateText({bottomText: counter.toString()})
+    // aggregateDemandPanel.updateColor(counter)
     
     fixedText = new FixedText(new THREE.Vector3(0, 0, 0), counter, font)
     // if (fixedText != null && counter % 10 == 0) {
