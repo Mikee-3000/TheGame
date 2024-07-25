@@ -8,7 +8,7 @@ export default class GameDateDisplay extends MetricsDisplay {
                 topText: 'Date',
                 bottomText: '0000-00-00',
                 color: 'magenta',
-                position: {x: 0, y: 6.01, z: -1.5}
+                position: {x: 0, y: 5.90, z: -1.5}
             }
         )
     }

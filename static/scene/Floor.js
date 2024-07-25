@@ -15,6 +15,6 @@ export default class Floor extends THREE.Mesh {
         })
         super(floor, floorMaterial)
         this.rotation.x = -Math.PI / 2
-        this.position.y = -0.0
+        this.position.y = -0.1
     }
 }

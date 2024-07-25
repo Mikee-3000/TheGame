@@ -88,4 +88,8 @@ export default class MetricsDisplay extends THREE.Group {
         this.topTextPlane.setTextColor(color)
         this.bottomTextPlane.setTextColor(color)
     }
+    addTo(scene) {
+        scene.add(this)
+        return this
+    }
 }
