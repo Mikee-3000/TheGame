@@ -39,7 +39,7 @@ export default class MetricsDisplay extends THREE.Group {
         position,
         topText,
         bottomText,
-        topFontSize=300,
+        topFontSize=270,
         bottomFontSize=400
     }) {
         super()
