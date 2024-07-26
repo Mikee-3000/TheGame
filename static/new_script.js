@@ -4,6 +4,10 @@ import { RGBELoader } from './node_modules/three/examples/jsm/loaders/RGBELoader
 const canvas = document.querySelector('canvas.webgl')
 import { RectAreaLightUniformsLib } from './node_modules/three/examples/jsm/lights/RectAreaLightUniformsLib.js'
 import MetricsDisplay from './scene/MetricsDisplay.js'
+import getMouse from './scene/Mouse.js'
+import ButtonText from './scene/ButtonText.js'
+import PolicySettingsDisplay from './scene/PolicySettingsDisplay.js'
+import PolicySettingsButton from './scene/PolicySettingsButton.js'
 import GameDateDisplay from './scene/GameDateDisplay.js'
 import Floor from './scene/Floor.js'
 import FillerPanel  from './scene/FillerPanel.js'
@@ -20,7 +24,7 @@ class Points {
 }
 
 // renderer
-const sizes = {
+window.sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
@@ -29,7 +33,7 @@ const renderer = new THREE.WebGLRenderer({
     antialias: true
 })
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-renderer.setSize(sizes.width, sizes.height)
+renderer.setSize(window.sizes.width, window.sizes.height)
 
 // scene
 const scene = new THREE.Scene()
@@ -104,12 +108,36 @@ const policyConsole = new PolicyConsole({x: metricsDisplayGroupBoxSize.x, y: 1, 
 await policyConsole.load()
 // put the set of displays on top of the policy console
 metricsDisplayGroup.position.set(0, 0.85, -1.209)
+const policySettingsDisplayColor = 'black'
+const interestRatePanel = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(6, 0.9, -1), topText: 'Interest Rate'}).addTo(sceneGroup)
+const governmentSpendingPanel = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(3, 0.9, -1), topText: 'Government Spending'}).addTo(sceneGroup)
+const openMarketOperations = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(0, 0.9, -1), topText: 'Open Market Operations'}).addTo(sceneGroup)
+const individualIncomeTaxRate = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(-3, 0.9, -1), topText: 'Individual Income Tax Rate'}).addTo(sceneGroup)
+const corporateIncomeTaxRate = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(-6, 0.9, -1), topText: 'Corporate Income Tax Rate'}).addTo(sceneGroup)
+
+const policySettingsButton = new PolicySettingsButton({
+    color: 'red',
+    position: new Points(0, 0.9, 2),
+    radius: '1',
+    height: '0.1',
+
+}).addTo(sceneGroup)
+
+const buttonText = new ButtonText(sceneGroup)
+buttonText.position.set(0, 1, 1)
+
 
 // camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 30)
+const camera = new THREE.PerspectiveCamera(75, window.sizes.width / window.sizes.height, 0.1, 30)
 camera.position.z = 7
 camera.position.y = 3
 sceneGroup.add(camera)
+
+// mouse
+const mouse = getMouse()
+window.addEventListener('click', (event) => {
+    mouse.click(camera)
+})
 
 // controls
 const controls = new OrbitControls(camera, canvas)
@@ -127,23 +155,28 @@ controls.invertY = true;
 renderer.render(scene, camera)
 
 window.addEventListener('resize' , () => {
-    // update sizes
-    sizes.width = window.innerWidth
-    sizes.height = window.innerHeight
+    // update window.sizes
+    window.sizes.width = window.innerWidth
+    window.sizes.height = window.innerHeight
     // update camera
-    camera.aspect = sizes.width / sizes.height
+    camera.aspect = window.sizes.width / window.sizes.height
     camera.updateProjectionMatrix()
     // update renderer
-    renderer.setSize(sizes.width, sizes.height)
+    renderer.setSize(window.sizes.width, window.sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 let counter = 0
+
 const tick = () => {
     // render
     controls.update();
     if (aggregateDemandPanel) {
         aggregateDemandPanel.updateText({bottomText: counter.toString()})
     }
+
+    // if (camera !== undefined) {
+    // mouse.update(camera)
+    // }
 
     // rotate the background to give the illusion of a galaxy moving around the player
     if (scene.background) {
