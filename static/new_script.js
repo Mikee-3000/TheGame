@@ -52,16 +52,11 @@ const rgbeLoader = new RGBELoader();
 let envMap = null
 // load the map from the hdr image
 rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
-    // Pre-filter the HDR image
-    texture.rotation = 45
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    pmremGenerator.compileEquirectangularShader();
-    envMap = pmremGenerator.fromEquirectangular(texture).texture;
-    // Set the environment map of the scene
-    scene.environment = envMap;
+    texture.mapping = THREE.EquirectangularReflectionMapping
+    envMap = texture
     scene.background = envMap
     scene.background.rotation = 45
-});
+})
 
 // objects
 const loadingManager = new THREE.LoadingManager();
@@ -73,8 +68,8 @@ sceneGroup.add(floor)
 
 // metrics displays
 const metricsDisplayGroup = new THREE.Group()
-const aggregateDemandPanel = new MetricsDisplay({color: 'green', position: new Points(6.6, 0.7, -1.55), topText: 'Aggregate Demand'}).addTo(metricsDisplayGroup)
-const populationPanel = new MetricsDisplay({color: 'red', position: new Points(6.6, 1.7, -1.55), topText: 'Population', bottomText: '3'}).addTo(metricsDisplayGroup)
+const aggregateDemandPanel = new MetricsDisplay({color: 'green', position: new Points(6.6, 0.5, -1.55), topText: 'Aggregate Demand'}).addTo(metricsDisplayGroup)
+const populationPanel = new MetricsDisplay({color: 'red', position: new Points(6.6, 1.6, -1.55), topText: 'Population', bottomText: '3'}).addTo(metricsDisplayGroup)
 const governmentDebtPanel = new MetricsDisplay({color: 'blue', position: new Points(6.6, 2.7, -1.55), topText: 'Government Debt', bottomText: '3'}).addTo(metricsDisplayGroup)
 const moneySupplyPanel = new MetricsDisplay({color: 'yellow', position: new Points(6.6, 3.8, -1.55), topText: 'Money Supply', bottomText: '3'}).addTo(metricsDisplayGroup)
 const unemploymentRatePanel = new MetricsDisplay({color: 'gold', position: new Points(6.6, 4.9, -1.55), topText: 'Unemployment Rate', bottomText: '3'}).addTo(metricsDisplayGroup)
@@ -86,7 +81,8 @@ const consumptionPanel = new MetricsDisplay({color: 'orange', position: new Poin
 const datePanel = new GameDateDisplay().addTo(metricsDisplayGroup)
 
 // fillers
-const fillerCentres = [0.05, 1.05, 2.15, 3.25, 4.35]
+// const fillerCentres = [0.05, 1.05, 2.15, 3.25, 4.35]
+const fillerCentres = [1.05, 2.15, 3.25, 4.35]
 for (const f of fillerCentres) {
     new FillerPanel(new Points(3, 0.1, 0.6), new Points(-6.6, f, -1.5)).addTo(metricsDisplayGroup)
     new FillerPanel(new Points(3, 0.1, 0.6), new Points(6.6, f, -1.5)).addTo(metricsDisplayGroup)
@@ -100,12 +96,14 @@ new FillerPanel(new Points(6.7, 0.1, 0.6), new Points(4.85, 5.45, -1.5)).addTo(m
 new FillerPanel(new Points(6.7, 0.1, 0.6), new Points(-4.85, 5.45, -1.5)).addTo(metricsDisplayGroup)
 
 sceneGroup.add(metricsDisplayGroup)
-metricsDisplayGroup.position.set(0, 0.9, -1.1)
 // policy console
 // the dimensions are wanted dimensions, the constructor will scale the dimensions of the model
 const metricsDisplayGroupBoxSize = new THREE.Box3().setFromObject(metricsDisplayGroup).getSize(new THREE.Vector3())
-console.log(metricsDisplayGroupBoxSize)
 const policyConsole = new PolicyConsole({x: metricsDisplayGroupBoxSize.x, y: 1, z: 5}, {x:0, y:0.5, z:2}, sceneGroup)
+// the gltfLoader loads the model asynchronously
+await policyConsole.load()
+// put the set of displays on top of the policy console
+metricsDisplayGroup.position.set(0, 0.85, -1.209)
 
 // camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 30)
@@ -117,8 +115,8 @@ sceneGroup.add(camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 // prevent the controls from looking at the bottom of the floor
-controls.minPolarAngle = 1.1
-controls.maxPolarAngle = 1.5
+// controls.minPolarAngle = 1.1
+// controls.maxPolarAngle = 1.5
 // default position of the view
 controls.target.set(0, 2, 0)
 // prevent the scene from moving infinitely after the user stopped moving it
