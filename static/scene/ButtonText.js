@@ -32,7 +32,6 @@ export default class ButtonText extends THREE.Mesh {
             const boundingBox = new THREE.Box3().setFromObject(this)
             const size = new THREE.Vector3();
             boundingBox.getSize(size);
-            console.log(size)
             scene.add(this)
             this.position.set(-size.x/2, 0.15, size.z/2 + 1.98)
         })

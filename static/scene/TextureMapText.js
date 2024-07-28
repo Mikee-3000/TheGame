@@ -26,7 +26,6 @@ export default class TextureMapText {
         this.ctx.clearRect(0, 0, this.cnvs.width, this.cnvs.height)
         // Set the canvas background color 
         this.ctx.fillStyle = this.backgroundColor
-        // console.log(this.backgroundColor)
         this.ctx.fillRect(0, 0, this.cnvs.width, this.cnvs.height)
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'

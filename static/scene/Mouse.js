@@ -17,7 +17,6 @@ class Mouse {
         this.clickableObjects.push(object)
     }
     click(camera) {
-        console.log('click')
         this.raycaster.setFromCamera(this.position, camera)
         const intersects = this.raycaster.intersectObjects(this.clickableObjects)
         if (intersects.length) {

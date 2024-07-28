@@ -9,6 +9,7 @@ import ButtonText from './scene/ButtonText.js'
 import PolicySettingsDisplay from './scene/PolicySettingsDisplay.js'
 import PolicySettingsButton from './scene/PolicySettingsButton.js'
 import PolicySettingsButtonPlinth from './scene/PolicySettingsButtonPlinth.js'
+import ChartDisplay from './scene/ChartDisplay.js'
 import GameDateDisplay from './scene/GameDateDisplay.js'
 import Floor from './scene/Floor.js'
 import FillerPanel  from './scene/FillerPanel.js'
@@ -56,12 +57,12 @@ sceneGroup.add(ceilingLight)
 const rgbeLoader = new RGBELoader();
 let envMap = null
 // load the map from the hdr image
-rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
-    texture.mapping = THREE.EquirectangularReflectionMapping
-    envMap = texture
-    scene.background = envMap
-    scene.background.rotation = 45
-})
+// rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
+//     texture.mapping = THREE.EquirectangularReflectionMapping
+//     envMap = texture
+//     scene.background = envMap
+//     scene.background.rotation = 45
+// })
 
 // objects
 const loadingManager = new THREE.LoadingManager();
@@ -108,7 +109,7 @@ const policyConsole = new PolicyConsole({x: metricsDisplayGroupBoxSize.x, y: 1, 
 // the gltfLoader loads the model asynchronously
 await policyConsole.load()
 // put the set of displays on top of the policy console
-metricsDisplayGroup.position.set(0, 0.85, -1.209)
+metricsDisplayGroup.position.set(0, 0.89, -1.209)
 const policySettingsDisplayColor = 'black'
 const interestRatePanel = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(6, 0.9, -1), topText: 'Interest Rate'}).addTo(sceneGroup)
 const governmentSpendingPanel = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(3, 0.9, -1), topText: 'Government Spending'}).addTo(sceneGroup)
@@ -119,9 +120,43 @@ const corporateIncomeTaxRate = new PolicySettingsDisplay({color: policySettingsD
 const policySettingsButton = new PolicySettingsButton().addTo(sceneGroup)
 const policySettingsButtonPlinth = new PolicySettingsButtonPlinth()
 policySettingsButtonPlinth.addTo(sceneGroup)
-console.log(sceneGroup.position)
 const buttonText = new ButtonText(sceneGroup)
 
+// chart display
+const fakeDates = [
+{date: '2024-07-28', metric: 'Investment', value: 0},
+{date: '2024-07-28', metric: 'Investment', value: 2},  
+{date: '2024-07-28', metric: 'Investment', value: 31},  
+{date: '2024-07-28', metric: 'Investment', value: 13},  
+{date: '2024-07-28', metric: 'Investment', value: 33},  
+{date: '2024-07-28', metric: 'Investment', value: 8},  
+{date: '2024-07-28', metric: 'Investment', value: 0.5},  
+{date: '2024-07-28', metric: 'Investment', value: 0},  
+{date: '2024-07-28', metric: 'Investment', value: -10},  
+{date: '2024-07-28', metric: 'Investment', value: 3},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'},  
+// {date: '2024-07-28'}  
+]
+const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
+// chartDisplay.position.set(0, 0, -1.209)
 
 // camera
 const camera = new THREE.PerspectiveCamera(75, window.sizes.width / window.sizes.height, 0.1, 30)
