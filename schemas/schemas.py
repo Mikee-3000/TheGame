@@ -14,6 +14,7 @@ class ScenarioSchema(BaseModel):
     game_type: Annotated[GameType, 'The game type of the scenario, e.g. Keynes, Marx, Smith']
     system_prompt: Annotated[str, 'The system prompt of the scenario']
     initial_system_prompt: Annotated[str, 'The initial system prompt of the scenario']
+    imageURL: Annotated[str, 'The URL of the image of the scenario']
 
     # enable default values in class attributes
     class Config:

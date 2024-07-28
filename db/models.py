@@ -24,6 +24,7 @@ class Scenario(Base):
     game_type: Mapped[GameType]
     system_prompt: Mapped[str] = mapped_column(Text)
     initial_system_prompt: Mapped[str] = mapped_column(Text)
+    image_url: Mapped[str255]
 
     # one scenario has many games
     games: Mapped[list['Game']] = relationship('Game', back_populates='scenario')

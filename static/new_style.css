@@ -5,6 +5,7 @@
 html, body {
     /* prevent scrolling */
     overflow: hidden;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 .webgl {
     /* remove scrollbars */
@@ -12,4 +13,60 @@ html, body {
     top: 0;
     left: 0;
     outline: none;
+}
+
+.top {
+    text-align: center;
+}
+
+.game-cards {
+    display: flex;
+    justify-content: center;
+}
+
+.picture {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.game-card {
+    max-width: 25%;
+    padding: 5px;
+    text-align: center;
+}
+
+.playbutton {
+    max-width: 100%;
+}
+
+
+@media (max-width: 600px) {
+  .game-cards {
+    flex-direction: column;
+  }
+  .game-card {
+    max-width: 100%;
+    text-align: center;
+  }
+}
+
+.economist {
+    max-width: 100%;
+}
+
+h1, h2, h3, a, p, span {
+    color: aqua;
+}
+h1 {
+    font-size: 75;
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0%;
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.7);
 }

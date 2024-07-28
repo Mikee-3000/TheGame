@@ -8,6 +8,7 @@ import getMouse from './scene/Mouse.js'
 import ButtonText from './scene/ButtonText.js'
 import PolicySettingsDisplay from './scene/PolicySettingsDisplay.js'
 import PolicySettingsButton from './scene/PolicySettingsButton.js'
+import PolicySettingsButtonPlinth from './scene/PolicySettingsButtonPlinth.js'
 import GameDateDisplay from './scene/GameDateDisplay.js'
 import Floor from './scene/Floor.js'
 import FillerPanel  from './scene/FillerPanel.js'
@@ -115,16 +116,11 @@ const openMarketOperations = new PolicySettingsDisplay({color: policySettingsDis
 const individualIncomeTaxRate = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(-3, 0.9, -1), topText: 'Individual Income Tax Rate'}).addTo(sceneGroup)
 const corporateIncomeTaxRate = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(-6, 0.9, -1), topText: 'Corporate Income Tax Rate'}).addTo(sceneGroup)
 
-const policySettingsButton = new PolicySettingsButton({
-    color: 'red',
-    position: new Points(0, 0.9, 2),
-    radius: '1',
-    height: '0.1',
-
-}).addTo(sceneGroup)
-
+const policySettingsButton = new PolicySettingsButton().addTo(sceneGroup)
+const policySettingsButtonPlinth = new PolicySettingsButtonPlinth()
+policySettingsButtonPlinth.addTo(sceneGroup)
+console.log(sceneGroup.position)
 const buttonText = new ButtonText(sceneGroup)
-buttonText.position.set(0, 1, 1)
 
 
 // camera

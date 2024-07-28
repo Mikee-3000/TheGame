@@ -2,8 +2,12 @@ import * as THREE from 'three'
 import getMouse from './Mouse.js'
 
 export default class PolicySettingsButton extends THREE.Mesh {
-    constructor({color, position, radius, height}) {
-        const geometry = new THREE.CylinderGeometry(radius, radius, height, 32)
+    constructor() {
+        const color = 'red'
+        const position = {x: 0, y: .5, z: 1}
+        const radius = '0.5'
+        const height = '0.1'
+        const geometry = new THREE.CylinderGeometry(radius, radius, height, 512)
         const material = new THREE.MeshBasicMaterial({ color: color })
         super(geometry, material)
         this.name = 'policySettingsButton'

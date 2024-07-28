@@ -4,14 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TheGame</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/new_style.css">
+<!-- the stylesheet prevents scrolling for the purpose of the game, overwrite for this page -->
+<style>
+html, body
+{
+    overflow: visible;
+    background-color: #000000;
+}
+</style>
 </head>
 <body>
-    <h1>TheGame</h1>
-    <h2>Choose a game</h2>
+    <div class="top">
+        <h1>Choose a game</h1>
+    </div>
+    <div class="game-cards">
     {% for game in scenarios %}
-        <a href="/game/{{game.id}}">{{game.name}}</a>: {{game.description}}
-        <br>
+        <div class="game-card">
+            <div class="picture">
+                <h2>{{game.name}}</h2>
+                <img class="economist" src="{{game.image_url}}" alt="{{game.name}}">
+                <span class="overlay">{{game.description}}</span>
+            </div>
+            <div> 
+                <a  href="/game/{{game.id}}">
+                    <img class="playbutton" id="playbutton-{{game.id}}" src="/static/textures/playbutton.png" alt="play">
+                </a>
+            </div>
+        </div>
     {% endfor %}
+    </div>
+    <script>
+        <!-- change the button image on hover -->
+        {% for game in scenarios %}
+        const linkImage{{game.id}} = document.getElementById('playbutton-{{game.id}}');
+        linkImage{{game.id}}.addEventListener('mouseenter', function() {
+            linkImage{{game.id}}.src = '/static/textures/playbutton_hover.png';
+        });
+        linkImage{{game.id}}.addEventListener('mouseleave', function() {
+            linkImage{{game.id}}.src = '/static/textures/playbutton.png';
+        });
+        {% endfor %}
+    </script>
 </body>
 </html>

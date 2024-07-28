@@ -7,7 +7,7 @@ export default class GameData {
         if (instance) return instance
         instance = this
         // add start values
-        // TODO: create a configuration file for these values
+        this.metrics  = []
         this.interestRate = 0.05
         this.govtSpending = 1000
         this.taxRate = 0.2

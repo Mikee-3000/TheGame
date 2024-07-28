@@ -10,27 +10,31 @@ export default class ButtonText extends THREE.Mesh {
         // Load the font
         const fontLoader = new FontLoader()
         const fontUrl = '/static/textures/fonts/gentilis/gentilis_bold.typeface.json'
-        const text = 'Set Policy'
+        const text='SET POLICY'
         fontLoader.load(fontUrl, (font) => {
             // Add text to the button
             const textGeometry = new TextGeometry(text, {
                 font: font,
-                size: 0.2,
+                size: 0.18,
                 depth: 0.01,
                 curveSegments: 12,
-                bevelEnabled: true,
+                bevelEnabled: false,
                 bevelThickness: 0.02,
                 bevelSize: 0.02,
                 bevelOffset: 0,
                 bevelSegments: 5
             })
-            const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
+            const textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 
             // Update the geometry and material of the mesh
             this.geometry = textGeometry
             this.material = textMaterial
-
+            const boundingBox = new THREE.Box3().setFromObject(this)
+            const size = new THREE.Vector3();
+            boundingBox.getSize(size);
+            console.log(size)
             scene.add(this)
+            this.position.set(-size.x/2, 0.15, size.z/2 + 1.98)
         })
     }
 }
