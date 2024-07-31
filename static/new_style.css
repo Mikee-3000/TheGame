@@ -70,3 +70,62 @@ h1 {
     height: auto;
     background-color: rgba(0, 0, 0, 0.7);
 }
+
+.setters {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    display: none;
+}
+
+form {
+    color: #00ff00;
+    background-color: #000000b3;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* max-width: 400px; */
+    margin: 0 auto;
+}
+.form-row { 
+    display: flex;
+    align-items: center;
+    justify-items: spaced-between;
+}
+label {
+    /* display: block; */
+    flex: 1;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+input {
+    flex: 1;
+    width: l00px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #000000;
+    background-color: #00ff00;
+    margin-bottom: 20px;
+    appearance: none;
+    -webkit-appearance: none;
+    /* remove number arrows from Firefox */
+    -moz-appearance: textfield; 
+}
+/* remove ugly styling from Safari and other WebKit browsers */
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+button[type="submit"] {
+    background-color: #00ff00;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button[type="submit"]:hover {
+    background-color: #45a049;
+}

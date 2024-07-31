@@ -10,6 +10,7 @@ import PolicySettingsDisplay from './scene/PolicySettingsDisplay.js'
 import PolicySettingsButton from './scene/PolicySettingsButton.js'
 import PolicySettingsButtonPlinth from './scene/PolicySettingsButtonPlinth.js'
 import ChartDisplay from './scene/ChartDisplay.js'
+import GameState from './lib/GameState.js'
 import GameDateDisplay from './scene/GameDateDisplay.js'
 import Floor from './scene/Floor.js'
 import FillerPanel  from './scene/FillerPanel.js'
@@ -24,6 +25,9 @@ class Points {
         this.z = z
     }
 }
+
+// Game Data
+const gameState = new GameState()
 
 // renderer
 window.sizes = {
@@ -121,6 +125,9 @@ const policySettingsButton = new PolicySettingsButton().addTo(sceneGroup)
 const policySettingsButtonPlinth = new PolicySettingsButtonPlinth()
 policySettingsButtonPlinth.addTo(sceneGroup)
 const buttonText = new ButtonText(sceneGroup)
+// this is going to be used to anchor the setters form
+// needs to be __cloned__ , otherwise the original will be changed
+const originalButtonPosition = policySettingsButton.position.clone()
 
 // chart display
 const fakeDates = [
@@ -216,6 +223,17 @@ const tick = () => {
         // stop the scene from rotating around the camera
         camera.lookAt(0, 2, 0)
     }
+
+    // the setters form needs to move with the button
+    let settersPosition = originalButtonPosition.clone()
+    settersPosition.x 
+    settersPosition.y += 2
+    settersPosition.project(camera)
+    let settersPositionX = settersPosition.x * window.sizes.width / 2 
+    settersPositionX -= gameState.setters.offsetWidth / 2
+    let settersPositionY = settersPosition.y * window.sizes.width / 2 
+    settersPositionY += gameState.setters.offsetHeight / 2
+    gameState.setters.style.transform = `translate(${settersPositionX}px, ${-settersPositionY}px)`
 
     counter += 1
     // call tick again on the next frame
