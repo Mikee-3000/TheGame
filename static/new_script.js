@@ -3,6 +3,7 @@ import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitC
 import { RGBELoader } from './node_modules/three/examples/jsm/loaders/RGBELoader.js'
 const canvas = document.querySelector('canvas.webgl')
 import { RectAreaLightUniformsLib } from './node_modules/three/examples/jsm/lights/RectAreaLightUniformsLib.js'
+import { gsap } from './node_modules/gsap/all.js'
 import MetricsDisplay from './scene/MetricsDisplay.js'
 import getMouse from './scene/Mouse.js'
 import ButtonText from './scene/ButtonText.js'
@@ -46,6 +47,16 @@ const scene = new THREE.Scene()
 const sceneGroup = new THREE.Group()
 scene.add(sceneGroup)
 
+// camera
+const camera = new THREE.PerspectiveCamera(75, window.sizes.width / window.sizes.height, 0.1, 30)
+camera.position.z = 7
+camera.position.y = 3
+sceneGroup.add(camera)
+
+// hide the scene until it's loaded
+const loadingOverlay = document.querySelector('.loading-overlay')
+const loadingBar = document.querySelector('.loading-bar')
+
 // Create a rectangular area light
 RectAreaLightUniformsLib.init()
 const rectLight = new THREE.RectAreaLight('white', 1, 1400.2, 160.5);
@@ -56,22 +67,40 @@ sceneGroup.add(ceilingLight)
 // const helper = new RectAreaLightHelper(ceilingLight);
 // sceneGroup.add(helper);
 
+// loading overlay with progress bar
+window.loadingManager = new THREE.LoadingManager(
+    ( ) => {
+        gsap.delayedCall(0.5, () => {
+            gsap.to(
+                loadingOverlay,
+                { duration: 3, opacity: 0, delay: 1
+                    , onComplete: () => {
+                        loadingOverlay.classList.add('ended')
+                    }
+                }
+            )
+            loadingBar.classList.add('ended')
+            loadingBar.style.transform = ''
+        })
+    },
+    ( url, itemsLoaded, itemsTotal ) => {
+        loadingBar.style.transform = `scaleX(${itemsLoaded / itemsTotal})`
+    }
+)
+
 // Load the environment map
 // Create an RGBE loader
-const rgbeLoader = new RGBELoader();
+const rgbeLoader = new RGBELoader(window.loadingManager);
 let envMap = null
 // load the map from the hdr image
-// rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
-//     texture.mapping = THREE.EquirectangularReflectionMapping
-//     envMap = texture
-//     scene.background = envMap
-//     scene.background.rotation = 45
-// })
+rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
+    texture.mapping = THREE.EquirectangularReflectionMapping
+    envMap = texture
+    scene.background = envMap
+    scene.background.rotation = 45
+})
 
 // objects
-const loadingManager = new THREE.LoadingManager();
-
-
 // floor
 const floor = new Floor(envMap)
 sceneGroup.add(floor)
@@ -165,11 +194,6 @@ const fakeDates = [
 const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
 // chartDisplay.position.set(0, 0, -1.209)
 
-// camera
-const camera = new THREE.PerspectiveCamera(75, window.sizes.width / window.sizes.height, 0.1, 30)
-camera.position.z = 7
-camera.position.y = 3
-sceneGroup.add(camera)
 
 // mouse
 const mouse = getMouse()

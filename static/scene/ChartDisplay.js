@@ -19,7 +19,7 @@ export default class ChartDisplay {
                 metalness: 0.5,
                 roughness: 0.5,
             }))
-        helperBar.position.set(0, 0.3, -0.26)
+        helperBar.position.set(0, 0.3, -0.2555555)
         chartGroup.add(helperBar)
 
         // y axis - the values, normalized from 0 to 5

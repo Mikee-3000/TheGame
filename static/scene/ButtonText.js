@@ -3,12 +3,12 @@ import { TextGeometry } from '../node_modules/three/examples/jsm/geometries/Text
 import { FontLoader } from '../node_modules/three/examples/jsm/loaders/FontLoader.js' 
 
 export default class ButtonText extends THREE.Mesh {
-    constructor(scene) {
+    constructor(scene, loadingManager) {
         // Call the super constructor with dummy arguments
         super(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial())
 
         // Load the font
-        const fontLoader = new FontLoader()
+        const fontLoader = new FontLoader(window.loadingManager)
         const fontUrl = '/static/textures/fonts/gentilis/gentilis_bold.typeface.json'
         const text='SET POLICY'
         fontLoader.load(fontUrl, (font) => {
