@@ -57,6 +57,9 @@ sceneGroup.add(camera)
 const loadingOverlay = document.querySelector('.loading-overlay')
 const loadingBar = document.querySelector('.loading-bar')
 
+// end of game overlay
+const endOverlay = document.querySelector('.end-overlay')
+
 // Create a rectangular area light
 RectAreaLightUniformsLib.init()
 const rectLight = new THREE.RectAreaLight('white', 1, 1400.2, 160.5);
@@ -93,12 +96,12 @@ window.loadingManager = new THREE.LoadingManager(
 const rgbeLoader = new RGBELoader(window.loadingManager);
 let envMap = null
 // load the map from the hdr image
-rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
-    texture.mapping = THREE.EquirectangularReflectionMapping
-    envMap = texture
-    scene.background = envMap
-    scene.background.rotation = 45
-})
+// rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
+//     texture.mapping = THREE.EquirectangularReflectionMapping
+//     envMap = texture
+//     scene.background = envMap
+//     scene.background.rotation = 45
+// })
 
 // objects
 // floor
@@ -230,6 +233,17 @@ window.addEventListener('resize' , () => {
 let counter = 0
 
 const tick = () => {
+    if (counter === 200) {
+        let resultDiv = null
+        console.log(gameState)
+        if (gameState.result == 'win') {
+            resultDiv = document.getElementById('win')
+        } else {
+            resultDiv = document.getElementById('lose')
+        }
+        resultDiv.style.opacity = 1
+        gsap.to(endOverlay, { width: '100%', height: '100%', opacity: 1, duration: 1 });
+    }
     // render
     controls.update();
     if (aggregateDemandPanel) {

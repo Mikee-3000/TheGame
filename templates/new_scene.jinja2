@@ -23,6 +23,19 @@
     </div>
     <div class="loading-overlay"></div>
     <div class="loading-bar"></div>
+    <div class="end-overlay">
+        <div class="win" id="win">
+            <h1>You Win!</h1>
+            <img src="{{ scenario.win_image_url }}">
+            <p>Congratulations!</p>
+            <a href="/">Play Again</a>
+        </div>
+        <div class="lose" id="lose">
+            <h1>You Lose!</h1>
+            <img src="{{ scenario.lose_image_url }}">
+            <p>Game over.</p>
+            <a href="/">Play Again</a>
+        </div>
     <script type="module" src="/static/new_script.js"></script>
 </body>
 </html>

@@ -23,6 +23,7 @@ export default class GameState {
         this.unemploymentRate = 0
         this.populationGrowth = 0
         this.setters = document.querySelector('.setters')
+        this.result = 'win'
     }
     getRequestData() {
         // sends only the data that the AI expects
