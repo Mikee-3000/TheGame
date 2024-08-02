@@ -2,12 +2,12 @@
 
 let instance = null
 
-export default class GameData {
+export default class GameState {
     constructor() {
         if (instance) return instance
         instance = this
         // add start values
-        // TODO: create a configuration file for these values
+        this.metrics  = []
         this.interestRate = 0.05
         this.govtSpending = 1000
         this.taxRate = 0.2
@@ -22,6 +22,8 @@ export default class GameData {
         this.governmentDebt = 0
         this.unemploymentRate = 0
         this.populationGrowth = 0
+        this.setters = document.querySelector('.setters')
+        this.result = 'win'
     }
     getRequestData() {
         // sends only the data that the AI expects
@@ -33,5 +35,14 @@ export default class GameData {
             foodImport: this.foodImport,
             population: this.population
         }
+    }
+    toggleSetters() {
+        // toggles the setters on and off
+        if (this.setters.style.display === 'none' || this.setters.style.display === '') {
+            this.setters.style.display = 'block'
+        } else {
+            this.setters.style.display = 'none'
+        }
+        
     }
 }

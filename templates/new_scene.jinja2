@@ -1,0 +1,55 @@
+{% include 'top_html.jinja2'%} 
+    <script type="importmap">
+        {
+            "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@latest/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@latest/examples/jsm/"
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.umd.min.js "></script>
+    <link href="https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.min.css " rel="stylesheet">
+</head>
+<body>
+    <canvas class="webgl" id="webgl-canvas"></canvas>
+    <div class="setters">
+    {% include 'setters.jinja2'%} 
+    </div>
+    <div class="loading-overlay"></div>
+    <div class="loading-bar"></div>
+    <div class="end-overlay">
+        <div class="game-result win" id="win">
+            <h1>You Win!</h1>
+            <div class="result-image">
+               <img src="{{ scenario.win_image_url }}" alt="Win Image">
+            </div>
+            <a href="/">
+                <img class="playbutton" id="playagainbuttonwin" src="/static/textures/playagainbutton.png" alt="play again">
+            </a>
+        </div>
+        <div class="game-result lose" id="lose">
+            <h1>You Lose!</h1>
+            <div class="result-image">
+                <img src="{{ scenario.lose_image_url }}" alt="Lose Image">
+            </div>
+            <a href="/">
+                <img class="playbutton" id="playagainbuttonlose" src="/static/textures/playagainbutton.png" alt="play again">
+            </a>
+        </div>
+    </div>
+    <script type="module" src="/static/new_script.js"></script>
+    <script>
+        <!-- change the button image on hover -->
+        const buttons = ['playagainbuttonwin', 'playagainbuttonlose']
+        for (const button of buttons) {
+            const linkImage = document.getElementById(button);
+            linkImage.addEventListener('mouseenter', function() {
+                linkImage.src = '/static/textures/playagainbutton_hover.png'
+            })
+            linkImage.addEventListener('mouseleave', function() {
+                linkImage.src = '/static/textures/playagainbutton.png'
+            })
+        }
+    </script>
+</body>
+</html>

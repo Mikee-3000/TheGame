@@ -2,6 +2,7 @@ from datetime import datetime as dt
 from dotenv import load_dotenv
 load_dotenv('.env')
 from db.crud import *
+from db.crud import get_scenario_by_id as get_scenario_by_id_crud
 from db.database import Base, engine
 from db.models import Game
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -58,7 +59,7 @@ def new_scenario_from_json(db: Session = Depends(db_session)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get('/{scenario_id}', response_class=HTMLResponse)
+@app.get('/game/{scenario_id}', response_class=HTMLResponse)
 def start_game(
     request: Request,
     response: Response,
@@ -66,8 +67,9 @@ def start_game(
     db: Session = Depends(db_session)
 ):
     try:
+        scenario = get_scenario_by_id_crud(db, scenario_id)
         return templates.TemplateResponse(
-            request=request, name="main_screen.jinja2", context={"id": id, "scenarios_id": scenario_id}
+            request=request, name="new_scene.jinja2", context={"id": id, "scenario": scenario}
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -203,6 +205,14 @@ def root(
         request=request, name="game_selection.jinja2", context={"id": id, "scenarios": scenarios}
     )
 
+@app.get("/info/", response_class=HTMLResponse)
+def root(
+    request: Request,
+    response: Response,
+):
+    return templates.TemplateResponse(
+        request=request, name="info.jinja2", context={}
+    )
 
 if __name__ == "__main__":
     uvicorn.run(

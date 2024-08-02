@@ -29,11 +29,6 @@ def create_scenarios_from_json(
         with open(scenario) as f:
             scenario_data = json.load(f)
             db_scenario = Scenario(
-                # name=scenario_data['name'],
-                # description=scenario_data['description'],
-                # game_type=scenario_data['game_type'],
-                # system_prompt=scenario_data['system_prompt'],
-                # initial_system_prompt=scenario_data['initial_system_prompt']
                 **scenario_data
             )
             db.add(db_scenario)

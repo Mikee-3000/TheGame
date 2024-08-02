@@ -5,3 +5,5 @@ logs/*
 !logs/.gitkeep
 **/node_modules/*
 **/static/draco/*
+**/static/textures/*
+!**/static/textures/.gitkeep

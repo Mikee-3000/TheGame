@@ -1,0 +1,276 @@
+* {
+    margin:0;
+    padding: 0;
+}
+html, body {
+    /* prevent scrolling */
+    overflow: hidden;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    background-color: #000000;
+    color: aqua;
+}
+.webgl {
+    /* remove scrollbars */
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+.top {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+}
+
+.title {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 10px;
+}
+
+.menu img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    list-style-type: none;
+    width: 100%;
+    z-index: 6;
+    background-color: #000000b3;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+.menu:hover .dropdown {
+    display: block;
+}
+
+.menu-item:hover h3 {
+    color: #00ff00;
+}
+
+.menu-item {
+    cursor: pointer;
+}
+.menu-input {
+    display: grid;
+    grid-template-columns: 60% 30%;
+    justify-content: space-around;
+}
+
+.menu-item.info {
+    padding-top: 10px;
+}
+
+.menu-item button {
+    min-width: auto;
+    margin-bottom: 20px;
+    padding: none;
+}
+
+.menu-item.save button {
+    margin-left: 10px;
+}
+
+.menu-item.info:hover {
+    text-decoration: underline;
+    color: #00ff00;
+}
+.game-cards {
+    display: flex;
+    justify-content: center;
+}
+
+.picture {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.game-card {
+    max-width: 25%;
+    padding: 5px;
+    text-align: center;
+}
+
+.playbutton {
+    max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .game-cards {
+    flex-direction: column;
+  }
+  .game-card {
+    max-width: 100%;
+    text-align: center;
+  }
+}
+
+.economist {
+    max-width: 100%;
+}
+
+/* h1, h2, h3, a, p, span {
+} */
+h1 {
+    font-size: 75;
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0%;
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.setters {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    display: none;
+}
+
+form {
+    color: #00ff00;
+    background-color: #000000b3;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+.form-row { 
+    display: flex;
+    align-items: center;
+    justify-items: spaced-between;
+}
+label {
+    /* display: block; */
+    flex: 1;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+input {
+    flex: 1;
+    width: l00px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #000000;
+    background-color: #00ff00;
+    margin-bottom: 20px;
+    appearance: none;
+    -webkit-appearance: none;
+    /* remove number arrows from Firefox */
+    -moz-appearance: textfield; 
+}
+/* remove ugly styling from Safari and other WebKit browsers */
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+button[type="submit"] {
+    background-color: #00ff00;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* transform: opacify(1); */
+    background-color: #000000;
+    z-index: 0;
+}
+
+.loading-overlay.ended {
+    display: none;
+}
+
+.loading-bar {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    background: #ffffff;
+    transform: scale(0);
+    transform-origin: top left;
+    /* smooth out the transition */
+    transition: transform 0.5s ease;
+    /* improve performance */
+    will-change: transform;
+}
+
+.loading-bar.ended {
+    transform-origin: top right;
+    transition: transform 1.5s ease-in-out;
+}
+
+.end-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.end-overlay > div {
+    width: auto;
+    position: absolute;
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.game-result > a > .playbutton {
+    max-width: 350px;
+}
