@@ -205,13 +205,13 @@ def root(
         request=request, name="game_selection.jinja2", context={"id": id, "scenarios": scenarios}
     )
 
-@app.get("/about/", response_class=HTMLResponse)
+@app.get("/info/", response_class=HTMLResponse)
 def root(
     request: Request,
     response: Response,
 ):
     return templates.TemplateResponse(
-        request=request, name="about.jinja2", context={}
+        request=request, name="info.jinja2", context={}
     )
 
 if __name__ == "__main__":

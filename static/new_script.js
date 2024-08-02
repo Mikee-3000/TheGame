@@ -59,6 +59,8 @@ const loadingBar = document.querySelector('.loading-bar')
 
 // end of game overlay
 const endOverlay = document.querySelector('.end-overlay')
+const winResultDiv = document.getElementById('win')
+const loseResultDiv = document.getElementById('lose')
 
 // Create a rectangular area light
 RectAreaLightUniformsLib.init()
@@ -235,8 +237,6 @@ let counter = 0
 const tick = () => {
     if (counter === 200) {
         console.log(gameState.result)
-        const winResultDiv = document.getElementById('win')
-        const loseResultDiv = document.getElementById('lose')
         console.log(gameState)
         if (gameState.result == 'win') {
             loseResultDiv.remove()
@@ -245,7 +245,9 @@ const tick = () => {
             winResultDiv.remove()
             loseResultDiv.style.opacity = 1
         }
-        gsap.to(endOverlay, { width: '100%', height: '100%', opacity: 1, duration: 1 });
+        gsap.to(endOverlay, { 
+            display: 'flex', opacity: 1, duration: 1
+        });
     }
     // render
     controls.update();
