@@ -11,11 +11,16 @@
     <link href="https://cdn.jsdelivr.net/npm/lil-gui@0.19/dist/lil-gui.min.css " rel="stylesheet">
 </head>
 <body>
+    <div id="data" style="display:none;" data-scenario="{{ scenario.id }}"></div>
     <canvas class="webgl" id="webgl-canvas"></canvas>
-    <div class="setters">
-    {% include 'setters.jinja2'%} 
+    <div class="setters-container">
+        <div class="setters">
+        {% include 'setters.jinja2'%} 
+        </div>
     </div>
-    <div class="loading-overlay"></div>
+    <div class="loading-overlay">
+            Loading...
+    </div>
     <div class="loading-bar"></div>
     <div class="end-overlay">
         <div class="game-result win" id="win">

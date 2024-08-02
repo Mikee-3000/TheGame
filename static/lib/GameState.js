@@ -3,9 +3,11 @@
 let instance = null
 
 export default class GameState {
-    constructor() {
+    constructor(scenarioId) {
         if (instance) return instance
         instance = this
+        this.scenarioId = scenarioId
+        this.startTimestamp = Math.floor(Date.now() / 1000);
         // add start values
         this.metrics  = []
         this.interestRate = 0.05
@@ -24,6 +26,8 @@ export default class GameState {
         this.populationGrowth = 0
         this.setters = document.querySelector('.setters')
         this.result = 'win'
+        this.setters.clicked = false
+
     }
     getRequestData() {
         // sends only the data that the AI expects
@@ -40,8 +44,10 @@ export default class GameState {
         // toggles the setters on and off
         if (this.setters.style.display === 'none' || this.setters.style.display === '') {
             this.setters.style.display = 'block'
+            this.setters.clicked = true
         } else {
             this.setters.style.display = 'none'
+            this.setters.clicked = false
         }
         
     }
