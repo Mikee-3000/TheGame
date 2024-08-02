@@ -1,11 +1,11 @@
 import * as THREE from 'three'
 import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from './node_modules/three/examples/jsm/loaders/RGBELoader.js'
-import { CSS3DRenderer, CSS3DObject } from './node_modules/three/examples/jsm/renderers/CSS3DRenderer.js';
 const canvas = document.querySelector('canvas.webgl')
 import { RectAreaLightUniformsLib } from './node_modules/three/examples/jsm/lights/RectAreaLightUniformsLib.js'
 import { gsap } from './node_modules/gsap/all.js'
 import MetricsDisplays from './scene/MetricsDisplays.js'
+import StarSphere from './scene/SkySphere.js'
 import URLVault from './lib/URLVault.js'
 import DataFetcher from './lib/DataFetcher.js'
 import getMouse from './scene/Mouse.js'
@@ -24,6 +24,7 @@ import { Points } from './lib/utils.js'
 // retrieve the scenario ID from an invisible div
 const scenarioId = document.getElementById('data').dataset.scenario
 const gameState = new GameState(scenarioId)
+const urlVault = new URLVault()
 
 // hide the scene until it's loaded
 const loadingOverlay = document.querySelector('.loading-overlay')
@@ -35,8 +36,9 @@ const winResultDiv = document.getElementById('win')
 const loseResultDiv = document.getElementById('lose')
 
 let counter = 0
+let rotationOffset = 0
 const tick = () => {
-    if (counter === 1000) {
+    if (counter === 5000) {
         if (gameState.result == 'win') {
             loseResultDiv.remove()
             winResultDiv.style.opacity = 1
@@ -50,33 +52,31 @@ const tick = () => {
     }
     // render
     controls.update();
-    if (metricsDisplays.aggregateDemandPanel) {
+    if ( counter % 100 == 0 && metricsDisplays.aggregateDemandPanel) {
         metricsDisplays.aggregateDemandPanel.updateText({bottomText: counter.toString()})
     }
 
-    // if (camera !== undefined) {
-    // mouse.update(camera)
-    // }
+    // the setters form needs to move with the button
+    let settersPosition = originalButtonPosition.clone()
 
-    // rotate the background to give the illusion of a galaxy moving around the player
-    // don't do this when the setters are on, as an indication of stopped time
-    if (scene.background && !gameState.setters.clicked) {
+    // if the setters are on, don't run time
+    if (!gameState.setters.clicked) {
+        // rotationOffset += Math.PI / 14400
+        starSphere.rotation.y += Math.PI / 14400
+        starSphere.rotation.x += Math.PI / 14400
         counter += 1
-        sceneGroup.rotation.y += Math.PI / 1440
-        scene.background.needsUpdate = true
+        // sceneGroup.rotation.y = rotationOffset
+        // scene.rotation.y = rotationOffset
+        // scene.background.needsUpdate = true
         // stop the scene from rotating around the camera
-        camera.lookAt(0, 2, 0)
+        // camera.lookAt(0, 2, 0)
     }
 
-    // the setters form needs to move with the button
-    // let settersPosition = originalButtonPosition.clone()
-    let settersPosition = policySettingsButton.position.clone()
-
-    settersPosition.x += 0.25
     settersPosition.y += 2
+    settersPosition.z = 0
     settersPosition.project(camera)
     let settersPositionX = settersPosition.x * window.sizes.width / 2 
-    settersPositionX -= gameState.setters.offsetWidth / 2
+    settersPositionX -= gameState.setters.offsetWidth / 2 
     let settersPositionY = settersPosition.y * window.sizes.width / 2 
     settersPositionY += gameState.setters.offsetHeight / 2
     gameState.setters.style.transform = `translate(${settersPositionX}px, ${-settersPositionY}px)`
@@ -85,7 +85,6 @@ const tick = () => {
     renderer.render(scene, camera)
     window.requestAnimationFrame(tick)
 }
-const urlVault = new URLVault()
 
 // loading overlay with progress bar
 window.loadingManager = new THREE.LoadingManager(
@@ -108,6 +107,14 @@ window.loadingManager = new THREE.LoadingManager(
         loadingBar.style.transform = `scaleX(${itemsLoaded / itemsTotal})`
     }
 )
+
+// data loader for LLM responses
+const dataFetcher = new DataFetcher(window.loadingManager)
+const initData = {
+  "start_gt_timestamp": gameState.startTimestamp,
+  "scenario_id": gameState.scenarioId
+}
+dataFetcher.load(urlVault.new_game_url, initData)
 
 // renderer
 window.sizes = {
@@ -135,13 +142,14 @@ sceneGroup.add(camera)
 
 // Create a rectangular area light
 RectAreaLightUniformsLib.init()
-const rectLight = new THREE.RectAreaLight('white', 1, 1400.2, 160.5);
 const ceilingLight = new THREE.RectAreaLight(0x888888, 100, 1000, 1000);
 ceilingLight.position.set(0, 4, 4)
 ceilingLight.lookAt(0, 0, 0)
 sceneGroup.add(ceilingLight)
-// const helper = new RectAreaLightHelper(ceilingLight);
-// sceneGroup.add(helper);
+
+// Sky
+const starSphere = new StarSphere().addTo(sceneGroup)
+
 
 const metricsDisplays = new MetricsDisplays()
 sceneGroup.add(metricsDisplays)
@@ -194,8 +202,14 @@ window.addEventListener('click', (event) => {
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 // prevent the controls from looking at the bottom of the floor
-// controls.minPolarAngle = 1.1
-// controls.maxPolarAngle = 1.5
+controls.minPolarAngle = 1.1
+controls.maxPolarAngle = 1.5
+// Set limits for sideways movement
+controls.minAzimuthAngle = -Math.PI / 4;
+controls.maxAzimuthAngle = Math.PI / 4;
+// Max zoom out level
+controls.maxDistance = 7;
+
 // default position of the view
 controls.target.set(0, 2, 0)
 // prevent the scene from moving infinitely after the user stopped moving it
@@ -217,25 +231,17 @@ window.addEventListener('resize' , () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-// data loader for LLM responses
-const dataFetcher = new DataFetcher(window.loadingManager)
-const initData = {
-  "start_gt_timestamp": gameState.startTimestamp,
-  "scenario_id": gameState.scenarioId
-}
-dataFetcher.load(urlVault.new_game_url, initData)
-
 // Load the environment map
 // Create an RGBE loader
 const rgbeLoader = new RGBELoader(window.loadingManager);
 let envMap = null
 // load the map from the hdr image
-rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
-    texture.mapping = THREE.EquirectangularReflectionMapping
-    envMap = texture
-    scene.background = envMap
-    scene.background.rotation = 45
-})
+// rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
+//     texture.mapping = THREE.EquirectangularReflectionMapping
+//     envMap = texture
+//     scene.background = envMap
+//     scene.background.rotation = 45
+// })
 
 // objects
 // floor

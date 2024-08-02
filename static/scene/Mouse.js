@@ -10,17 +10,18 @@ class Mouse {
             // the values need to be from -1 to 1 bottom to top
             this.position.y = - (event.clientY / window.sizes.height) * 2 + 1
         })
-        this.raycaster = new THREE.Raycaster()
     }
     clickableObjects = []
     addClickableObject(object) {
         this.clickableObjects.push(object)
     }
     click(camera) {
-        this.raycaster.setFromCamera(this.position, camera)
-        const intersects = this.raycaster.intersectObjects(this.clickableObjects)
-        if (intersects.length) {
-            const clickedObject = intersects[0].object
+        let raycaster = new THREE.Raycaster()
+        raycaster.setFromCamera(this.position, camera)
+        const intersects = raycaster.intersectObjects(this.clickableObjects)[0]
+        if (typeof intersects !== 'undefined') {
+            const clickedObject = intersects.object
+            // console.log(clickedObject)
             clickedObject.click()
         }
     }
