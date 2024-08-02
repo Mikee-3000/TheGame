@@ -234,14 +234,17 @@ let counter = 0
 
 const tick = () => {
     if (counter === 200) {
-        let resultDiv = null
+        console.log(gameState.result)
+        const winResultDiv = document.getElementById('win')
+        const loseResultDiv = document.getElementById('lose')
         console.log(gameState)
         if (gameState.result == 'win') {
-            resultDiv = document.getElementById('win')
+            loseResultDiv.remove()
+            winResultDiv.style.opacity = 1
         } else {
-            resultDiv = document.getElementById('lose')
+            winResultDiv.remove()
+            loseResultDiv.style.opacity = 1
         }
-        resultDiv.style.opacity = 1
         gsap.to(endOverlay, { width: '100%', height: '100%', opacity: 1, duration: 1 });
     }
     // render

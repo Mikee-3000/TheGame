@@ -24,18 +24,38 @@
     <div class="loading-overlay"></div>
     <div class="loading-bar"></div>
     <div class="end-overlay">
-        <div class="win" id="win">
+        <div class="game-result win" id="win">
             <h1>You Win!</h1>
-            <img src="{{ scenario.win_image_url }}">
-            <p>Congratulations!</p>
-            <a href="/">Play Again</a>
+            <div class="result-image">
+               <img src="{{ scenario.win_image_url }}" alt="Win Image">
+            </div>
+            <a href="/">
+                <img class="playbutton" id="playagainbuttonwin" src="/static/textures/playagainbutton.png" alt="play again">
+            </a>
         </div>
-        <div class="lose" id="lose">
+        <div class="game-result lose" id="lose">
             <h1>You Lose!</h1>
-            <img src="{{ scenario.lose_image_url }}">
-            <p>Game over.</p>
-            <a href="/">Play Again</a>
+            <div class="result-image">
+                <img src="{{ scenario.lose_image_url }}" alt="Lose Image">
+            </div>
+            <a href="/">
+                <img class="playbutton" id="playagainbuttonlose" src="/static/textures/playagainbutton.png" alt="play again">
+            </a>
         </div>
+    </div>
     <script type="module" src="/static/new_script.js"></script>
+    <script>
+        <!-- change the button image on hover -->
+        const buttons = ['playagainbuttonwin', 'playagainbuttonlose']
+        for (const button of buttons) {
+            const linkImage = document.getElementById(button);
+            linkImage.addEventListener('mouseenter', function() {
+                linkImage.src = '/static/textures/playagainbutton_hover.png'
+            })
+            linkImage.addEventListener('mouseleave', function() {
+                linkImage.src = '/static/textures/playagainbutton.png'
+            })
+        }
+    </script>
 </body>
 </html>
