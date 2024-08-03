@@ -53,6 +53,7 @@ export default class GameState {
             'governmentDebt': 'Government Debt',
             'aggregateDemand': 'Aggregate Demand'
         }
+        this.metricsDisplayClicked = null
 
     }
     getRequestData() {
@@ -108,7 +109,7 @@ export default class GameState {
         // returns the set of metrics for the current date
         // no color code
         return {
-            population: this.metrics[this.currentDate].population.toFixed(2),
+            population: (this.metrics[this.currentDate].population/1).toString(),
             consumption: this.metrics[this.currentDate].consumption.toFixed(2),
             investment: this.metrics[this.currentDate].investment.toFixed(2),
             netExport: this.metrics[this.currentDate].netExport.toFixed(2),
@@ -156,7 +157,6 @@ export default class GameState {
                 }
             )
         }
-        console.log(returnArray)
         return returnArray
     }
 }
