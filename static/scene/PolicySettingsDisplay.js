@@ -38,7 +38,19 @@ export default class PolicySettingsDisplay extends THREE.Group {
         this.bottomTextPlane.position.set(0, -this.dims.y/4, this.dims.z/2 + 0.01)
         this.add(this.bottomTextPlane)
     }
+    updateText({topText=null, bottomText=null}) {
+        if (topText) {
+            this.topTextPlane.setText(topText)
+        }
+        if (bottomText) {
+            this.bottomTextPlane.setText(bottomText)
+        }
+    }
+    updateValue(value) {
+        this.updateText({bottomText: value})
+    }
     addTo(scene) {
         scene.add(this)
+        return this
     }
 }

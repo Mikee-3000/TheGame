@@ -42,9 +42,8 @@ export default class GameState {
         }
     }
     setMetrics(metrics){
-        // delete the previous data first
-        this.metrics = {}
         // add the new data
+        // if there is old data with the same key, it will be overwritten
         for (let key in metrics) {
             const newMetrics = metrics[key]
             // the keys in objects returned by the API are not sorted,
@@ -63,5 +62,15 @@ export default class GameState {
                 newMetrics.aggregate_demand
             )
         }
+    }
+    setPolicySettings(data){
+        this.policySettings = new PolicySettings(
+            data.interestRate,
+            data.governmentSpending,
+            data.openMarketOperations,
+            data.individualIncomeTaxRate,
+            data.corporateIncomeTaxRate,
+        )
+        console.log(this.policySettings)
     }
 }
