@@ -13,7 +13,6 @@ async function setPolicy(gameData) {
     return data;
   } catch (error) {
     // TODO: Error handling
-    console.log(response)
     console.error(error)
   }
 }

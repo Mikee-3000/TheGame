@@ -10,7 +10,7 @@ import URLVault from './lib/URLVault.js'
 import DataFetcher from './lib/DataFetcher.js'
 import getMouse from './scene/Mouse.js'
 import ButtonText from './scene/ButtonText.js'
-import PolicySettingsDisplay from './scene/PolicySettingsDisplay.js'
+import PolicySettingsDisplays from './scene/PolicySettingsDisplays.js'
 import PolicySettingsButton from './scene/PolicySettingsButton.js'
 import PolicySettingsButtonPlinth from './scene/PolicySettingsButtonPlinth.js'
 import ChartDisplay from './scene/ChartDisplay.js'
@@ -36,19 +36,10 @@ const loseResultDiv = document.getElementById('lose')
 
 // the animation loop
 let counter = 0
+const clock = new THREE.Clock()
+// setting this to -1 will pass the if on start
+let daysPast = -1
 const tick = () => {
-    if (counter === 5000) {
-        if (gameState.result == 'win') {
-            loseResultDiv.remove()
-            winResultDiv.style.opacity = 1
-        } else {
-            winResultDiv.remove()
-            loseResultDiv.style.opacity = 1
-        }
-        gsap.to(endOverlay, { 
-            display: 'flex', opacity: 1, duration: 1
-        });
-    }
     // render
     controls.update();
     if ( counter % 100 == 0 && metricsDisplays.aggregateDemandPanel) {
@@ -63,8 +54,31 @@ const tick = () => {
         // rotate the sky, it looks pretty
         starSphere.rotation.y += Math.PI / 14400
         starSphere.rotation.x += Math.PI / 14400
-        // update the counter
-        counter += 1
+        // update the date
+        const dayCheck = Math.floor(clock.getElapsedTime())
+        if (daysPast != dayCheck) {
+            daysPast = dayCheck
+            // update the counter
+            counter += 1
+            if (counter % 5 === 0) {
+                // update the date
+                gameState.addDayToGameDate()
+                // update the date display
+                metricsDisplays.datePanel.updateValue(gameState.currentDate)
+                if (counter == 1000) {
+                    if (gameState.result == 'win') {
+                        loseResultDiv.remove()
+                        winResultDiv.style.opacity = 1
+                    } else {
+                        winResultDiv.remove()
+                        loseResultDiv.style.opacity = 1
+                    }
+                    gsap.to(endOverlay, { 
+                        display: 'flex', opacity: 1, duration: 1
+                    })
+                }
+            }
+        }
     } else {
         settersPosition.y += 2
         settersPosition.z = 0
@@ -94,7 +108,8 @@ window.loadingManager = new THREE.LoadingManager(
             )
             loadingBar.classList.add('ended')
             loadingBar.style.transform = ''
-            console.log(gameState)
+            metricsDisplays.datePanel.updateValue(gameState.currentDate)
+            policySettingsDisplays.updateValues(gameState.policySettings.getValuesAsStrings())
             tick()
         })
     },
@@ -156,13 +171,7 @@ const policyConsole = new PolicyConsole({x: metricsDisplayGroupBoxSize.x, y: 1, 
 await policyConsole.load()
 // put the set of displays on top of the policy console
 metricsDisplays.position.set(0, 0.89, -1.209)
-const policySettingsDisplayColor = 'black'
-const interestRatePanel = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(6, 0.9, -1), topText: 'Interest Rate'}).addTo(sceneGroup)
-const governmentSpendingPanel = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(3, 0.9, -1), topText: 'Government Spending'}).addTo(sceneGroup)
-const openMarketOperations = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(0, 0.9, -1), topText: 'Open Market Operations'}).addTo(sceneGroup)
-const individualIncomeTaxRate = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(-3, 0.9, -1), topText: 'Individual Income Tax Rate'}).addTo(sceneGroup)
-const corporateIncomeTaxRate = new PolicySettingsDisplay({color: policySettingsDisplayColor, position: new Points(-6, 0.9, -1), topText: 'Corporate Income Tax Rate'}).addTo(sceneGroup)
-
+const policySettingsDisplays = new PolicySettingsDisplays(sceneGroup)
 const policySettingsButton = new PolicySettingsButton().addTo(sceneGroup)
 const policySettingsButtonPlinth = new PolicySettingsButtonPlinth()
 policySettingsButtonPlinth.addTo(sceneGroup)
@@ -223,13 +232,8 @@ settersForm.addEventListener('submit', (event) => {
     event.preventDefault()
     const formData = new FormData(event.target)
     const data = Object.fromEntries(formData.entries())
-    console.log(data)
     // update the panels
-    interestRatePanel.updateValue(data.interestRate)
-    governmentSpendingPanel.updateValue(data.governmentSpending)
-    openMarketOperations.updateValue(data.openMarketOperations)
-    individualIncomeTaxRate.updateValue(data.individualIncomeTaxRate)
-    corporateIncomeTaxRate.updateValue(data.corporateIncomeTaxRate)
+    policySettingsDisplays.updateValues(data)
     // add to the game state
     gameState.setPolicySettings(data)
 })
