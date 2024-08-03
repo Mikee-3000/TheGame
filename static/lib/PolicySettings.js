@@ -17,11 +17,11 @@ export default class PolicySettings {
     }
     getValuesAsStrings() {
         return {
-            interestRate: this.interestRate.toString(),
-            governmentSpending: this.governmentSpending.toString(),
-            openMarketOperations: this.openMarketOperations.toString(),
-            individualIncomeTaxRate: this.individualIncomeTaxRate.toString(),
-            corporateIncomeTaxRate: this.corporateIncomeTaxRate.toString()
+            interestRate: this.interestRate.toFixed(2),
+            governmentSpending: this.governmentSpending.toFixed(2),
+            openMarketOperations: this.openMarketOperations.toFixed(2),
+            individualIncomeTaxRate: this.individualIncomeTaxRate.toFixed(2),
+            corporateIncomeTaxRate: this.corporateIncomeTaxRate.toFixed(2)
         }
 
     }

@@ -20,6 +20,7 @@ export default class GameState {
         // add the current date in YYYY-MM-DD format
         this.currentDate = new Date(this.startTimestamp * 1000).toISOString().split('T')[0]
         // the user's API key is needed for AI communication
+        this.lastTenDays = [this.currentDate]
         this.mistralApiKey = null
         // add start values
         this.metrics  = {}
@@ -28,6 +29,30 @@ export default class GameState {
         this.result = 'win'
         this.setters.clicked = false
         this.gameId = null
+        this.metricsList = [
+           'population',
+           'consumption',
+           'investment',
+           'netExport',
+           'governmentIncome',
+           'inflation',
+           'unemploymentRate',
+           'moneySupply',
+           'governmentDebt',
+           'aggregateDemand'
+        ]
+        this.metricsLabels = {
+            'population': 'Population',
+            'consumption': 'Consumption',
+            'investment': 'Investment',
+            'netExport': 'Net Export',
+            'governmentIncome': 'Government Income',
+            'inflation': 'Inflation',
+            'unemploymentRate': 'Unemployment Rate',
+            'moneySupply': 'Money Supply',
+            'governmentDebt': 'Government Debt',
+            'aggregateDemand': 'Aggregate Demand'
+        }
 
     }
     getRequestData() {
@@ -112,5 +137,26 @@ export default class GameState {
         date.setDate(date.getDate() + 1);
         this.currentTimestamp = date.getTime() / 1000
         this.currentDate = date.toISOString().split('T')[0]
+        // add the date to the lookup array for the chart
+        this.lastTenDays.push(this.currentDate)
+        if (this.lastTenDays.length > 10) {
+            // keep it 10 max
+            this.lastTenDays.shift()
+        }
+    }
+    getLastTenDaysMetrics(metric) {
+        let returnArray = []
+        for (let day of this.lastTenDays) {
+            returnArray.push(
+                {
+                    date: day,
+                    value: this.metrics[day][metric],
+                    metric: metric,
+                    metricLabel: this.metricsLabels[metric]
+                }
+            )
+        }
+        console.log(returnArray)
+        return returnArray
     }
 }

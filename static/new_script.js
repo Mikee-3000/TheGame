@@ -60,6 +60,7 @@ const tick = () => {
             daysPast = dayCheck
             // update the counter
             counter += 1
+            // this is a new day
             if (counter % 5 === 0) {
                 // update the date
                 gameState.addDayToGameDate()
@@ -78,6 +79,15 @@ const tick = () => {
                         display: 'flex', opacity: 1, duration: 1
                     })
                 }
+            }
+            // let's rotate the metric charts in the middle ab it faster than daily
+            if (counter % 3 === 0) {
+                // sceneGroup.remove(chartDisplay)
+                const chosenMetric = gameState.metricsList[counter % gameState.metricsList.length]
+                if (chartDisplay !== null) {
+                    chartDisplay.destroy()
+                }
+                chartDisplay.create(gameState.getLastTenDaysMetrics(chosenMetric))
             }
         }
     } else {
@@ -110,6 +120,8 @@ window.loadingManager = new THREE.LoadingManager(
             loadingBar.classList.add('ended')
             loadingBar.style.transform = ''
             metricsDisplays.datePanel.updateValue(gameState.currentDate)
+            metricsDisplays.updateValues(gameState.getDailyMetricsAsString())
+            chartDisplay.create(gameState.getLastTenDaysMetrics(gameState.metricsList[0]))
             policySettingsDisplays.updateValues(gameState.policySettings.getValuesAsStrings())
             tick()
         })
@@ -161,6 +173,8 @@ sceneGroup.add(ceilingLight)
 // Sky
 const starSphere = new StarSphere().addTo(sceneGroup)
 
+// declare chart display, it has to be removed and re-added in the game loop
+let chartDisplay = new ChartDisplay(sceneGroup)
 
 const metricsDisplays = new MetricsDisplays()
 sceneGroup.add(metricsDisplays)
@@ -195,7 +209,7 @@ const fakeDates = [
 {date: '2024-07-28', metric: 'Investment', value: 3},  
 ]
 
-const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
+// const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
 
 // controls
 const controls = new OrbitControls(camera, canvas)

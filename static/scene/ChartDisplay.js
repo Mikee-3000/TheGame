@@ -2,7 +2,14 @@ import * as THREE from 'three'
 import  TextPlane from '/static/scene/TextPlane.js'
 
 export default class ChartDisplay {
-    constructor(data, scene) {
+    constructor(scene) {
+        this.scene = scene
+    }
+    destroy() {
+        this.scene.remove(this.chartGroup)
+    }
+    create(data) {
+        const metric = data[0].metricLabel
         // data is an array of dated values for the given metric
         let counter = 0
         // x axis - the dates
@@ -10,7 +17,7 @@ export default class ChartDisplay {
         const gap = 0.15
         const groupWidth = 9.5
         const elementWidth = groupWidth/elements - gap
-        const chartGroup = new THREE.Group()
+        this.chartGroup = new THREE.Group()
         // this helps calculate the position for the elments
         const helperBar = new THREE.Mesh(
             new THREE.BoxGeometry(groupWidth, 1.0, 0.5),
@@ -20,9 +27,9 @@ export default class ChartDisplay {
                 roughness: 0.5,
             }))
         helperBar.position.set(0, 0.3, -0.2555555)
-        chartGroup.add(helperBar)
+        this.chartGroup.add(helperBar)
 
-        // y axis - the values, normalized from 0 to 5
+        // y axis - the values, normalized from 0 to 2
         const maxY = 2
         // get the list of values from the maps
         const values = data.map(datum => datum.value)
@@ -32,8 +39,15 @@ export default class ChartDisplay {
         const shiftedValues = values.map(value => value - (0 + min))
         // get the new maximum
         const max = Math.max(...shiftedValues)
-        // normalize so that it fits into the space
-        const normalizedValues = shiftedValues.map(value => 0 + value/max * maxY)
+        let normalizedValues  = []
+        // if max is 0, than all the values are the same, and we can't do the calculation
+        if (max === 0) {
+            normalizedValues = shiftedValues.map(value => 1)
+        } else {
+            // normalize so that it fits into the space
+            normalizedValues = shiftedValues.map(value => 0 + value/max * maxY)
+        }
+        console.log(normalizedValues)
         data.map((datum, index) => datum.normalizedValue = normalizedValues[index])
         data.forEach(datum => {
             // the date label
@@ -53,11 +67,15 @@ export default class ChartDisplay {
             datePlane.position.set(0, 0.4, 0.00)
             valuePlane.position.set(0, datum.normalizedValue + 1.2, 0.00)
             barGroup.position.set(0-groupWidth/2  + (elementWidth + gap)/2 + counter * (elementWidth + gap), 0, 0)
-            chartGroup.add(barGroup)
+            this.chartGroup.add(barGroup)
             counter ++
         })
-        scene.add(chartGroup)
-        const groupSize = new THREE.Box3().setFromObject(chartGroup).getSize(new THREE.Vector3())
-        chartGroup.position.set(0, 1, -2.5)
+        // add label
+        const labelPlane = new TextPlane({color: 'blue', text: metric, dims: {x: 5, y: 3}, fontSize: 500, backgroundColor: 'rgba(0,0,0,0)'})
+        labelPlane.position.set(0, 4, 0)
+        this.chartGroup.add(labelPlane)
+        this.scene.add(this.chartGroup)
+        const groupSize = new THREE.Box3().setFromObject(this.chartGroup).getSize(new THREE.Vector3())
+        this.chartGroup.position.set(0, 1, -2.5)
     }
 }
