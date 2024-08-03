@@ -27,4 +27,18 @@ export default class Metrics {
     timestampToDate(){
         return new Date(this.gtTimestamp * 1000).toISOString().split('T')[0]
     }
+    compareAndColor(compareTo) {
+        return {
+            populationColor: this.population === compareTo.population ? 'cyan' : this.population > compareTo.population ? 'green' : 'red',
+            consumptionColor: this.consumption === compareTo.consumption ? 'cyan' : this.consumption > compareTo.consumption ? 'green' : 'red',
+            investmentColor: this.investment === compareTo.investment ? 'cyan' : this.investment > compareTo.investment ? 'green' : 'red',
+            netExportColor: this.netExport === compareTo.netExport ? 'cyan' : this.netExport > compareTo.netExport ? 'green' : 'red',
+            governmentIncomeColor: this.governmentIncome === compareTo.governmentIncome ? 'cyan' : this.governmentIncome > compareTo.governmentIncome ? 'green' : 'red',
+            inflationColor: this.inflation === compareTo.inflation ? 'cyan' : this.inflation > compareTo.inflation ? 'red' : 'green',
+            unemploymentRateColor: this.unemploymentRate === compareTo.unemploymentRate ? 'cyan' : this.unemploymentRate > compareTo.unemploymentRate ? 'red' : 'green',
+            moneySupplyColor: this.moneySupply === compareTo.moneySupply ? 'cyan' : this.moneySupply > compareTo.moneySupply ? 'green' : 'red',
+            governmentDebtColor: this.governmentDebt === compareTo.governmentDebt ? 'cyan' : this.governmentDebt > compareTo.governmentDebt ? 'red' : 'green',
+            aggregateDemandColor: this.aggregateDemand === compareTo.aggregateDemand ? 'cyan' : this.aggregateDemand > compareTo.aggregateDemand ? 'green' : 'red',
+        }
+    }
 }

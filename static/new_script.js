@@ -36,35 +36,51 @@ const loseResultDiv = document.getElementById('lose')
 
 // the animation loop
 let counter = 0
+// selects the chart, start from 1 as 0 is selected on page load
+let chartSelector = 1
 const clock = new THREE.Clock()
 // setting this to -1 will pass the if on start
 let daysPast = -1
 const tick = () => {
-    // render
-    controls.update();
-    if ( counter % 100 == 0 && metricsDisplays.aggregateDemandPanel) {
-        metricsDisplays.aggregateDemandPanel.updateText({bottomText: counter.toString()})
-    }
-
     // the setters form needs to move with the button
     let settersPosition = originalButtonPosition.clone()
+
+    // update the metrics chart if the user has clicked on a display
+    if (gameState.metricsDisplayClicked) {
+        chartDisplay.update(gameState.getLastTenDaysMetrics(gameState.metricsDisplayClicked))
+    }
 
     // if the setters are on, don't run time
     if (!gameState.setters.clicked) {
         // rotate the sky, it looks pretty
         starSphere.rotation.y += Math.PI / 14400
-        starSphere.rotation.x += Math.PI / 14400
+        // starSphere.rotation.x += Math.PI / 14400
+
         // update the date
         const dayCheck = Math.floor(clock.getElapsedTime())
+
+        // the following can only be run when the game date changes
+        // without the day check, it would run on every frame
         if (daysPast != dayCheck) {
             daysPast = dayCheck
             // update the counter
             counter += 1
+            // if nothing is selected, switch the metrics up periodically
+            if (!gameState.metricsDisplayClicked) {
+                if (counter % 2 === 0) {
+                    const chosenMetric = gameState.metricsList[chartSelector]
+                    chartDisplay.update(gameState.getLastTenDaysMetrics(chosenMetric))
+                    chartSelector += 1
+                    chartSelector = chartSelector % gameState.metricsList.length
+                }
+            }
+            // this is a new day
             if (counter % 5 === 0) {
                 // update the date
                 gameState.addDayToGameDate()
                 // update the date display
                 metricsDisplays.datePanel.updateValue(gameState.currentDate)
+                metricsDisplays.updateValuesAndColors(gameState.colorDailyMetrics())
                 if (counter == 1000) {
                     if (gameState.result == 'win') {
                         loseResultDiv.remove()
@@ -89,6 +105,7 @@ const tick = () => {
         settersPositionY += gameState.setters.offsetHeight / 2
         gameState.setters.style.transform = `translate(${settersPositionX}px, ${-settersPositionY}px)`
     }
+    controls.update()
     // call tick again on the next frame
     renderer.render(scene, camera)
     window.requestAnimationFrame(tick)
@@ -109,6 +126,8 @@ window.loadingManager = new THREE.LoadingManager(
             loadingBar.classList.add('ended')
             loadingBar.style.transform = ''
             metricsDisplays.datePanel.updateValue(gameState.currentDate)
+            metricsDisplays.updateValues(gameState.getDailyMetricsAsString())
+            chartDisplay.update(gameState.getLastTenDaysMetrics(gameState.metricsList[0]))
             policySettingsDisplays.updateValues(gameState.policySettings.getValuesAsStrings())
             tick()
         })
@@ -160,6 +179,8 @@ sceneGroup.add(ceilingLight)
 // Sky
 const starSphere = new StarSphere().addTo(sceneGroup)
 
+// declare chart display, it has to be removed and re-added in the game loop
+let chartDisplay = new ChartDisplay(sceneGroup)
 
 const metricsDisplays = new MetricsDisplays()
 sceneGroup.add(metricsDisplays)
@@ -194,7 +215,7 @@ const fakeDates = [
 {date: '2024-07-28', metric: 'Investment', value: 3},  
 ]
 
-const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
+// const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
 
 // controls
 const controls = new OrbitControls(camera, canvas)

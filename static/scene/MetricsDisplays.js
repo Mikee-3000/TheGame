@@ -8,16 +8,17 @@ import { Points } from '../lib/utils.js'
 export default class MetricsDisplays extends THREE.Group {
     constructor() {
         super()
-        this.aggregateDemandPanel = new MetricsDisplay({color: 'green', position: new Points(6.6, 0.5, -1.55), topText: 'Aggregate Demand'}).addTo(this)
-        this.populationPanel = new MetricsDisplay({color: 'red', position: new Points(6.6, 1.6, -1.55), topText: 'Population', bottomText: '3'}).addTo(this)
-        this.governmentDebtPanel = new MetricsDisplay({color: 'blue', position: new Points(6.6, 2.7, -1.55), topText: 'Government Debt', bottomText: '3'}).addTo(this)
-        this.moneySupplyPanel = new MetricsDisplay({color: 'yellow', position: new Points(6.6, 3.8, -1.55), topText: 'Money Supply', bottomText: '3'}).addTo(this)
-        this.unemploymentRatePanel = new MetricsDisplay({color: 'gold', position: new Points(6.6, 4.9, -1.55), topText: 'Unemployment Rate', bottomText: '3'}).addTo(this)
-        this.inflationPanel = new MetricsDisplay({color: 'magenta', position: new Points(-6.6, 4.9, -1.55), topText: 'Inflation', bottomText: '3'}).addTo(this)
-        this.governmentIncomePanel = new MetricsDisplay({color: 'cyan', position: new Points(-6.6, 3.8, -1.55), topText: 'Government Income', bottomText: '3'}).addTo(this)
-        this.netExportPanel = new MetricsDisplay({color: 'white', position: new Points(-6.6, 2.7, -1.55), topText: 'Net Export', bottomText: '3'}).addTo(this)
-        this.investmentPanel = new MetricsDisplay({color: 'purple', position: new Points(-6.6, 1.6, -1.55), topText: 'Investment', bottomText: '3'}).addTo(this)
-        this.consumptionPanel = new MetricsDisplay({color: 'orange', position: new Points(-6.6, 0.5, -1.55), topText: 'Consumption', bottomText: '3'}).addTo(this)
+        const basicColor = 'cyan'
+        this.aggregateDemandPanel = new MetricsDisplay({color: basicColor, position: new Points(6.6, 0.5, -1.55), topText: 'Aggregate Demand'}).addTo(this)
+        this.populationPanel = new MetricsDisplay({color: basicColor, position: new Points(6.6, 1.6, -1.55), topText: 'Population', bottomText: '3'}).addTo(this)
+        this.governmentDebtPanel = new MetricsDisplay({color: basicColor, position: new Points(6.6, 2.7, -1.55), topText: 'Government Debt', bottomText: '3'}).addTo(this)
+        this.moneySupplyPanel = new MetricsDisplay({color: basicColor, position: new Points(6.6, 3.8, -1.55), topText: 'Money Supply', bottomText: '3'}).addTo(this)
+        this.unemploymentRatePanel = new MetricsDisplay({color: basicColor, position: new Points(6.6, 4.9, -1.55), topText: 'Unemployment Rate', bottomText: '3'}).addTo(this)
+        this.inflationPanel = new MetricsDisplay({color: basicColor, position: new Points(-6.6, 4.9, -1.55), topText: 'Inflation', bottomText: '3'}).addTo(this)
+        this.governmentIncomePanel = new MetricsDisplay({color: basicColor, position: new Points(-6.6, 3.8, -1.55), topText: 'Government Income', bottomText: '3'}).addTo(this)
+        this.netExportPanel = new MetricsDisplay({color: basicColor, position: new Points(-6.6, 2.7, -1.55), topText: 'Net Export', bottomText: '3'}).addTo(this)
+        this.investmentPanel = new MetricsDisplay({color: basicColor, position: new Points(-6.6, 1.6, -1.55), topText: 'Investment', bottomText: '3'}).addTo(this)
+        this.consumptionPanel = new MetricsDisplay({color: basicColor, position: new Points(-6.6, 0.5, -1.55), topText: 'Consumption', bottomText: '3'}).addTo(this)
         this.datePanel = new GameDateDisplay().addTo(this)
         // fillers
         // const fillerCentres = [0.05, 1.05, 2.15, 3.25, 4.35]
@@ -34,6 +35,29 @@ export default class MetricsDisplays extends THREE.Group {
         new FillerPanel(new Points(6.7, 0.1, 0.6), new Points(4.85, 5.45, -1.5)).addTo(this)
         new FillerPanel(new Points(6.7, 0.1, 0.6), new Points(-4.85, 5.45, -1.5)).addTo(this)
     }
+    updateValues(metrics) {
+        this.aggregateDemandPanel.updateValue(metrics.aggregateDemand)
+        this.populationPanel.updateValue(metrics.population)
+        this.governmentDebtPanel.updateValue(metrics.governmentDebt)
+        this.moneySupplyPanel.updateValue(metrics.moneySupply)
+        this.unemploymentRatePanel.updateValue(metrics.unemploymentRate)
+        this.inflationPanel.updateValue(metrics.inflation)
+        this.governmentIncomePanel.updateValue(metrics.governmentIncome)
+        this.netExportPanel.updateValue(metrics.netExport)
+        this.investmentPanel.updateValue(metrics.investment)
+        this.consumptionPanel.updateValue(metrics.consumption)
+    }
+    updateValuesAndColors(metrics) {
+        this.updateValues(metrics)
+        this.aggregateDemandPanel.updateColor(metrics.aggregateDemandColor)
+        this.populationPanel.updateColor(metrics.populationColor)
+        this.governmentDebtPanel.updateColor(metrics.governmentDebtColor)
+        this.moneySupplyPanel.updateColor(metrics.moneySupplyColor)
+        this.unemploymentRatePanel.updateColor(metrics.unemploymentRateColor)
+        this.inflationPanel.updateColor(metrics.inflationColor)
+        this.governmentIncomePanel.updateColor(metrics.governmentIncomeColor)
+        this.netExportPanel.updateColor(metrics.netExportColor)
+        this.investmentPanel.updateColor(metrics.investmentColor)
+        this.consumptionPanel.updateColor(metrics.consumptionColor)
+    }
 }
-
-// export default metricsDisplayGroup
