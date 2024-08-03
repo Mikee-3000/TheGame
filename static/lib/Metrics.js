@@ -25,6 +25,6 @@ export default class Metrics {
         this.aggregateDemand = aggregate_demand
     }
     timestampToDate(){
-        return new Date(this.gtTimestamp * 1000).toISOString.slice(0, 10)
+        return new Date(this.gtTimestamp * 1000).toISOString().split('T')[0]
     }
 }

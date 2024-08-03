@@ -21,7 +21,6 @@ class Mouse {
         const intersects = raycaster.intersectObjects(this.clickableObjects)[0]
         if (typeof intersects !== 'undefined') {
             const clickedObject = intersects.object
-            // console.log(clickedObject)
             clickedObject.click()
         }
     }

@@ -7,7 +7,6 @@ export default class StarSphere extends THREE.Mesh {
         const geometry = new THREE.SphereGeometry(20, 32, 32)
         const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide })
         super(geometry, material)
-        console.log(this)
     }
     addTo(scene) {
         scene.add(this)

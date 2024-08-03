@@ -15,6 +15,10 @@ export default class GameState {
         this.scenarioId = scenarioId
         // the game starts now
         this.startTimestamp = Math.floor(Date.now() / 1000);
+        // this will keep game date
+        this.currentTimestamp = this.startTimestamp
+        // add the current date in YYYY-MM-DD format
+        this.currentDate = new Date(this.startTimestamp * 1000).toISOString().split('T')[0]
         // the user's API key is needed for AI communication
         this.mistralApiKey = null
         // add start values
@@ -35,6 +39,9 @@ export default class GameState {
         // toggles the setters on and off
         if (this.setters.style.display === 'none' || this.setters.style.display === '') {
             this.setters.style.display = 'block'
+            for (const key in this.policySettings) {
+                document.getElementById(key).value = this.policySettings[key]
+            }
             this.setters.clicked = true
         } else {
             this.setters.style.display = 'none'
@@ -65,12 +72,17 @@ export default class GameState {
     }
     setPolicySettings(data){
         this.policySettings = new PolicySettings(
-            data.interestRate,
-            data.governmentSpending,
-            data.openMarketOperations,
-            data.individualIncomeTaxRate,
-            data.corporateIncomeTaxRate,
+            parseFloat(data.interestRate),
+            parseFloat(data.governmentSpending),
+            parseFloat(data.openMarketOperations),
+            parseFloat(data.individualIncomeTaxRate),
+            parseFloat(data.corporateIncomeTaxRate),
         )
-        console.log(this.policySettings)
+    }
+    addDayToGameDate() {
+        const date = new Date(this.currentTimestamp * 1000)
+        date.setDate(date.getDate() + 1);
+        this.currentTimestamp = date.getTime() / 1000
+        this.currentDate = date.toISOString().split('T')[0]
     }
 }
