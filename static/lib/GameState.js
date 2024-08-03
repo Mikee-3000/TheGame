@@ -1,4 +1,5 @@
-// keeps in-memory game data
+import Metrics from './metrics.js'
+import PolicySettings from './PolicySettings.js'
 
 let instance = null
 
@@ -7,37 +8,22 @@ export default class GameState {
         if (instance) return instance
         instance = this
         this.scenarioId = scenarioId
+        // the game starts now
         this.startTimestamp = Math.floor(Date.now() / 1000);
+        // the user's API key is needed for AI communication
+        this.mistralApiKey = null
         // add start values
-        this.metrics  = []
-        this.interestRate = 0.05
-        this.govtSpending = 1000
-        this.taxRate = 0.2
-        this.moneySupply = 1000
-        this.foodImport = 1
-        this.population = 1000
-        this.gdp = 1000
-        this.inflationRate = 0
-        this.consumerConfidence = 100
-        this.investmentLevel = 1000
-        this.tradeBalance = 0
-        this.governmentDebt = 0
-        this.unemploymentRate = 0
-        this.populationGrowth = 0
+        this.metrics  = {}
+        this.policySettings = PolicySettings().zeroValues()
         this.setters = document.querySelector('.setters')
         this.result = 'win'
         this.setters.clicked = false
+        this.gameId = null
 
     }
     getRequestData() {
         // sends only the data that the AI expects
         return {
-            interestRate: this.interestRate,
-            govtSpending: this.govtSpending,
-            taxRate: this.taxRate,
-            moneySupply: this.moneySupply,
-            foodImport: this.foodImport,
-            population: this.population
         }
     }
     toggleSetters() {
@@ -49,6 +35,13 @@ export default class GameState {
             this.setters.style.display = 'none'
             this.setters.clicked = false
         }
-        
+    }
+    setMetrics(metrics){
+        // delete the previous data first
+        this.metrics = {}
+        // add the new data
+        for (key in metrics) {
+            this.metrics[key] = new Metrics(...Object.values(metrics[key]))
+        }
     }
 }

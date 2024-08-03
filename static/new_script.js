@@ -36,7 +36,6 @@ const winResultDiv = document.getElementById('win')
 const loseResultDiv = document.getElementById('lose')
 
 let counter = 0
-let rotationOffset = 0
 const tick = () => {
     if (counter === 5000) {
         if (gameState.result == 'win') {
@@ -61,15 +60,11 @@ const tick = () => {
 
     // if the setters are on, don't run time
     if (!gameState.setters.clicked) {
-        // rotationOffset += Math.PI / 14400
+        // rotate the sky, it looks pretty
         starSphere.rotation.y += Math.PI / 14400
         starSphere.rotation.x += Math.PI / 14400
+        // update the counter
         counter += 1
-        // sceneGroup.rotation.y = rotationOffset
-        // scene.rotation.y = rotationOffset
-        // scene.background.needsUpdate = true
-        // stop the scene from rotating around the camera
-        // camera.lookAt(0, 2, 0)
     }
 
     settersPosition.y += 2
