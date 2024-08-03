@@ -95,6 +95,7 @@ window.loadingManager = new THREE.LoadingManager(
             )
             loadingBar.classList.add('ended')
             loadingBar.style.transform = ''
+            console.log(gameState)
             tick()
         })
     },

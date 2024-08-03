@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import GameState from './GameState.js';
 
 export default class DataFetcher extends THREE.Loader {
     constructor(manager) {
@@ -18,7 +19,17 @@ export default class DataFetcher extends THREE.Loader {
             .then(responseData => {
                 // Decrement the loading manager's item count
                 scope.manager.itemEnd(url);
-                console.log('Loaded data:', responseData);
+                // GameState is a singleton, its instance gets created before this is called
+                let gameState = null
+                try {
+                    gameState = new GameState(null)
+                } catch (error) {
+                    // initialize the game state from here
+                    const scenarioId = document.getElementById('data').dataset.scenario
+                    gameState = new GameState(scenarioId)
+                }
+                gameState.gameId = responseData.game.game_id
+                gameState.setMetrics(responseData.metrics)
                 resolve(responseData);
             })
             .catch(error => {
