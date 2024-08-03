@@ -3,14 +3,14 @@ export default class PolicySettings {
         interestRate,
         governmentSpending,
         openMarketOperations,
-        individualIncomeTax,
-        corporateIncomeTax
+        individualIncomeTaxRate,
+        corporateIncomeTaxRate
     ) {
         this.interestRate = interestRate
         this.governmentSpending = governmentSpending
         this.openMarketOperations = openMarketOperations
-        this.individualIncomeTax = individualIncomeTax
-        this.corporateIncomeTax = corporateIncomeTax
+        this.individualIncomeTaxRate = individualIncomeTaxRate
+        this.corporateIncomeTaxRate = corporateIncomeTaxRate
     }
     zeroValues () {
         return new PolicySettings(0, 0, 0, 0, 0)

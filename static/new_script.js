@@ -17,7 +17,6 @@ import ChartDisplay from './scene/ChartDisplay.js'
 import GameState from './lib/GameState.js'
 import Floor from './scene/Floor.js'
 import PolicyConsole from './scene/PolicyConsole.js'
-import { RectAreaLightHelper } from './node_modules/three/examples/jsm/helpers/RectAreaLightHelper.js'
 import { Points } from './lib/utils.js'
 
 // Game Data
@@ -35,6 +34,7 @@ const endOverlay = document.querySelector('.end-overlay')
 const winResultDiv = document.getElementById('win')
 const loseResultDiv = document.getElementById('lose')
 
+// the animation loop
 let counter = 0
 const tick = () => {
     if (counter === 5000) {
@@ -65,17 +65,16 @@ const tick = () => {
         starSphere.rotation.x += Math.PI / 14400
         // update the counter
         counter += 1
+    } else {
+        settersPosition.y += 2
+        settersPosition.z = 0
+        settersPosition.project(camera)
+        let settersPositionX = settersPosition.x * window.sizes.width / 2 
+        settersPositionX -= gameState.setters.offsetWidth / 2 
+        let settersPositionY = settersPosition.y * window.sizes.width / 2 
+        settersPositionY += gameState.setters.offsetHeight / 2
+        gameState.setters.style.transform = `translate(${settersPositionX}px, ${-settersPositionY}px)`
     }
-
-    settersPosition.y += 2
-    settersPosition.z = 0
-    settersPosition.project(camera)
-    let settersPositionX = settersPosition.x * window.sizes.width / 2 
-    settersPositionX -= gameState.setters.offsetWidth / 2 
-    let settersPositionY = settersPosition.y * window.sizes.width / 2 
-    settersPositionY += gameState.setters.offsetHeight / 2
-    gameState.setters.style.transform = `translate(${settersPositionX}px, ${-settersPositionY}px)`
-
     // call tick again on the next frame
     renderer.render(scene, camera)
     window.requestAnimationFrame(tick)
@@ -188,12 +187,6 @@ const fakeDates = [
 
 const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
 
-// mouse
-const mouse = getMouse()
-window.addEventListener('click', (event) => {
-    mouse.click(camera)
-})
-
 // controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -201,11 +194,12 @@ controls.enableDamping = true
 controls.minPolarAngle = 1.1
 controls.maxPolarAngle = 1.5
 // Set limits for sideways movement
-controls.minAzimuthAngle = -Math.PI / 4;
-controls.maxAzimuthAngle = Math.PI / 4;
+controls.minAzimuthAngle = -Math.PI / 4
+controls.maxAzimuthAngle = Math.PI / 4
 // Max zoom out level
-controls.maxDistance = 7;
-
+controls.maxDistance = 7
+// don't let the user move the objects too far, hard to get back
+controls.maxTargetRadius = 7
 // default position of the view
 controls.target.set(0, 2, 0)
 // prevent the scene from moving infinitely after the user stopped moving it
@@ -215,6 +209,32 @@ controls.dampingFactor = 1
 controls.invertY = true;
 renderer.render(scene, camera)
 
+// event listeners
+
+// mouse
+const mouse = getMouse()
+window.addEventListener('click', (event) => {
+    mouse.click(camera)
+})
+
+// setters
+const settersForm = document.getElementById('setters-form')
+settersForm.addEventListener('submit', (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.target)
+    const data = Object.fromEntries(formData.entries())
+    console.log(data)
+    // update the panels
+    interestRatePanel.updateValue(data.interestRate)
+    governmentSpendingPanel.updateValue(data.governmentSpending)
+    openMarketOperations.updateValue(data.openMarketOperations)
+    individualIncomeTaxRate.updateValue(data.individualIncomeTaxRate)
+    corporateIncomeTaxRate.updateValue(data.corporateIncomeTaxRate)
+    // add to the game state
+    gameState.setPolicySettings(data)
+})
+
+// window
 window.addEventListener('resize' , () => {
     // update window.sizes
     window.sizes.width = window.innerWidth
@@ -230,16 +250,7 @@ window.addEventListener('resize' , () => {
 // Load the environment map
 // Create an RGBE loader
 const rgbeLoader = new RGBELoader(window.loadingManager);
-let envMap = null
-// load the map from the hdr image
-// rgbeLoader.load('/static/textures/HDR_blue_nebulae-1.hdr', (texture) => {
-//     texture.mapping = THREE.EquirectangularReflectionMapping
-//     envMap = texture
-//     scene.background = envMap
-//     scene.background.rotation = 45
-// })
 
-// objects
 // floor
-const floor = new Floor(envMap)
+const floor = new Floor()
 sceneGroup.add(floor)
