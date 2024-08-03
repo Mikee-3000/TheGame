@@ -65,6 +65,7 @@ const tick = () => {
                 gameState.addDayToGameDate()
                 // update the date display
                 metricsDisplays.datePanel.updateValue(gameState.currentDate)
+                metricsDisplays.updateValuesAndColors(gameState.colorDailyMetrics())
                 if (counter == 1000) {
                     if (gameState.result == 'win') {
                         loseResultDiv.remove()

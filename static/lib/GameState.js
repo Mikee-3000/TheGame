@@ -79,8 +79,36 @@ export default class GameState {
             parseFloat(data.corporateIncomeTaxRate),
         )
     }
+    getDailyMetricsAsString() {
+        // returns the set of metrics for the current date
+        // no color code
+        return {
+            population: this.metrics[this.currentDate].population.toFixed(2),
+            consumption: this.metrics[this.currentDate].consumption.toFixed(2),
+            investment: this.metrics[this.currentDate].investment.toFixed(2),
+            netExport: this.metrics[this.currentDate].netExport.toFixed(2),
+            governmentIncome: this.metrics[this.currentDate].governmentIncome.toFixed(2),
+            inflation: this.metrics[this.currentDate].inflation.toFixed(2),
+            unemploymentRate: this.metrics[this.currentDate].unemploymentRate.toFixed(2),
+            moneySupply: this.metrics[this.currentDate].moneySupply.toFixed(2),
+            governmentDebt: this.metrics[this.currentDate].governmentDebt.toFixed(2),
+            aggregateDemand: this.metrics[this.currentDate].aggregateDemand.toFixed(2),
+        }
+    }
+    colorDailyMetrics() {
+        // looks up the current date in the metrics object,
+        // and returns a color-coded comparison that can be used for the UI
+        // if no previous metrics, color is cyan
+        const colors = this.metrics[this.currentDate].compareAndColor(this.metrics[this.yesterday])
+        let todaysMetrics = this.getDailyMetricsAsString()
+        Object.assign(todaysMetrics, colors)
+        return todaysMetrics
+
+
+    }
     addDayToGameDate() {
         const date = new Date(this.currentTimestamp * 1000)
+        this.yesterday = date.toISOString().split('T')[0]
         date.setDate(date.getDate() + 1);
         this.currentTimestamp = date.getTime() / 1000
         this.currentDate = date.toISOString().split('T')[0]
