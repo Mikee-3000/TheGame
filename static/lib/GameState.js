@@ -1,4 +1,4 @@
-import Metrics from './metrics.js'
+import Metrics from './Metrics.js'
 import PolicySettings from './PolicySettings.js'
 
 let instance = null
@@ -6,6 +6,11 @@ let instance = null
 export default class GameState {
     constructor(scenarioId) {
         if (instance) return instance
+        if (scenarioId === null) {
+            // this is not supposed to happen
+            console.error('GameState failed to initialize on time')
+            throw new Error('GameState failed to initialize on time')
+        }
         instance = this
         this.scenarioId = scenarioId
         // the game starts now
@@ -14,7 +19,7 @@ export default class GameState {
         this.mistralApiKey = null
         // add start values
         this.metrics  = {}
-        this.policySettings = PolicySettings().zeroValues()
+        this.policySettings = new PolicySettings().zeroValues()
         this.setters = document.querySelector('.setters')
         this.result = 'win'
         this.setters.clicked = false
@@ -40,8 +45,23 @@ export default class GameState {
         // delete the previous data first
         this.metrics = {}
         // add the new data
-        for (key in metrics) {
-            this.metrics[key] = new Metrics(...Object.values(metrics[key]))
+        for (let key in metrics) {
+            const newMetrics = metrics[key]
+            // the keys in objects returned by the API are not sorted,
+            // the constructor assignments need to be explicit
+            this.metrics[key] = new Metrics(
+                newMetrics.gt_timestamp,
+                newMetrics.population,
+                newMetrics.consumption,
+                newMetrics.investment,
+                newMetrics.net_export,
+                newMetrics.government_income,
+                newMetrics.inflation,
+                newMetrics.unemployment_rate,
+                newMetrics.money_supply,
+                newMetrics.government_debt,
+                newMetrics.aggregate_demand
+            )
         }
     }
 }
