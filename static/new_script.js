@@ -81,6 +81,26 @@ const tick = () => {
                 // update the date display
                 metricsDisplays.datePanel.updateValue(gameState.currentDate)
                 metricsDisplays.updateValuesAndColors(gameState.colorDailyMetrics())
+
+                // check if automated policy settings is needed to obtain
+                // new metrics
+                // dayBuffer = amount of days that should be enough to get an LLM response
+                const dayBuffer = gameState.llmAverageRoundTripTimeInGameDays * 2
+                // if there are not enough days left, send the LLM request
+                // not enough is less than teh buffer or 3 (to allow for changes in bandwith)
+                const daysLeft = gameState.getFutureDaysLeft()
+                console.log('days left: ', daysLeft)
+                if (daysLeft <= dayBuffer || daysLeft == 3) {
+                    // send the LLM request
+                    const payload = gameState.getDataForLlmRequest()
+                    inGameDataFetcher.load('/set-policy', payload)
+                        // this prevents printing of more error messages into the console 
+                        // the actual successful requests and errors are handled in the loading manager
+                        .then(() => {}).catch((error) => {})
+                }
+
+
+                // ---testing
                 if (counter == 1000) {
                     if (gameState.result == 'win') {
                         loseResultDiv.remove()
