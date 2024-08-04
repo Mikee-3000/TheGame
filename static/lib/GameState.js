@@ -212,4 +212,18 @@ export default class GameState {
         }
         return data
     }
+    updateMetrics(data) {
+        // there is already a method
+        // used to update the metrics with the LLM response
+        // but before using it, I need to make sure that only future data
+        // is going to be updated (this is needed due to the delay in LLM response)
+        let futureData = {}
+        for (const key in data) {
+            if (data[key].gt_timestamp > this.currentTimestamp) {
+                // only update if the timestamp is newer than the current one
+                futureData[key] = data[key]
+            }
+        }
+        this.setMetrics(futureData)
+    }
 }

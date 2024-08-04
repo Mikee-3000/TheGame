@@ -131,7 +131,7 @@ def new_game(
             metrics_response[1]['projection_date']: metrics_response[1]
             }}
     except Exception as e:
-        print(e)
+        # print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 # @app.post('/set-policy', response_model=MetricsSchema)
@@ -159,11 +159,11 @@ def send_policy(policySettings: PolicySettingsSchema,
                 system_message=system_message,
                 model=os.environ['MISTRAL_MODEL']
             )
-            print(162)
-            print(metrics_response_list)
+            # print(162)
+            # print(metrics_response_list)
             metrics_response = metrics_response_list[0]
         except Exception as e:
-            print(166)
+            # print(166)
             raise HTTPException(status_code=500, detail=str(e))
         metrics_response['gt_timestamp'] = dt.strptime(metrics_response['projection_date'], '%Y-%m-%d').timestamp()
         game_data = {'game_id': game.id, 'rl_timestamp': game.rl_timestamp}
@@ -196,7 +196,7 @@ def send_policy(policySettings: PolicySettingsSchema,
         }
         return api_response
     except Exception as e:
-        print(e)
+        # print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/", response_class=HTMLResponse)

@@ -41,8 +41,12 @@ export default class DataFetcher extends THREE.Loader {
                 if (!gameState.gameId) {
                     // this is only necessary on the first load.
                     gameState.gameId = responseData.game.game_id
+                    // this is for the initial load
+                    gameState.setMetrics(responseData.metrics)
+                } else {
+                    // the subsequent LLM updates need filtering for future only
+                    gameState.updateMetrics(responseData)
                 }
-                gameState.setMetrics(responseData.metrics)
                 // register the llm response time
                 gameState.logLlmResponseTime(elapsedTime)
                 resolve(responseData);
