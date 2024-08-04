@@ -282,3 +282,27 @@ button[type="submit"]:hover {
 .game-result > a > .playbutton {
     max-width: 350px;
 }
+
+.notification {
+    display: none;
+    position: fixed;
+    left: 3%;
+    top: 3%;
+    margin: auto;
+    color: #00ff00;
+    background-color: #000000b3;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 6;
+}
+
+.notification.error {
+    color: #ff0000;
+    background-color: #00ff00b3;
+}
+
+.notification.show {
+    display: block;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}

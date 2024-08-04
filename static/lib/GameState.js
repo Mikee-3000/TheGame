@@ -1,5 +1,6 @@
 import Metrics from './Metrics.js'
 import PolicySettings from './PolicySettings.js'
+import Notification from '../scene/Notification.js'
 
 let instance = null
 
@@ -60,6 +61,7 @@ export default class GameState {
         this.llmRoundTripTimes = []
         this.llmAverageRoundTripTime = 0
         this.llmAverageRoundTripTimeInGameDays = 0
+        this.notification = new Notification()
     }
     logLlmResponseTime(duration) {
         this.llmRoundTripTimes.push(duration)
@@ -184,7 +186,7 @@ export default class GameState {
                     government_income: this.metrics[day].governmentIncome,
                     inflation: this.metrics[day].inflation,
                     unemployment_rate: this.metrics[day].unemploymentRate,
-                    moneySupply: this.metrics[day].moneySupply,
+                    money_supply: this.metrics[day].moneySupply,
                     government_debt: this.metrics[day].governmentDebt,
                     aggregate_demand: this.metrics[day].aggregateDemand,
                 }
@@ -194,13 +196,16 @@ export default class GameState {
     }
     getDataForLlmRequest() {
         const metricsLastTenDays = this.getLastTenDaysAllMetrics()
-        data = {
+        let policySettings = this.policySettings.getValuesForLlmJson()
+        policySettings.gt_timestamp = this.currentTimestamp 
+        const data = {
             game: {
                 game_id: this.gameId,
                 rl_timestamp: Math.floor(Date.now() / 1000)
             },
             metrics: metricsLastTenDays,
-            policySettings: this.policySettings
+            policySettings: policySettings
         }
+        return data
     }
 }

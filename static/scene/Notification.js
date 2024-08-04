@@ -1,14 +1,17 @@
 
-import TextPlane from "./TextPlane.js"
-
-export default class Notification extends TextPlane  {
-    constructor(text) {
-        super({color: 'cyan', text: 'metric', dims: {x: 5, y: 3}, fontSize: 500, backgroundColor: 'rgba(0,0,0,0)'})
-        this.position.set(2, 2, 0)
-        this.setText(text)
+export default class Notification {
+    constructor() {
+        this.notification = document.querySelector('.notification')
     }
-    addTo(scene) {
-        scene.add(this)
-        return this
+    show(text, style) {
+        this.notification.textContent = text
+        if (style) {
+            this.notification.classList.add(style)
+        }
+        this.notification.classList.add('show')
+        setTimeout(() => {
+            this.notification.classList.remove('show')
+            this.notification.classList.remove(style)
+        }, 3000)
     }
 }

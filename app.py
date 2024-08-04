@@ -80,6 +80,7 @@ def new_game(
     scenario: ScenarioSchema = Depends(get_scenario_by_id),
     db: Session = Depends(db_session),
     ):
+    # raise HTTPException(status_code=500, detail='mock exception')
     try:
         # request the initial metrics and policy settings from the LLLM
         game_time_str = dt.strftime(dt.fromtimestamp(game.start_gt_timestamp), '%Y-%m-%d')

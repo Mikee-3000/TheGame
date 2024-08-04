@@ -17,7 +17,12 @@ export default class DataFetcher extends THREE.Loader {
                 headers: { 'Content-Type': 'application/json', 'User-Agent': 'TheGame DataFetcher/1.0' },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+                return response.json()
+            })
             .then(responseData => {
                 // measure the time it takes, in milliseconds
                 const endTime = performance.now()
@@ -40,9 +45,8 @@ export default class DataFetcher extends THREE.Loader {
                 resolve(responseData);
             })
             .catch(error => {
-                console.error('Error loading data:', error);
                 scope.manager.itemError(this.url)
-                reject(error);
+                reject(error)
             });
         });
     }

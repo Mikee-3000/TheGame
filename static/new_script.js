@@ -8,7 +8,6 @@ import MetricsDisplays from './scene/MetricsDisplays.js'
 import StarSphere from './scene/SkySphere.js'
 import URLVault from './lib/URLVault.js'
 import DataFetcher from './lib/DataFetcher.js'
-import Notification from './scene/Notification.js'
 import getMouse from './scene/Mouse.js'
 import ButtonText from './scene/ButtonText.js'
 import PolicySettingsDisplays from './scene/PolicySettingsDisplays.js'
@@ -140,8 +139,12 @@ window.loadingManager = new THREE.LoadingManager(
     },
     // onError
     ( ) => {
-        alert("The LLM didn't send the expected response. Redirecting back to the start page, please try again.");
-        window.location.href = "/";
+        // the LLM didn't respond as expected
+        // notify the user and redirect them back to the selection page
+        gameState.notification.show("The LLM didn't send the expected response. Redirecting back to the start page, please try again.")
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 3000);
     }
 )
 
@@ -153,11 +156,11 @@ const inGameLoadingManager = new THREE.LoadingManager(
     },
     // onProgress
     ( ) => {
-        const notification = new Notification('Request to LLM sent. Awaiting reply.')
+        // const notification = new Notification('Request to LLM sent. Awaiting reply.')
     },
     // onError
     ( ) => {
-        const notification = new Notification("The LLM didn't send the expected reply. Please retry")
+        gameState.notification.show("The LLM didn't reply in the expected format. Please try again.", 'error')
     }
 )
 
@@ -271,7 +274,9 @@ settersForm.addEventListener('submit', (event) => {
     // send the LLM request
     const payload = gameState.getDataForLlmRequest()
     inGameDataFetcher.load('/set-policy', payload)
-    
+        // this prevents printing of more error messages into the console 
+        // the actual successful requests and errors are handled in the loading manager
+        .then(() => {}).catch((error) => {})
 })
 
 // window
