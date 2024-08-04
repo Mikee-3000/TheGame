@@ -22,6 +22,14 @@ export default class GameState {
         this.currentTimestamp = this.startTimestamp
         // add the current date in YYYY-MM-DD format
         this.currentDate = new Date(this.startTimestamp * 1000).toISOString().split('T')[0]
+        // end date - when the game is lost or won
+        let dateNow = new Date()
+        dateNow.setFullYear(dateNow.getFullYear() + 1)
+        this.endTimestamp = Math.floor(dateNow.getTime() / 1000)
+        this.endDate = dateNow.toISOString().split('T')[0]
+        console.log('end date')
+        console.log(this.endTimestamp)
+        console.log(this.endDate)
         this.lastTenDays = [this.currentDate]
         // the user's API key is needed for AI communication
         this.mistralApiKey = null

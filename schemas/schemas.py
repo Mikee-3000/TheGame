@@ -117,3 +117,13 @@ class PolicySettingsSchema(BaseModel):
             corporate_tax_rate = corporate_tax_rate,
             gt_timestamp = gt_timestamp
         )
+
+class GameStateSchema(BaseModel):
+    scenarioId: Annotated[int, 'The ID of the scenario']
+    # gameDayInSeconds: Annotated[int, 'The duration of a single game day in seconds']
+    # startTimestamp = Annotated[int, 'The start timestamp of the game']
+    # currentTimestamp = Annotated[int, 'The end timestamp of the game']
+    # metrics: Annotated[dict[str, MetricsSchema], 'The metrics for each day']
+    # policySettings: Annotated[PolicySettingsSchema, 'The policy settings']
+
+

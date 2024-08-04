@@ -199,6 +199,12 @@ def send_policy(policySettings: PolicySettingsSchema,
         # print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/save-game/")
+def save_game(
+    db: Session = Depends(db_session)
+):
+    pass
+
 @app.get("/", response_class=HTMLResponse)
 def root(
     request: Request,

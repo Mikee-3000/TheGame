@@ -306,3 +306,16 @@ button[type="submit"]:hover {
     display: block;
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
+
+.save-button {
+    z-index: 6;
+    opacity: 0%;
+    position: fixed;
+    top: 3%;
+    left: 93%;
+    transition: opacity 5.5s ease;
+}
+.save-button.show {
+    opacity: 100%;
+    /* animation: fadein 1.5s; */
+}
