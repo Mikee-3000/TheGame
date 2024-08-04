@@ -28,14 +28,50 @@ def talk(
     try:
         metrics_list = []
         for i in range(expected_metrics_amount):
-            message_json = re.findall(r'```json([^`]+)```', message_content)[i]
+            message_json = re.findall(r'```([^`]+)```', message_content)[i].strip()
+            # message_json = re.findall(r'{([^`]+)}$', message_content)[i]
             metrics_list.append(json.loads(message_json))
-        return metrics_list, chat_response.choices[0]
-    except IndexError:
+        print(metrics_list)
+        print('-----')
+        print(chat_response.choices[0])
+        return (metrics_list, chat_response.choices[0])
+    except IndexError as e:
         # sometimes the AI sends only the JSON
         try:
-            return json.loads(message_content)
+            print('message py 41')
+            print(e)
+            print(message_content)
+            loaded_json = json.loads(message_content)
+            if not isinstance(loaded_json, list):
+                return ([loaded_json], chat_response.choices[0])
+            else:
+                return (loaded_json, chat_response.choices[0])
         except json.JSONDecodeError:
             # stuck
+            print('bad json')
+            print(type(message_content))
             print(message_content)
-            # TODO: more error handling
+            # probably an almost-ok JSON, that might still be fixed
+            all_tokens = re.split(r'[{}":\s,]', message_content)
+            tokens = []
+            for token in all_tokens:
+                token = re.sub(r'[{}":\s,]', '', token)
+                if token == '':
+                    continue
+                tokens.append(token)
+            print(tokens)
+            fixed_json = {}
+            key = None
+            for i, token in enumerate(tokens):
+                if token == '':
+                    continue
+                if i % 2 == 0:
+                    # key
+                    key = token
+                else:
+                    try:
+                        token = float(token)
+                    except ValueError:
+                        pass
+                    fixed_json[key] = token
+            return [fixed_json], chat_response.choices[0]

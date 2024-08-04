@@ -142,6 +142,7 @@ window.loadingManager = new THREE.LoadingManager(
         // the LLM didn't respond as expected
         // notify the user and redirect them back to the selection page
         gameState.notification.show("The LLM didn't send the expected response. Redirecting back to the start page, please try again.")
+        gameState.failedLlmCalls += 1
         setTimeout(() => {
             window.location.href = "/";
         }, 3000);
@@ -152,15 +153,16 @@ window.loadingManager = new THREE.LoadingManager(
 const inGameLoadingManager = new THREE.LoadingManager(
     // onLoad
     ( ) => {
-        console.log('llm request fetched')
+        gameState.notification.show("LLM response received.")
     },
     // onProgress
     ( ) => {
-        // const notification = new Notification('Request to LLM sent. Awaiting reply.')
+        gameState.notification.show("Request to LLM sent.")
     },
     // onError
     ( ) => {
         gameState.notification.show("The LLM didn't reply in the expected format. Please try again.", 'error')
+        gameState.failedLlmCalls += 1
     }
 )
 

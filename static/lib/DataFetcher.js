@@ -38,13 +38,17 @@ export default class DataFetcher extends THREE.Loader {
                     const scenarioId = document.getElementById('data').dataset.scenario
                     gameState = new GameState(scenarioId)
                 }
-                gameState.gameId = responseData.game.game_id
+                if (!gameState.gameId) {
+                    // this is only necessary on the first load.
+                    gameState.gameId = responseData.game.game_id
+                }
                 gameState.setMetrics(responseData.metrics)
                 // register the llm response time
                 gameState.logLlmResponseTime(elapsedTime)
                 resolve(responseData);
             })
             .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
                 scope.manager.itemError(this.url)
                 reject(error)
             });

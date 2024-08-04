@@ -141,7 +141,7 @@ def send_policy(policySettings: PolicySettingsSchema,
                 db: Session = Depends(db_session),
                 game: Game = Depends(get_game_by_id)
 ):
-    raise HTTPException(status_code=500, detail='mock exception')
+    # raise HTTPException(status_code=500, detail='mock exception')
     try:
         # convert the object into a dict
         policy_settings = policySettings.model_dump()
@@ -159,9 +159,12 @@ def send_policy(policySettings: PolicySettingsSchema,
                 system_message=system_message,
                 model=os.environ['MISTRAL_MODEL']
             )
+            print(162)
+            print(metrics_response_list)
             metrics_response = metrics_response_list[0]
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str("103" + e))
+            print(166)
+            raise HTTPException(status_code=500, detail=str(e))
         metrics_response['gt_timestamp'] = dt.strptime(metrics_response['projection_date'], '%Y-%m-%d').timestamp()
         game_data = {'game_id': game.id, 'rl_timestamp': game.rl_timestamp}
 

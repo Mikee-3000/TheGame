@@ -31,6 +31,7 @@ export default class GameState {
         this.setters = document.querySelector('.setters')
         this.result = 'win'
         this.setters.clicked = false
+        // set this to null, the data fetcher will fill it on first LLM response
         this.gameId = null
         this.metricsList = [
            'population',
@@ -61,6 +62,9 @@ export default class GameState {
         this.llmRoundTripTimes = []
         this.llmAverageRoundTripTime = 0
         this.llmAverageRoundTripTimeInGameDays = 0
+        // count how many LLM calls failed
+        this.failedLlmCalls = 0
+        // notification shows when communicating with the LLM
         this.notification = new Notification()
     }
     logLlmResponseTime(duration) {
