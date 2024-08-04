@@ -73,6 +73,7 @@ export default class GameState {
         this.llmAverageRoundTripTime = this.llmRoundTripTimes.reduce((acc, cv) => acc + cv, 0) / this.llmRoundTripTimes.length
         // convert the avg to game days. 
         this.llmAverageRoundTripTimeInGameDays = (this.llmAverageRoundTripTime / 1000) / this.gameDayInSeconds
+        console.log(this.llmAverageRoundTripTimeInGameDays)
     }
     getRequestData() {
         // sends only the data that the AI expects
@@ -225,5 +226,15 @@ export default class GameState {
             }
         }
         this.setMetrics(futureData)
+    }
+    // how many days do we still have metrics for
+    getFutureDaysLeft() {
+        let counter = 0
+        for (const key in this.metrics) {
+            if (this.metrics[key].gtTimestamp > this.currentTimestamp) {
+                counter++
+            }
+        }
+        return counter
     }
 }
