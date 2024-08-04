@@ -22,6 +22,12 @@ export default class GameState {
         this.currentTimestamp = this.startTimestamp
         // add the current date in YYYY-MM-DD format
         this.currentDate = new Date(this.startTimestamp * 1000).toISOString().split('T')[0]
+        // end date - when the game is lost or won
+        let dateNow = new Date()
+        dateNow.setFullYear(dateNow.getFullYear() + 1)
+        this.endTimestamp = Math.floor(dateNow.getTime() / 1000)
+        this.endDate = dateNow.toISOString().split('T')[0]
+        this.yesterday = null
         this.lastTenDays = [this.currentDate]
         // the user's API key is needed for AI communication
         this.mistralApiKey = null
@@ -73,13 +79,8 @@ export default class GameState {
         this.llmAverageRoundTripTime = this.llmRoundTripTimes.reduce((acc, cv) => acc + cv, 0) / this.llmRoundTripTimes.length
         // convert the avg to game days. 
         this.llmAverageRoundTripTimeInGameDays = (this.llmAverageRoundTripTime / 1000) / this.gameDayInSeconds
-        console.log(this.llmAverageRoundTripTimeInGameDays)
     }
-    getRequestData() {
-        // sends only the data that the AI expects
-        return {
-        }
-    }
+
     toggleSetters() {
         // toggles the setters on and off
         if (this.setters.style.display === 'none' || this.setters.style.display === '') {
@@ -148,8 +149,6 @@ export default class GameState {
         let todaysMetrics = this.getDailyMetricsAsString()
         Object.assign(todaysMetrics, colors)
         return todaysMetrics
-
-
     }
     addDayToGameDate() {
         const date = new Date(this.currentTimestamp * 1000)
@@ -236,5 +235,28 @@ export default class GameState {
             }
         }
         return counter
+    }
+    getStateForSaving() {
+        let stateObject = {}
+        stateObject.scenarioId = this.scenarioId
+        stateObject.gameId = this.gameId
+        stateObject.gameDayInSeconds = this.gameDayInSeconds
+        stateObject.startTimestamp = this.startTimestamp
+        stateObject.currentTimestamp = this.currentTimestamp
+        stateObject.currentDate = this.currentDate
+        stateObject.endTimestamp = this.endTimestamp
+        stateObject.endDate = this.endDate
+        stateObject.lastTenDays = this.lastTenDays
+        stateObject.mistralApiKey = this.mistralApiKey
+        stateObject.metrics = this.metrics
+        stateObject.policySettings = this.policySettings
+        stateObject.result = this.result
+        stateObject.llmRoundTripTimes = this.llmRoundTripTimes
+        stateObject.llmAverageRoundTripTime = this.llmAverageRoundTripTime
+        stateObject.llmAverageRoundTripTimeInGameDays = this.llmAverageRoundTripTimeInGameDays
+        stateObject.failedLlmCalls = this.failedLlmCalls
+        stateObject.yesterday = this.yesterday
+
+        return stateObject
     }
 }

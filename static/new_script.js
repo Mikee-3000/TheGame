@@ -9,6 +9,7 @@ import StarSphere from './scene/SkySphere.js'
 import URLVault from './lib/URLVault.js'
 import DataFetcher from './lib/DataFetcher.js'
 import getMouse from './scene/Mouse.js'
+import SaveButton from './scene/SaveButton.js'
 import ButtonText from './scene/ButtonText.js'
 import PolicySettingsDisplays from './scene/PolicySettingsDisplays.js'
 import PolicySettingsButton from './scene/PolicySettingsButton.js'
@@ -17,7 +18,6 @@ import ChartDisplay from './scene/ChartDisplay.js'
 import GameState from './lib/GameState.js'
 import Floor from './scene/Floor.js'
 import PolicyConsole from './scene/PolicyConsole.js'
-import { Points } from './lib/utils.js'
 
 // Game Data
 // retrieve the scenario ID from an invisible div
@@ -89,7 +89,6 @@ const tick = () => {
                 // if there are not enough days left, send the LLM request
                 // not enough is less than teh buffer or 3 (to allow for changes in bandwith)
                 const daysLeft = gameState.getFutureDaysLeft()
-                console.log('days left: ', daysLeft)
                 if (daysLeft <= dayBuffer || daysLeft == 3) {
                     // send the LLM request
                     const payload = gameState.getDataForLlmRequest()
@@ -131,6 +130,9 @@ const tick = () => {
     window.requestAnimationFrame(tick)
 }
 
+// Save Button
+const saveButton = new SaveButton()
+
 // loading overlay with progress bar
 window.loadingManager = new THREE.LoadingManager(
     // onLoad
@@ -150,6 +152,7 @@ window.loadingManager = new THREE.LoadingManager(
             metricsDisplays.updateValues(gameState.getDailyMetricsAsString())
             chartDisplay.update(gameState.getLastTenDaysMetrics(gameState.metricsList[0]))
             policySettingsDisplays.updateValues(gameState.policySettings.getValuesAsStrings())
+            saveButton.show()
             tick()
         })
     },
@@ -164,8 +167,8 @@ window.loadingManager = new THREE.LoadingManager(
         gameState.notification.show("The LLM didn't send the expected response. Redirecting back to the start page, please try again.")
         gameState.failedLlmCalls += 1
         setTimeout(() => {
-            window.location.href = "/";
-        }, 3000);
+            window.location.href = "/"
+        }, 3000)
     }
 )
 
@@ -223,7 +226,7 @@ sceneGroup.add(camera)
 
 // Create a rectangular area light
 RectAreaLightUniformsLib.init()
-const ceilingLight = new THREE.RectAreaLight(0x888888, 100, 1000, 1000);
+const ceilingLight = new THREE.RectAreaLight(0x888888, 100, 1000, 1000)
 ceilingLight.position.set(0, 4, 4)
 ceilingLight.lookAt(0, 0, 0)
 sceneGroup.add(ceilingLight)
@@ -272,7 +275,7 @@ controls.target.set(0, 2, 0)
 controls.enableDamping = true
 controls.dampingFactor = 1
 // the default for Y is unintuitive for me
-controls.invertY = true;
+controls.invertY = true
 renderer.render(scene, camera)
 
 // event listeners
@@ -316,7 +319,7 @@ window.addEventListener('resize' , () => {
 
 // Load the environment map
 // Create an RGBE loader
-const rgbeLoader = new RGBELoader(window.loadingManager);
+const rgbeLoader = new RGBELoader(window.loadingManager)
 
 // floor
 const floor = new Floor()

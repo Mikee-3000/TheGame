@@ -199,6 +199,15 @@ def send_policy(policySettings: PolicySettingsSchema,
         # print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/save-game/")
+def save_game(
+    gameStateSchema: GameStateSchema,
+    db: Session = Depends(db_session)
+):
+    saved_game_id = create_game_state(db, gameStateSchema)
+    return {"message": "Game state saved successfully",
+            "saved_game_id": saved_game_id}
+
 @app.get("/", response_class=HTMLResponse)
 def root(
     request: Request,
