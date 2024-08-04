@@ -8,6 +8,7 @@ import MetricsDisplays from './scene/MetricsDisplays.js'
 import StarSphere from './scene/SkySphere.js'
 import URLVault from './lib/URLVault.js'
 import DataFetcher from './lib/DataFetcher.js'
+import Notification from './scene/Notification.js'
 import getMouse from './scene/Mouse.js'
 import ButtonText from './scene/ButtonText.js'
 import PolicySettingsDisplays from './scene/PolicySettingsDisplays.js'
@@ -113,6 +114,7 @@ const tick = () => {
 
 // loading overlay with progress bar
 window.loadingManager = new THREE.LoadingManager(
+    // onLoad
     ( ) => {
         gsap.delayedCall(0.5, () => {
             gsap.to(
@@ -132,10 +134,35 @@ window.loadingManager = new THREE.LoadingManager(
             tick()
         })
     },
+    // onProgress
     ( url, itemsLoaded, itemsTotal ) => {
         loadingBar.style.transform = `scaleX(${itemsLoaded / itemsTotal})`
+    },
+    // onError
+    ( ) => {
+        alert("The LLM didn't send the expected response. Redirecting back to the start page, please try again.");
+        window.location.href = "/";
     }
 )
+
+// loading manager for in-game data requests
+const inGameLoadingManager = new THREE.LoadingManager(
+    // onLoad
+    ( ) => {
+        console.log('llm request fetched')
+    },
+    // onProgress
+    ( ) => {
+        const notification = new Notification('Request to LLM sent. Awaiting reply.')
+    },
+    // onError
+    ( ) => {
+        const notification = new Notification("The LLM didn't send the expected reply. Please retry")
+    }
+)
+
+// create a var for the in-game data fetcher
+let inGameDataFetcher = new DataFetcher(inGameLoadingManager)
 
 // data loader for LLM responses
 const dataFetcher = new DataFetcher(window.loadingManager)
@@ -201,22 +228,6 @@ const buttonText = new ButtonText(sceneGroup)
 // needs to be __cloned__ , otherwise the original will be changed
 const originalButtonPosition = policySettingsButton.position.clone()
 
-// chart display
-const fakeDates = [
-{date: '2024-07-28', metric: 'Investment', value: 0},
-{date: '2024-07-28', metric: 'Investment', value: 2},  
-{date: '2024-07-28', metric: 'Investment', value: 31},  
-{date: '2024-07-28', metric: 'Investment', value: 13},  
-{date: '2024-07-28', metric: 'Investment', value: 33},  
-{date: '2024-07-28', metric: 'Investment', value: 8},  
-{date: '2024-07-28', metric: 'Investment', value: 0.5},  
-{date: '2024-07-28', metric: 'Investment', value: 0},  
-{date: '2024-07-28', metric: 'Investment', value: -10},  
-{date: '2024-07-28', metric: 'Investment', value: 3},  
-]
-
-// const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
-
 // controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -257,6 +268,10 @@ settersForm.addEventListener('submit', (event) => {
     policySettingsDisplays.updateValues(data)
     // add to the game state
     gameState.setPolicySettings(data)
+    // send the LLM request
+    const payload = gameState.getDataForLlmRequest()
+    inGameDataFetcher.load('/set-policy', payload)
+    
 })
 
 // window

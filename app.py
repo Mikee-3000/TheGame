@@ -140,6 +140,7 @@ def send_policy(policySettings: PolicySettingsSchema,
                 db: Session = Depends(db_session),
                 game: Game = Depends(get_game_by_id)
 ):
+    raise HTTPException(status_code=500, detail='mock exception')
     try:
         # convert the object into a dict
         policy_settings = policySettings.model_dump()

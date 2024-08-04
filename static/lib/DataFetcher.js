@@ -41,6 +41,7 @@ export default class DataFetcher extends THREE.Loader {
             })
             .catch(error => {
                 console.error('Error loading data:', error);
+                scope.manager.itemError(this.url)
                 reject(error);
             });
         });

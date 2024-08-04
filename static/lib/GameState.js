@@ -21,8 +21,8 @@ export default class GameState {
         this.currentTimestamp = this.startTimestamp
         // add the current date in YYYY-MM-DD format
         this.currentDate = new Date(this.startTimestamp * 1000).toISOString().split('T')[0]
-        // the user's API key is needed for AI communication
         this.lastTenDays = [this.currentDate]
+        // the user's API key is needed for AI communication
         this.mistralApiKey = null
         // add start values
         this.metrics  = {}
@@ -170,5 +170,37 @@ export default class GameState {
             )
         }
         return returnArray
+    }
+    getLastTenDaysAllMetrics() {
+        let returnArray = []
+        for (let day of this.lastTenDays) {
+            returnArray.push(
+                {
+                    gt_timestamp: this.metrics[day].gtTimestamp,
+                    population: this.metrics[day].population,
+                    consumption: this.metrics[day].consumption,
+                    investment: this.metrics[day].investment,
+                    net_export: this.metrics[day].netExport,
+                    government_income: this.metrics[day].governmentIncome,
+                    inflation: this.metrics[day].inflation,
+                    unemployment_rate: this.metrics[day].unemploymentRate,
+                    moneySupply: this.metrics[day].moneySupply,
+                    government_debt: this.metrics[day].governmentDebt,
+                    aggregate_demand: this.metrics[day].aggregateDemand,
+                }
+            )
+        }
+        return returnArray
+    }
+    getDataForLlmRequest() {
+        const metricsLastTenDays = this.getLastTenDaysAllMetrics()
+        data = {
+            game: {
+                game_id: this.gameId,
+                rl_timestamp: Math.floor(Date.now() / 1000)
+            },
+            metrics: metricsLastTenDays,
+            policySettings: this.policySettings
+        }
     }
 }
