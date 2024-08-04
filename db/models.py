@@ -1,10 +1,11 @@
 from db.database import Base, str255, MetricsType, GameType
-from sqlalchemy import Boolean, ForeignKey, BigInteger, Text
+from sqlalchemy import Boolean, ForeignKey, BigInteger, Text, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Text
 # from typing_extensions import Annotated
 from typing import Annotated, Optional
+import uuid
 
 # sources:
 # - https://fastapi.tiangolo.com/tutorial/sql-databases
@@ -31,6 +32,11 @@ class Scenario(Base):
     # one scenario has many games
     games: Mapped[list['Game']] = relationship('Game', back_populates='scenario')
 
+class GameState(Base):
+    __tablename__ = 'game_states'
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    data: Mapped[dict] = mapped_column(JSONB)
 
 class Game(Base):
     __tablename__ = 'games'

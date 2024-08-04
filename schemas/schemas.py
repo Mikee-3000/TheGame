@@ -156,5 +156,6 @@ class GameStateSchema(BaseModel):
     llmAverageRoundTripTime: Annotated[Optional[float], 'Average round trip time of the LLM requests'] = None
     llmAverageRoundTripTimeInGameDays: Annotated[Optional[float], 'Average round trip time of the LLM requests in game days'] = None
     failedLlmCalls: Annotated[Optional[int], 'Number of failed LLM calls'] = None
+    yesterday: Annotated[Optional[str], 'The date of yesterday in game days'] = None
 
 

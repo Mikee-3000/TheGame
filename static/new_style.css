@@ -288,6 +288,7 @@ button[type="submit"]:hover {
     position: fixed;
     left: 3%;
     top: 3%;
+    max-width: 300px;
     margin: auto;
     color: #00ff00;
     background-color: #000000b3;
@@ -312,8 +313,17 @@ button[type="submit"]:hover {
     opacity: 0%;
     position: fixed;
     top: 3%;
-    left: 93%;
+    right: 5%;
     transition: opacity 5.5s ease;
+    background-color: #00ff00;
+    color:  black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.save-button:hover {
+    background-color: yellow;
 }
 .save-button.show {
     opacity: 100%;

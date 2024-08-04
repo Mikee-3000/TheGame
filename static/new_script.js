@@ -89,7 +89,6 @@ const tick = () => {
                 // if there are not enough days left, send the LLM request
                 // not enough is less than teh buffer or 3 (to allow for changes in bandwith)
                 const daysLeft = gameState.getFutureDaysLeft()
-                console.log('days left: ', daysLeft)
                 if (daysLeft <= dayBuffer || daysLeft == 3) {
                     // send the LLM request
                     const payload = gameState.getDataForLlmRequest()

@@ -204,7 +204,9 @@ def save_game(
     gameStateSchema: GameStateSchema,
     db: Session = Depends(db_session)
 ):
-    print(gameStateSchema)
+    saved_game_id = create_game_state(db, gameStateSchema)
+    return {"message": "Game state saved successfully",
+            "saved_game_id": saved_game_id}
 
 @app.get("/", response_class=HTMLResponse)
 def root(

@@ -22,6 +22,19 @@ def create_scenario(
     db.refresh(db_scenario)
     return db_scenario
 
+def create_game_state(
+        db: Session,
+        gameStateSchema: GameStateSchema
+):
+    db_game_state = GameState(
+        data = gameStateSchema.model_dump()
+    )
+    db.add(db_game_state)
+    db.commit()
+    db.refresh(db_game_state)
+    return db_game_state.id
+
+
 def create_scenarios_from_json(
         db: Session
 ):
