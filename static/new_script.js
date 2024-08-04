@@ -53,7 +53,7 @@ const tick = () => {
     // if the setters are on, don't run time
     if (!gameState.setters.clicked) {
         // rotate the sky, it looks pretty
-        starSphere.rotation.y += Math.PI / 14400
+        starSphere.rotation.y += Math.PI / 20000
         // starSphere.rotation.x += Math.PI / 14400
 
         // update the date
@@ -67,7 +67,7 @@ const tick = () => {
             counter += 1
             // if nothing is selected, switch the metrics up periodically
             if (!gameState.metricsDisplayClicked) {
-                if (counter % 2 === 0) {
+                if (counter % 9 === 0) { // don't do it too often, bad for performance
                     const chosenMetric = gameState.metricsList[chartSelector]
                     chartDisplay.update(gameState.getLastTenDaysMetrics(chosenMetric))
                     chartSelector += 1
@@ -75,7 +75,7 @@ const tick = () => {
                 }
             }
             // this is a new day
-            if (counter % 5 === 0) {
+            if (counter % gameState.gameDayInSeconds === 0) {
                 // update the date
                 gameState.addDayToGameDate()
                 // update the date display
@@ -113,6 +113,7 @@ const tick = () => {
 
 // loading overlay with progress bar
 window.loadingManager = new THREE.LoadingManager(
+    // onLoad
     ( ) => {
         gsap.delayedCall(0.5, () => {
             gsap.to(
@@ -132,10 +133,41 @@ window.loadingManager = new THREE.LoadingManager(
             tick()
         })
     },
+    // onProgress
     ( url, itemsLoaded, itemsTotal ) => {
         loadingBar.style.transform = `scaleX(${itemsLoaded / itemsTotal})`
+    },
+    // onError
+    ( ) => {
+        // the LLM didn't respond as expected
+        // notify the user and redirect them back to the selection page
+        gameState.notification.show("The LLM didn't send the expected response. Redirecting back to the start page, please try again.")
+        gameState.failedLlmCalls += 1
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 3000);
     }
 )
+
+// loading manager for in-game data requests
+const inGameLoadingManager = new THREE.LoadingManager(
+    // onLoad
+    ( ) => {
+        gameState.notification.show("LLM response received.")
+    },
+    // onProgress
+    ( ) => {
+        gameState.notification.show("Request to LLM sent.")
+    },
+    // onError
+    ( ) => {
+        gameState.notification.show("The LLM didn't reply in the expected format. Please try again.", 'error')
+        gameState.failedLlmCalls += 1
+    }
+)
+
+// create a var for the in-game data fetcher
+let inGameDataFetcher = new DataFetcher(inGameLoadingManager)
 
 // data loader for LLM responses
 const dataFetcher = new DataFetcher(window.loadingManager)
@@ -201,22 +233,6 @@ const buttonText = new ButtonText(sceneGroup)
 // needs to be __cloned__ , otherwise the original will be changed
 const originalButtonPosition = policySettingsButton.position.clone()
 
-// chart display
-const fakeDates = [
-{date: '2024-07-28', metric: 'Investment', value: 0},
-{date: '2024-07-28', metric: 'Investment', value: 2},  
-{date: '2024-07-28', metric: 'Investment', value: 31},  
-{date: '2024-07-28', metric: 'Investment', value: 13},  
-{date: '2024-07-28', metric: 'Investment', value: 33},  
-{date: '2024-07-28', metric: 'Investment', value: 8},  
-{date: '2024-07-28', metric: 'Investment', value: 0.5},  
-{date: '2024-07-28', metric: 'Investment', value: 0},  
-{date: '2024-07-28', metric: 'Investment', value: -10},  
-{date: '2024-07-28', metric: 'Investment', value: 3},  
-]
-
-// const chartDisplay = new ChartDisplay(fakeDates, sceneGroup)
-
 // controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -257,6 +273,12 @@ settersForm.addEventListener('submit', (event) => {
     policySettingsDisplays.updateValues(data)
     // add to the game state
     gameState.setPolicySettings(data)
+    // send the LLM request
+    const payload = gameState.getDataForLlmRequest()
+    inGameDataFetcher.load('/set-policy', payload)
+        // this prevents printing of more error messages into the console 
+        // the actual successful requests and errors are handled in the loading manager
+        .then(() => {}).catch((error) => {})
 })
 
 // window

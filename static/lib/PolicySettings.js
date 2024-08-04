@@ -23,6 +23,15 @@ export default class PolicySettings {
             individualIncomeTaxRate: this.individualIncomeTaxRate.toFixed(2),
             corporateIncomeTaxRate: this.corporateIncomeTaxRate.toFixed(2)
         }
-
+    }
+    getValuesForLlmJson() {
+        // the API expects snake_case rather than camelCase
+        return {
+            interest_rate: this.interestRate,
+            government_spending: this.governmentSpending,
+            open_market_operations: this.openMarketOperations,
+            individual_tax_rate: this.individualIncomeTaxRate,
+            corporate_tax_rate: this.corporateIncomeTaxRate
+        }
     }
 }

@@ -1,5 +1,6 @@
 import Metrics from './Metrics.js'
 import PolicySettings from './PolicySettings.js'
+import Notification from '../scene/Notification.js'
 
 let instance = null
 
@@ -12,6 +13,8 @@ export default class GameState {
             throw new Error('GameState failed to initialize on time')
         }
         instance = this
+        // this how many real live seconds to one day
+        this.gameDayInSeconds = 5
         this.scenarioId = scenarioId
         // the game starts now
         this.startTimestamp = Math.floor(Date.now() / 1000);
@@ -19,8 +22,8 @@ export default class GameState {
         this.currentTimestamp = this.startTimestamp
         // add the current date in YYYY-MM-DD format
         this.currentDate = new Date(this.startTimestamp * 1000).toISOString().split('T')[0]
-        // the user's API key is needed for AI communication
         this.lastTenDays = [this.currentDate]
+        // the user's API key is needed for AI communication
         this.mistralApiKey = null
         // add start values
         this.metrics  = {}
@@ -28,6 +31,7 @@ export default class GameState {
         this.setters = document.querySelector('.setters')
         this.result = 'win'
         this.setters.clicked = false
+        // set this to null, the data fetcher will fill it on first LLM response
         this.gameId = null
         this.metricsList = [
            'population',
@@ -54,7 +58,21 @@ export default class GameState {
             'aggregateDemand': 'Aggregate Demand'
         }
         this.metricsDisplayClicked = null
-
+        // measure the response time from the LLM
+        this.llmRoundTripTimes = []
+        this.llmAverageRoundTripTime = 0
+        this.llmAverageRoundTripTimeInGameDays = 0
+        // count how many LLM calls failed
+        this.failedLlmCalls = 0
+        // notification shows when communicating with the LLM
+        this.notification = new Notification()
+    }
+    logLlmResponseTime(duration) {
+        this.llmRoundTripTimes.push(duration)
+        // average the array
+        this.llmAverageRoundTripTime = this.llmRoundTripTimes.reduce((acc, cv) => acc + cv, 0) / this.llmRoundTripTimes.length
+        // convert the avg to game days. 
+        this.llmAverageRoundTripTimeInGameDays = (this.llmAverageRoundTripTime / 1000) / this.gameDayInSeconds
     }
     getRequestData() {
         // sends only the data that the AI expects
@@ -158,5 +176,54 @@ export default class GameState {
             )
         }
         return returnArray
+    }
+    getLastTenDaysAllMetrics() {
+        let returnArray = []
+        for (let day of this.lastTenDays) {
+            returnArray.push(
+                {
+                    gt_timestamp: this.metrics[day].gtTimestamp,
+                    population: this.metrics[day].population,
+                    consumption: this.metrics[day].consumption,
+                    investment: this.metrics[day].investment,
+                    net_export: this.metrics[day].netExport,
+                    government_income: this.metrics[day].governmentIncome,
+                    inflation: this.metrics[day].inflation,
+                    unemployment_rate: this.metrics[day].unemploymentRate,
+                    money_supply: this.metrics[day].moneySupply,
+                    government_debt: this.metrics[day].governmentDebt,
+                    aggregate_demand: this.metrics[day].aggregateDemand,
+                }
+            )
+        }
+        return returnArray
+    }
+    getDataForLlmRequest() {
+        const metricsLastTenDays = this.getLastTenDaysAllMetrics()
+        let policySettings = this.policySettings.getValuesForLlmJson()
+        policySettings.gt_timestamp = this.currentTimestamp 
+        const data = {
+            game: {
+                game_id: this.gameId,
+                rl_timestamp: Math.floor(Date.now() / 1000)
+            },
+            metrics: metricsLastTenDays,
+            policySettings: policySettings
+        }
+        return data
+    }
+    updateMetrics(data) {
+        // there is already a method
+        // used to update the metrics with the LLM response
+        // but before using it, I need to make sure that only future data
+        // is going to be updated (this is needed due to the delay in LLM response)
+        let futureData = {}
+        for (const key in data) {
+            if (data[key].gt_timestamp > this.currentTimestamp) {
+                // only update if the timestamp is newer than the current one
+                futureData[key] = data[key]
+            }
+        }
+        this.setMetrics(futureData)
     }
 }

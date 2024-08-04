@@ -80,6 +80,7 @@ def new_game(
     scenario: ScenarioSchema = Depends(get_scenario_by_id),
     db: Session = Depends(db_session),
     ):
+    # raise HTTPException(status_code=500, detail='mock exception')
     try:
         # request the initial metrics and policy settings from the LLLM
         game_time_str = dt.strftime(dt.fromtimestamp(game.start_gt_timestamp), '%Y-%m-%d')
@@ -130,7 +131,7 @@ def new_game(
             metrics_response[1]['projection_date']: metrics_response[1]
             }}
     except Exception as e:
-        print(e)
+        # print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 # @app.post('/set-policy', response_model=MetricsSchema)
@@ -140,6 +141,7 @@ def send_policy(policySettings: PolicySettingsSchema,
                 db: Session = Depends(db_session),
                 game: Game = Depends(get_game_by_id)
 ):
+    # raise HTTPException(status_code=500, detail='mock exception')
     try:
         # convert the object into a dict
         policy_settings = policySettings.model_dump()
@@ -157,9 +159,12 @@ def send_policy(policySettings: PolicySettingsSchema,
                 system_message=system_message,
                 model=os.environ['MISTRAL_MODEL']
             )
+            # print(162)
+            # print(metrics_response_list)
             metrics_response = metrics_response_list[0]
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str("103" + e))
+            # print(166)
+            raise HTTPException(status_code=500, detail=str(e))
         metrics_response['gt_timestamp'] = dt.strptime(metrics_response['projection_date'], '%Y-%m-%d').timestamp()
         game_data = {'game_id': game.id, 'rl_timestamp': game.rl_timestamp}
 
@@ -191,7 +196,7 @@ def send_policy(policySettings: PolicySettingsSchema,
         }
         return api_response
     except Exception as e:
-        print(e)
+        # print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/", response_class=HTMLResponse)
