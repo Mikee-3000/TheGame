@@ -259,4 +259,48 @@ export default class GameState {
 
         return stateObject
     }
+    loadSavedState(stateObject) {
+        this.scenarioId = stateObject.scenarioId
+        this.gameId = stateObject.gameId
+        this.gameDayInSeconds = stateObject.gameDayInSeconds
+        this.startTimestamp = stateObject.startTimestamp
+        this.currentTimestamp = stateObject.currentTimestamp
+        this.currentDate = stateObject.currentDate
+        this.endTimestamp = stateObject.endTimestamp
+        this.endDate = stateObject.endDate
+        this.lastTenDays = stateObject.lastTenDays
+        this.mistralApiKey = stateObject.mistralApiKey
+        this.metrics = stateObject.metrics
+        for (const metric in stateObject.metrics) {
+            const mt = stateObject.metrics[metric]
+            this.metrics[metric] = new Metrics(
+                mt.gtTimestamp,
+                mt.population,
+                mt.consumption,
+                mt.investment,
+                mt.netExport,
+                mt.governmentIncome,
+                mt.inflation,
+                mt.unemploymentRate,
+                mt.moneySupply,
+                mt.governmentDebt,
+                mt.aggregateDemand
+            )
+        }
+        this.policySettings = new PolicySettings(
+            stateObject.policySettings.interestRate,
+            stateObject.policySettings.governmentSpending,
+            stateObject.policySettings.openMarketOperations,
+            stateObject.policySettings.individualIncomeTaxRate,
+            stateObject.policySettings.corporateIncomeTaxRate
+        ) 
+        this.result = stateObject.result
+        // it makes no sense to load these, as the user could load a 
+        // saved game on a completely different network
+        // llmRoundTripTimes
+        // llmAverageRoundTripTime
+        // llmAverageRoundTripTimeInGameDays
+        // failedLlmCalls
+        this.yesterday = stateObject.yesterday
+    }
 }

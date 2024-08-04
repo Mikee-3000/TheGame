@@ -3,8 +3,8 @@
 <style>
 html, body
 {
-    overflow: visible;
-    background-color: #000000;
+    overflow: visible
+    background-color: #000000
 }
 </style>
 </head>
@@ -19,28 +19,18 @@ html, body
                 </div>
             </div>
             <div class="menu">
-                <img src="static/textures/menu_icon.png" alt="menu">
+                <img src="/static/textures/menu_icon.png" alt="menu">
                 <div>Menu</div>
                 <ul class="dropdown">
                     <li>
                     <div class="load-game">
                         <div class="menu-item">
-                            <h3>Enter API Token</h3>
-                            <div class="menu-input">
-                                <input type="text" name="api-token" placeholder="Enter API token">
-                                <button type="submit">Submit</button>
-                            </div>
-                        </div>
-                        <div class="menu-item">
                             <h3>Load Saved Game</h3>
+                            <br>
                             <div class="menu-input">
-                                <input type="text" name="save-token" placeholder="Enter save token">
-                                <button type="submit">Load</button>
+                                <input type="text" id="save-token" name="save-token" placeholder="Enter save token">
+                                <button id="load-button" type="submit">Load</button>
                             </div>
-                        </div>
-                        <div class="menu-item save">
-                            <h3>Save Current Game</h3>
-                            <button type="submit">Save</button>
                         </div>
                         <div class="menu-item info" style="padding-top:10px" onclick="location.href='/info'">
                             <h3>Info</h3>
@@ -52,11 +42,17 @@ html, body
             </div>
             <div class="top-spacer"></div>
         </div>
+        <div class="note">
+            {% if announcement %}
+                <h2>{{announcement}}</h2>
+            {% endif %}
+        </div>
         <div class="game-cards">
         {% for game in scenarios %}
             <div class="game-card">
                 <div class="picture">
                     <h2>{{game.name}}</h2>
+                    <br>
                     <img class="economist" src="{{game.start_image_url}}" alt="{{game.name}}">
                     <span class="overlay">{{game.description}}</span>
                 </div>
@@ -72,14 +68,21 @@ html, body
     <script>
         <!-- change the button image on hover -->
         {% for game in scenarios %}
-        const linkImage{{game.id}} = document.getElementById('playbutton-{{game.id}}');
+        const linkImage{{game.id}} = document.getElementById('playbutton-{{game.id}}')
         linkImage{{game.id}}.addEventListener('mouseenter', function() {
-            linkImage{{game.id}}.src = '/static/textures/playbutton_hover.png';
-        });
+            linkImage{{game.id}}.src = '/static/textures/playbutton_hover.png'
+        })
         linkImage{{game.id}}.addEventListener('mouseleave', function() {
-            linkImage{{game.id}}.src = '/static/textures/playbutton.png';
-        });
+            linkImage{{game.id}}.src = '/static/textures/playbutton.png'
+        })
         {% endfor %}
+        <!-- load saved game -->
+        const button = document.getElementById('load-button')
+        button.addEventListener('click', (event) => {
+            event.preventDefault()
+            const saveToken = document.getElementById('save-token').value
+            window.location.href = '/game/load/' + saveToken 
+        })
     </script>
 </body>
 </html>
