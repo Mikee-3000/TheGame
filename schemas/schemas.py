@@ -118,12 +118,43 @@ class PolicySettingsSchema(BaseModel):
             gt_timestamp = gt_timestamp
         )
 
+class MetricsForStateSaveSchema(BaseModel):
+   gtTimestamp: Annotated[int, 'The game time timestamp']
+   aggregateDemand: Annotated[float, 'The aggregate demand']
+   consumption: Annotated[float, 'The consumption']
+   governmentDebt: Annotated[float, 'The government debt']
+   governmentIncome: Annotated[float, 'The government income']
+   inflation: Annotated[float, 'The inflation']
+   investment: Annotated[float, 'The investment']
+   moneySupply: Annotated[float, 'The money supply']
+   netExport: Annotated[float, 'The net export']
+   population: Annotated[int, 'The population']
+   unemploymentRate: Annotated[float, 'The unemployment rate']
+
+class PolicySettingsForStateSaveSchema(BaseModel):
+    corporateIncomeTaxRate: Annotated[float, 'The corporate income tax rate']
+    governmentSpending: Annotated[float, 'The government spending']
+    individualIncomeTaxRate: Annotated[float, 'The individual income tax rate']
+    interestRate: Annotated[float, 'The interest rate']
+    openMarketOperations: Annotated[float, 'The open market operations']
+
 class GameStateSchema(BaseModel):
     scenarioId: Annotated[int, 'The ID of the scenario']
-    # gameDayInSeconds: Annotated[int, 'The duration of a single game day in seconds']
-    # startTimestamp = Annotated[int, 'The start timestamp of the game']
-    # currentTimestamp = Annotated[int, 'The end timestamp of the game']
-    # metrics: Annotated[dict[str, MetricsSchema], 'The metrics for each day']
-    # policySettings: Annotated[PolicySettingsSchema, 'The policy settings']
+    gameDayInSeconds: Annotated[int, 'The duration of a single game day in seconds']
+    startTimestamp: Annotated[int, 'The start timestamp of the game']
+    currentTimestamp: Annotated[int, 'The end timestamp of the game']
+    currentDate: Annotated[str, 'The current date, YYYY-MM-DD']
+    endTimestamp: Annotated[int, 'The end timestamp of the game']
+    endDate: Annotated[str, 'The end date, YYYY-MM-DD']
+    lastTenDays: Annotated[list[str], 'The dates of the last ten days']
+    mistralApiKey: Annotated[Optional[str], 'The Mistral API key'] = None
+    metrics: Annotated[dict[str, MetricsForStateSaveSchema], 'The metrics for each day']
+    policySettings: Annotated[PolicySettingsForStateSaveSchema, 'The policy settings']
+    result: Annotated[Optional[str], 'The result of the game'] = None
+    gameId: Annotated[Optional[int], 'The ID of the game'] = None
+    llmRoundTripTimes: Annotated[Optional[list[float]], 'Recorded round trip times of the LLM requests'] = None
+    llmAverageRoundTripTime: Annotated[Optional[float], 'Average round trip time of the LLM requests'] = None
+    llmAverageRoundTripTimeInGameDays: Annotated[Optional[float], 'Average round trip time of the LLM requests in game days'] = None
+    failedLlmCalls: Annotated[Optional[int], 'Number of failed LLM calls'] = None
 
 

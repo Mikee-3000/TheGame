@@ -27,9 +27,6 @@ export default class GameState {
         dateNow.setFullYear(dateNow.getFullYear() + 1)
         this.endTimestamp = Math.floor(dateNow.getTime() / 1000)
         this.endDate = dateNow.toISOString().split('T')[0]
-        console.log('end date')
-        console.log(this.endTimestamp)
-        console.log(this.endDate)
         this.lastTenDays = [this.currentDate]
         // the user's API key is needed for AI communication
         this.mistralApiKey = null
@@ -244,5 +241,27 @@ export default class GameState {
             }
         }
         return counter
+    }
+    getStateForSaving() {
+        let stateObject = {
+        }
+        stateObject.scenarioId = this.scenarioId
+        for (let day of this.lastTenDays) {
+            returnArray.push(
+                {
+                    gt_timestamp: this.metrics[day].gtTimestamp,
+                    population: this.metrics[day].population,
+                    consumption: this.metrics[day].consumption,
+                    investment: this.metrics[day].investment,
+                    net_export: this.metrics[day].netExport,
+                    government_income: this.metrics[day].governmentIncome,
+                    inflation: this.metrics[day].inflation,
+                    unemployment_rate: this.metrics[day].unemploymentRate,
+                    money_supply: this.metrics[day].moneySupply,
+                    government_debt: this.metrics[day].governmentDebt,
+                    aggregate_demand: this.metrics[day].aggregateDemand,
+                }
+            )
+        }
     }
 }

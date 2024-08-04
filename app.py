@@ -201,9 +201,10 @@ def send_policy(policySettings: PolicySettingsSchema,
 
 @app.post("/save-game/")
 def save_game(
+    gameStateSchema: GameStateSchema,
     db: Session = Depends(db_session)
 ):
-    pass
+    print(gameStateSchema)
 
 @app.get("/", response_class=HTMLResponse)
 def root(
