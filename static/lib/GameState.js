@@ -12,6 +12,8 @@ export default class GameState {
             throw new Error('GameState failed to initialize on time')
         }
         instance = this
+        // this how many real live seconds to one day
+        this.gameDayInSeconds = 5
         this.scenarioId = scenarioId
         // the game starts now
         this.startTimestamp = Math.floor(Date.now() / 1000);
@@ -54,7 +56,17 @@ export default class GameState {
             'aggregateDemand': 'Aggregate Demand'
         }
         this.metricsDisplayClicked = null
-
+        // measure the response time from the LLM
+        this.llmRoundTripTimes = []
+        this.llmAverageRoundTripTime = 0
+        this.llmAverageRoundTripTimeInGameDays = 0
+    }
+    logLlmResponseTime(duration) {
+        this.llmRoundTripTimes.push(duration)
+        // average the array
+        this.llmAverageRoundTripTime = this.llmRoundTripTimes.reduce((acc, cv) => acc + cv, 0) / this.llmRoundTripTimes.length
+        // convert the avg to game days. 
+        this.llmAverageRoundTripTimeInGameDays = (this.llmAverageRoundTripTime / 1000) / this.gameDayInSeconds
     }
     getRequestData() {
         // sends only the data that the AI expects

@@ -57,7 +57,6 @@ export default class ChartDisplay {
             datePlane.position.set(0, 0.4, 0.00)
             valuePlane.position.set(0, 1 + 1.2, 0.00)
             this.barGroup.position.set(0-this.groupWidth/2  + (this.elementWidth + this.gap)/2 + i * (this.elementWidth + this.gap), 0, 0)
-            console.log(this.barGroup.position)
             this.chartGroup.add(this.barGroup)
         }
         this.scene.add(this.chartGroup)

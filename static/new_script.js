@@ -53,7 +53,7 @@ const tick = () => {
     // if the setters are on, don't run time
     if (!gameState.setters.clicked) {
         // rotate the sky, it looks pretty
-        starSphere.rotation.y += Math.PI / 14400
+        starSphere.rotation.y += Math.PI / 20000
         // starSphere.rotation.x += Math.PI / 14400
 
         // update the date
@@ -67,7 +67,7 @@ const tick = () => {
             counter += 1
             // if nothing is selected, switch the metrics up periodically
             if (!gameState.metricsDisplayClicked) {
-                if (counter % 2 === 0) {
+                if (counter % 9 === 0) { // don't do it too often, bad for performance
                     const chosenMetric = gameState.metricsList[chartSelector]
                     chartDisplay.update(gameState.getLastTenDaysMetrics(chosenMetric))
                     chartSelector += 1
@@ -75,7 +75,7 @@ const tick = () => {
                 }
             }
             // this is a new day
-            if (counter % 5 === 0) {
+            if (counter % gameState.gameDayInSeconds === 0) {
                 // update the date
                 gameState.addDayToGameDate()
                 // update the date display
