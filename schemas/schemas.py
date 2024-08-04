@@ -158,4 +158,5 @@ class GameStateSchema(BaseModel):
     failedLlmCalls: Annotated[Optional[int], 'Number of failed LLM calls'] = None
     yesterday: Annotated[Optional[str], 'The date of yesterday in game days'] = None
 
-
+class GameStateIdSchema(BaseModel):
+    game_state_id: Annotated[str, 'ID of the saved game state']

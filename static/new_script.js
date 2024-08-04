@@ -22,7 +22,17 @@ import PolicyConsole from './scene/PolicyConsole.js'
 // Game Data
 // retrieve the scenario ID from an invisible div
 const scenarioId = document.getElementById('data').dataset.scenario
+
+// if loading a previously saved state, retrieve it from the HTML
+const loadedGameState = document.getElementById('data').dataset.gamestate
 const gameState = new GameState(scenarioId)
+// if there's anything to load, load it
+let skipInitialLoad = false
+if (loadedGameState !=='None') {
+    gameState.loadSavedState(JSON.parse(loadedGameState))
+    // this means that we can skip the initial load
+    skipInitialLoad = true
+}
 const urlVault = new URLVault()
 
 // hide the scene until it's loaded
@@ -192,13 +202,16 @@ const inGameLoadingManager = new THREE.LoadingManager(
 // create a var for the in-game data fetcher
 let inGameDataFetcher = new DataFetcher(inGameLoadingManager)
 
+// load the initial data if we are starting a new game
+if (!skipInitialLoad) {
 // data loader for LLM responses
 const dataFetcher = new DataFetcher(window.loadingManager)
-const initData = {
-  "start_gt_timestamp": gameState.startTimestamp,
-  "scenario_id": gameState.scenarioId
+    const initData = {
+    "start_gt_timestamp": gameState.startTimestamp,
+    "scenario_id": gameState.scenarioId
+    }
+    dataFetcher.load(urlVault.new_game_url, initData)
 }
-dataFetcher.load(urlVault.new_game_url, initData)
 
 // renderer
 window.sizes = {
@@ -292,10 +305,10 @@ settersForm.addEventListener('submit', (event) => {
     event.preventDefault()
     const formData = new FormData(event.target)
     const data = Object.fromEntries(formData.entries())
-    // update the panels
-    policySettingsDisplays.updateValues(data)
     // add to the game state
     gameState.setPolicySettings(data)
+    // update the panels
+    policySettingsDisplays.updateValues(gameState.policySettings.getValuesAsStrings())
     // send the LLM request
     const payload = gameState.getDataForLlmRequest()
     inGameDataFetcher.load('/set-policy', payload)

@@ -69,10 +69,33 @@ def start_game(
     try:
         scenario = get_scenario_by_id_crud(db, scenario_id)
         return templates.TemplateResponse(
-            request=request, name="new_scene.jinja2", context={"id": id, "scenario": scenario}
+            request=request, name="new_scene.jinja2", context={"id": id, "scenario": scenario, "game_state": None}
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get('/game/load/{game_state_id}', response_class=HTMLResponse)
+def load_game(
+    request: Request,
+    response: Response,
+    game_state_id: str,
+    db: Session = Depends(db_session)
+):
+    try: 
+        game_state = get_game_state_by_id(db, game_state_id)
+        if game_state is None:
+            raise HTTPException(status_code=404, detail='Game state not found')
+        scenario_id = game_state.data['scenarioId']
+        scenario = get_scenario_by_id_crud(db, scenario_id)
+        json_data = json.dumps(game_state.data)
+        return templates.TemplateResponse(
+            request=request, name="new_scene.jinja2", context={"id": id, "scenario": scenario, "game_state": json_data}
+        )
+    except Exception as e:
+        scenarios = get_all_scenarios(db)
+        return templates.TemplateResponse(
+            request=request, name="game_selection.jinja2", context={"id": id, "scenarios": scenarios, "announcement": "A game with the specified ID was not found. Please make sure your token is correct."}
+        )
 
 @app.post('/game/new')
 def new_game(

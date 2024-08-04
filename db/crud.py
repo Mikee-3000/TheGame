@@ -34,6 +34,8 @@ def create_game_state(
     db.refresh(db_game_state)
     return db_game_state.id
 
+def get_game_state_by_id(db: Session, game_state_id: str):
+    return db.query(GameState).filter(GameState.id == game_state_id).first()
 
 def create_scenarios_from_json(
         db: Session
