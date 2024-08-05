@@ -61,8 +61,8 @@ class MetricsSchema(BaseModel):
     @classmethod
     def interpolate(cls, start_metrics: dict, end_metrics: dict):
         day_metrics = {}
-        start_ts = dt.fromtimestamp(start_metrics['gt_timestamp'])
-        end_ts = dt.fromtimestamp(end_metrics['gt_timestamp'])
+        start_ts = dt.utcfromtimestamp(start_metrics['gt_timestamp'])
+        end_ts = dt.utcfromtimestamp(end_metrics['gt_timestamp'])
         # the amount of days not including the start day or the end day
         days = (end_ts - start_ts).days
         interpolated_metrics = {}
@@ -160,3 +160,8 @@ class GameStateSchema(BaseModel):
 
 class GameStateIdSchema(BaseModel):
     game_state_id: Annotated[str, 'ID of the saved game state']
+
+class EndGameSchema(BaseModel):
+    scenarioId: Annotated[int, 'The ID of the scenario']
+    gameId: Annotated[int, 'The Game ID']
+    metrics: Annotated[dict[str, MetricsForStateSaveSchema], 'End game metrics']

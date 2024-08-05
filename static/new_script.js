@@ -8,6 +8,7 @@ import MetricsDisplays from './scene/MetricsDisplays.js'
 import StarSphere from './scene/SkySphere.js'
 import URLVault from './lib/URLVault.js'
 import DataFetcher from './lib/DataFetcher.js'
+import endResultQuery from './lib/endResultQuery.js'
 import getMouse from './scene/Mouse.js'
 import SaveButton from './scene/SaveButton.js'
 import ButtonText from './scene/ButtonText.js'
@@ -49,6 +50,7 @@ let counter = 0
 // selects the chart, start from 1 as 0 is selected on page load
 let chartSelector = 1
 const clock = new THREE.Clock()
+let stopTheClock = false
 // setting this to -1 will pass the if on start
 let daysPast = -1
 const tick = () => {
@@ -108,7 +110,35 @@ const tick = () => {
                         .then(() => {}).catch((error) => {})
                 }
 
-
+                // check for win/lose
+                if (gameState.currentDate === gameState.endDate) {
+                    console.log('END')
+                    const startDate = new Date(gameState.startTimestamp * 1000).toISOString().split('T')[0]
+                    const endGameData = {
+                        scenarioId: gameState.scenarioId,
+                        gameId: gameState.gameId,
+                        metrics: {
+                            'gameStart': gameState.metrics[startDate],
+                            'gameEnd': gameState.metrics[gameState.endDate]
+                        }
+                    }
+                    const judgment = endResultQuery(endGameData).then(judgment => {
+                        saveButton.button.style.display = 'none'
+                        console.log(judgment)
+                        if (judgment['result'] === 'WON'){
+                            loseResultDiv.remove()
+                            winResultDiv.style.opacity = 1
+                        } else {
+                            winResultDiv.remove()
+                            loseResultDiv.style.opacity = 1
+                        }
+                        stopTheClock = true
+                        gsap.to(endOverlay, { 
+                            display: 'flex', opacity: 1, duration: 1
+                        })
+                        document.querySelector('.verdict').innerHTML = judgment['verdict']
+                    })
+                }
                 // ---testing
                 if (counter == 1000) {
                     if (gameState.result == 'win') {
@@ -137,7 +167,9 @@ const tick = () => {
     controls.update()
     // call tick again on the next frame
     renderer.render(scene, camera)
-    window.requestAnimationFrame(tick)
+    if (!stopTheClock) {
+        window.requestAnimationFrame(tick)
+    }
 }
 
 // Save Button

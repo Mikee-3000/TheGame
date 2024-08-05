@@ -17,7 +17,7 @@ export default class GameState {
         this.gameDayInSeconds = 5
         this.scenarioId = scenarioId
         // the game starts now
-        this.startTimestamp = Math.floor(Date.now() / 1000);
+        this.startTimestamp = Math.floor(new Date().getTime() / 1000)
         // this will keep game date
         this.currentTimestamp = this.startTimestamp
         // add the current date in YYYY-MM-DD format
@@ -25,6 +25,8 @@ export default class GameState {
         // end date - when the game is lost or won
         let dateNow = new Date()
         dateNow.setFullYear(dateNow.getFullYear() + 1)
+        // TESTING
+        // dateNow.setDate(dateNow.getDate() + 2)
         this.endTimestamp = Math.floor(dateNow.getTime() / 1000)
         this.endDate = dateNow.toISOString().split('T')[0]
         this.yesterday = null
@@ -35,7 +37,7 @@ export default class GameState {
         this.metrics  = {}
         this.policySettings = new PolicySettings().zeroValues()
         this.setters = document.querySelector('.setters')
-        this.result = 'win'
+        this.result = null
         this.setters.clicked = false
         // set this to null, the data fetcher will fill it on first LLM response
         this.gameId = null
