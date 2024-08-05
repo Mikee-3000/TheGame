@@ -112,7 +112,6 @@ const tick = () => {
 
                 // check for win/lose
                 if (gameState.currentDate === gameState.endDate) {
-                    console.log('END')
                     const startDate = new Date(gameState.startTimestamp * 1000).toISOString().split('T')[0]
                     const endGameData = {
                         scenarioId: gameState.scenarioId,
@@ -122,10 +121,8 @@ const tick = () => {
                             'gameEnd': gameState.metrics[gameState.endDate]
                         }
                     }
-                    console.log(endGameData)
                     const judgment = endResultQuery(endGameData).then(judgment => {
                         saveButton.button.style.display = 'none'
-                        console.log(judgment)
                         if (judgment['result'] === 'WON'){
                             loseResultDiv.remove()
                             winResultDiv.style.opacity = 1

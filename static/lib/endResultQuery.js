@@ -10,7 +10,6 @@ export default function endResultQuery(endGameData) {
         })
         }).then(response => response.json())
         .then(data => {
-            console.log(data)
             resolve(data)
         }).catch(error => {
             console.error(error)
