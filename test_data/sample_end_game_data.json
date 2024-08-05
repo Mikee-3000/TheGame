@@ -1,0 +1,32 @@
+{
+    "scenarioId": "2",
+    "gameId": 153,
+    "metrics": {
+        "gameStart": {
+            "gtTimestamp": 1722895200,
+            "population": 313000,
+            "consumption": 250066.67,
+            "investment": 70066.67,
+            "netExport": -9933.33,
+            "governmentIncome": 120066.67,
+            "inflation": 2.1,
+            "unemploymentRate": 0.05,
+            "moneySupply": 1800333.33,
+            "governmentDebt": 2200333.33,
+            "aggregateDemand": 327173.33
+        },
+        "gameEnd": {
+            "gtTimestamp": 1723068000,
+            "population": 313000,
+            "consumption": 250200,
+            "investment": 70200,
+            "netExport": -9800,
+            "governmentIncome": 120200,
+            "inflation": 2.11,
+            "unemploymentRate": 0.05,
+            "moneySupply": 1801000,
+            "governmentDebt": 2201000,
+            "aggregateDemand": 327520
+        }
+    }
+}

@@ -1,22 +1,22 @@
 from datetime import datetime as dt
 from dotenv import load_dotenv
 load_dotenv('.env')
-from db.crud import *
-from db.crud import get_scenario_by_id as get_scenario_by_id_crud
-from db.database import Base, engine
-from db.models import Game
+from theGame.db.crud import *
+from theGame.db.crud import get_scenario_by_id as get_scenario_by_id_crud
+from theGame.db.database import Base, engine
+from theGame.db.models import Game
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import json
-from lib import client
-from lib.message import talk, get_game_result
-from middleware.middleware import *
+from theGame.lib import client
+from theGame.lib.message import talk, get_game_result
+from theGame.middleware.middleware import *
 from mistralai.models.chat_completion import ChatMessage
 import os
 from pydantic import BaseModel
-from schemas.schemas import *
+from theGame.schemas.schemas import *
 from sqlalchemy.orm import Session
 import uvicorn
 
@@ -43,14 +43,7 @@ templates = Jinja2Templates(directory="templates")
 # game time date
 # real life datetime
 
-@app.post('/scenario/new', response_model=ScenarioSchema)
-def new_scenario(scenario_schema: ScenarioSchema, db: Session = Depends(db_session)):
-    try:
-        scenario = create_scenario(db, scenario_schema)
-        return scenario
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
+# test added
 @app.post('/scenario/new-from-json')
 def new_scenario_from_json(db: Session = Depends(db_session)):
     try:
@@ -59,6 +52,7 @@ def new_scenario_from_json(db: Session = Depends(db_session)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# test added
 @app.get('/game/{scenario_id}', response_class=HTMLResponse)
 def start_game(
     request: Request,
@@ -74,6 +68,7 @@ def start_game(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# test added
 @app.get('/game/load/{game_state_id}', response_class=HTMLResponse)
 def load_game(
     request: Request,
@@ -97,6 +92,7 @@ def load_game(
             request=request, name="game_selection.jinja2", context={"id": id, "scenarios": scenarios, "announcement": "A game with the specified ID was not found. Please make sure your token is correct."}
         )
 
+# test added
 @app.post('/game/new')
 def new_game(
     game: GameCreateSchema,
@@ -158,6 +154,7 @@ def new_game(
         # print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
+# test added
 @app.post('/win-lose')
 def win_lose(
     end_game_data: EndGameSchema,
@@ -196,7 +193,7 @@ def win_lose(
         'verdict': verdict
     }
 
-# @app.post('/set-policy', response_model=MetricsSchema)
+# test added
 @app.post('/set-policy')
 def send_policy(policySettings: PolicySettingsSchema,
                 metrics: dict[str, dict] = Depends(dated_metrics_dict),
@@ -261,6 +258,7 @@ def send_policy(policySettings: PolicySettingsSchema,
         # print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
+# test added
 @app.post("/save-game/")
 def save_game(
     gameStateSchema: GameStateSchema,
@@ -270,6 +268,7 @@ def save_game(
     return {"message": "Game state saved successfully",
             "saved_game_id": saved_game_id}
 
+# visual test only
 @app.get("/", response_class=HTMLResponse)
 def root(
     request: Request,
@@ -281,6 +280,7 @@ def root(
         request=request, name="game_selection.jinja2", context={"id": id, "scenarios": scenarios}
     )
 
+# visual test only
 @app.get("/info/", response_class=HTMLResponse)
 def root(
     request: Request,

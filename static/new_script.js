@@ -112,7 +112,6 @@ const tick = () => {
 
                 // check for win/lose
                 if (gameState.currentDate === gameState.endDate) {
-                    console.log('END')
                     const startDate = new Date(gameState.startTimestamp * 1000).toISOString().split('T')[0]
                     const endGameData = {
                         scenarioId: gameState.scenarioId,
@@ -124,7 +123,6 @@ const tick = () => {
                     }
                     const judgment = endResultQuery(endGameData).then(judgment => {
                         saveButton.button.style.display = 'none'
-                        console.log(judgment)
                         if (judgment['result'] === 'WON'){
                             loseResultDiv.remove()
                             winResultDiv.style.opacity = 1
@@ -137,19 +135,6 @@ const tick = () => {
                             display: 'flex', opacity: 1, duration: 1
                         })
                         document.querySelector('.verdict').innerHTML = judgment['verdict']
-                    })
-                }
-                // ---testing
-                if (counter == 1000) {
-                    if (gameState.result == 'win') {
-                        loseResultDiv.remove()
-                        winResultDiv.style.opacity = 1
-                    } else {
-                        winResultDiv.remove()
-                        loseResultDiv.style.opacity = 1
-                    }
-                    gsap.to(endOverlay, { 
-                        display: 'flex', opacity: 1, duration: 1
                     })
                 }
             }

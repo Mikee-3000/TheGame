@@ -1,7 +1,6 @@
 from datetime import datetime as dt
 import json
-import lib.chat_logging as log
-from lib import client
+from theGame.lib import client
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os
@@ -42,10 +41,10 @@ def talk(
         except json.JSONDecodeError:
             # stuck
             # probably an almost-ok JSON, that might still be fixed
-            all_tokens = re.split(r'[{}":\s,]', message_content)
+            all_tokens = re.split(r'[\'\"\n{}":\s,]', message_content)
             tokens = []
             for token in all_tokens:
-                token = re.sub(r'[{}":\s,]', '', token)
+                token = re.sub(r'[\'\"\n{}":\s,]', '', token)
                 if token == '':
                     continue
                 tokens.append(token)

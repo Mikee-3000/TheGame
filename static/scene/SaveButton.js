@@ -8,7 +8,7 @@ export default class SaveButton {
     }
     save() {
         // save the game using FetchAPI
-            const stateForSaving = this.gameState.getStateForSaving()
+        const stateForSaving = this.gameState.getStateForSaving()
         fetch('/save-game', {
             method: 'POST',
             headers: {
