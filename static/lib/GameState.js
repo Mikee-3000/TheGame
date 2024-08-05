@@ -24,9 +24,10 @@ export default class GameState {
         this.currentDate = new Date(this.startTimestamp * 1000).toISOString().split('T')[0]
         // end date - when the game is lost or won
         let dateNow = new Date()
-        // dateNow.setFullYear(dateNow.getFullYear() + 1)
+        // the game lasts 6 months
+        dateNow.setDate(dateNow.getDate() + 180)
         // TESTING
-        dateNow.setDate(dateNow.getDate() + 2)
+        // dateNow.setDate(dateNow.getDate() + 2)
         this.endTimestamp = Math.floor(dateNow.getTime() / 1000)
         this.endDate = dateNow.toISOString().split('T')[0]
         this.yesterday = null
