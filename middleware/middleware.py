@@ -1,9 +1,9 @@
 from datetime import datetime as dt
-from db.crud import get_game_scenario_by_id, get_scenario_by_id as crud_get_scenario_by_id
-from db.database import SessionLocal
+from theGame.db.crud import get_game_scenario_by_id, get_scenario_by_id as crud_get_scenario_by_id
+from theGame.db.database import SessionLocal
 from fastapi import HTTPException, Request, Response, Depends
 from pydantic import BaseModel
-from schemas.schemas import MetricsSchema, GameCreateSchema
+from theGame.schemas.schemas import MetricsSchema, GameCreateSchema
 
 
 def setup_accept_header(app):

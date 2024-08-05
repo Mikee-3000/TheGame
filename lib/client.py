@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
-from lib import message
+from theGame.lib import message
 import os
 
 def start_client():

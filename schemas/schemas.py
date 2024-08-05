@@ -1,8 +1,8 @@
 from datetime import datetime as dt
 from datetime import timedelta
-from db.database import GameType
+from theGame.db.database import GameType
 import inspect
-from lib.interpolation import interpolate
+from theGame.lib.interpolation import interpolate
 from pydantic import BaseModel, field_validator, ValidationInfo, computed_field, Field
 from typing import Annotated, Optional, get_type_hints
 

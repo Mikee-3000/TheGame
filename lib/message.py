@@ -1,7 +1,6 @@
 from datetime import datetime as dt
 import json
-import lib.chat_logging as log
-from lib import client
+from theGame.lib import client
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os

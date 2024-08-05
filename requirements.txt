@@ -2,9 +2,10 @@ fastapi
 jinja2
 mistralai
 numpy
-# todo: change to psycopg2 in production
 psycopg2-binary
 pydantic
 python-dotenv
 sqlalchemy
 uvicorn
+pytest
+bs4

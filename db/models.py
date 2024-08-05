@@ -1,4 +1,4 @@
-from db.database import Base, str255, str5000, MetricsType, GameType
+from theGame.db.database import Base, str255, str5000, MetricsType, GameType
 from sqlalchemy import Boolean, ForeignKey, BigInteger, Text, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship

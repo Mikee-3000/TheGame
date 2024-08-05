@@ -1,8 +1,8 @@
 # from mistralai.models.chat_completion import ChatMessage
 from sqlalchemy.orm import Session, joinedload
 import json
-from schemas.schemas import *
-from db.models import *
+from theGame.schemas.schemas import *
+from theGame.db.models import *
 import datetime 
 from pathlib import Path
 
