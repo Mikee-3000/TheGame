@@ -334,3 +334,7 @@ button[type="submit"]:hover {
     background-color: yellow;
     color: black;
 }
+
+.verdict{
+    max-width: 50%;
+}

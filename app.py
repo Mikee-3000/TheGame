@@ -11,7 +11,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import json
 from lib import client
-from lib.message import talk
+from lib.message import talk, get_game_result
 from middleware.middleware import *
 from mistralai.models.chat_completion import ChatMessage
 import os
@@ -106,7 +106,8 @@ def new_game(
     # raise HTTPException(status_code=500, detail='mock exception')
     try:
         # request the initial metrics and policy settings from the LLLM
-        game_time_str = dt.strftime(dt.fromtimestamp(game.start_gt_timestamp), '%Y-%m-%d')
+        # game_time_str = dt.strftime(dt.fromtimestamp(game.start_gt_timestamp), '%Y-%m-%d')
+        game_time_str = dt.strftime(dt.utcfromtimestamp(game.start_gt_timestamp), '%Y-%m-%d')
         user_prompt = f"The game is starting, the game date is {game_time_str}. Please provide 2 sets of metrics - one for the game date and one for 30 days from the game date."
         user_message = ChatMessage(role='user', content=user_prompt)
         system_message = ChatMessage(role='system', content=scenario.initial_system_prompt)
@@ -156,6 +157,44 @@ def new_game(
     except Exception as e:
         # print(e)
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post('/win-lose')
+def win_lose(
+    end_game_data: EndGameSchema,
+    db: Session = Depends(db_session
+)):
+    scenario = get_scenario_by_id_crud(db, end_game_data.scenarioId)
+    system_prompt = f'''
+    You are an AI game engine, finetuned in economics as described by {scenario.name}.You are being sent 2 sets of economic metrics, one from the start of the game and one from the end. You are to judge whether the player won or lost. Please start your response with either "WON" or "LOST" followed by a brief explanation.
+    '''
+    user_prompt = end_game_data.model_dump_json()
+    system_message = ChatMessage(role='system', content=system_prompt)
+    user_message = ChatMessage(role='user', content=user_prompt)
+    try:
+        # send it to the LLM
+        judgment = get_game_result(
+            user_message=user_message,
+            system_message=system_message,
+            model=os.environ['MISTRAL_MODEL']
+        )
+    except Exception as e:
+        print(181)
+        raise HTTPException(status_code=500, detail=str(e))
+    result = judgment['result']
+    verdict = judgment['verdict']
+    raw = judgment['raw']
+    raw_messages = {
+        'user_message': str(user_message),
+        'system_message': str(system_message),
+        'raw_llm_response': str(raw),
+        'model': os.environ['MISTRAL_MODEL']
+    }
+    store_end_game_exchange(db, end_game_data.gameId, raw_messages)
+    game = update_game_by_id(db, end_game_data.gameId, result, verdict)
+    return {
+        'result': result,
+        'verdict': verdict
+    }
 
 # @app.post('/set-policy', response_model=MetricsSchema)
 @app.post('/set-policy')

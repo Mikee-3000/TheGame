@@ -1,4 +1,4 @@
-from db.database import Base, str255, MetricsType, GameType
+from db.database import Base, str255, str5000, MetricsType, GameType
 from sqlalchemy import Boolean, ForeignKey, BigInteger, Text, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -48,6 +48,7 @@ class Game(Base):
     end_rl_timestamp: Mapped[Optional[int]] = mapped_column(BigInteger)
     start_gt_timestamp: Mapped[int] = mapped_column(BigInteger)
     result: Mapped[Optional[str255]]
+    verdict: Mapped[Optional[str5000]]
 
     scenario_id: Mapped[int] = mapped_column(ForeignKey('scenarios.id'), nullable=False)
     scenario: Mapped['Scenario'] = relationship('Scenario', back_populates='games')

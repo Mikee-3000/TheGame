@@ -9,6 +9,7 @@ from typing import Annotated
 
 
 str255 = Annotated[str, 255]
+str5000 = Annotated[str, 5000]
 class MetricsType(Enum):
     measured = 'measured'
     projected = 'projected'

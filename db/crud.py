@@ -82,6 +82,27 @@ def get_game_scenario_by_id(db: Session, game_id: int):
     game = query.first()
     return game
 
+def update_game_by_id(db: Session, game_id: int, result: str, verdict: str):
+    game = db.query(Game).filter(Game.id == game_id).first()
+    game.result = result
+    game.verdict = verdict
+    game.end_rl_timestamp = round(datetime.datetime.now().timestamp())
+    db.commit()
+    db.refresh(game)
+    return game
+
+def store_end_game_exchange(
+    db: Session,
+    game_id: int,
+    raw_message: dict
+):
+    raw_messages_model = RawMessages(  
+        game_id=game_id,
+        rl_timestamp=datetime.datetime.now().timestamp(),
+        **raw_message
+    )
+    db.add(raw_messages_model)
+
 def store_message_exchange(
         db: Session,
         policy_settings: dict,

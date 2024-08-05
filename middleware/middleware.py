@@ -48,7 +48,7 @@ def dated_metrics_dict(metrics: list[MetricsSchema]) -> dict[dt, MetricsSchema]:
     dated_metrics = {}
     metrics_capture_date = None
     for metric in metrics:
-        metric_game_date = dt.strftime(dt.fromtimestamp(metric.gt_timestamp), '%Y-%m-%d')
+        metric_game_date = dt.strftime(dt.utcfromtimestamp(metric.gt_timestamp), '%Y-%m-%d')
         dated_metrics[metric_game_date] = metric.model_dump()
         # get the highest timestamp, as the game date of the current measurement
         if metrics_capture_date is None:
